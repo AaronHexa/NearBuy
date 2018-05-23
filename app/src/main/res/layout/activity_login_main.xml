@@ -39,19 +39,20 @@
 
     <Button
         android:id="@+id/loginBtn"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="15dp"
-        android:text="Login" />
+        android:text="Login"
+        android:background="@drawable/round_corner_box"/>
 
     <ImageView
         android:id="@+id/googleBtn"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="260dp"
+        android:layout_height="70dp"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
-        app:srcCompat="@mipmap/ic_launcher_round" />
+        app:srcCompat="@drawable/google_login_btn" />
 
     <TextView
         android:id="@+id/registerDirect"
