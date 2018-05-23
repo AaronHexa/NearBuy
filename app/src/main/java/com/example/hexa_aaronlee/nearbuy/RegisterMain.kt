@@ -92,8 +92,8 @@ class RegisterMain : AppCompatActivity() {
 
         var photoPic = R.drawable.guest_icon.toString()
 
-        val data = UserData(email,password,id,name,photoPic)
+        val data = UserData(email,password,name,id,photoPic,"Email")
 
-        mDatafaceReference.child("Email").child(id).setValue(data)
+        mDatafaceReference.child(id).setValue(data)
     }
 }

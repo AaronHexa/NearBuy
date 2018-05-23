@@ -17,7 +17,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.*
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.*
@@ -36,7 +35,6 @@ class LoginMain : AppCompatActivity(), LoginView.view{
     lateinit var mDatafaceReference: DatabaseReference
     lateinit var firebaseAuth : FirebaseAuth
 
-    private var typeSignIn : String? = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,7 +82,6 @@ class LoginMain : AppCompatActivity(), LoginView.view{
     }
 
     override fun loginToNext() {
-        typeSignIn = "Email"
         loginProcess()
         Toast.makeText(applicationContext,"Login Successfully",Toast.LENGTH_SHORT).show()
     }
@@ -98,7 +95,6 @@ class LoginMain : AppCompatActivity(), LoginView.view{
     }
 
     override fun loginGoogle() {
-        typeSignIn = "Google"
         val signInIntent = mGoogleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
@@ -157,7 +153,7 @@ class LoginMain : AppCompatActivity(), LoginView.view{
         var personName :String? = null
         var personEmail:String? = null
         var personPhoto :String? = null
-        var password = "-"
+        var password = "---"
 
         val acct = GoogleSignIn.getLastSignedInAccount(applicationContext)
         if (acct != null) {
@@ -172,23 +168,11 @@ class LoginMain : AppCompatActivity(), LoginView.view{
 
     fun updateNextPage(email: String?,password: String?,user_id: String?,name: String?,profilePhoto: String?){
 
-        saveDatabase(email,password,user_id,name,profilePhoto)
+        presenter?.saveDataProcess(email,password,user_id,name,profilePhoto)
 
         var intent = Intent(applicationContext,MainPage::class.java)
-        intent.putExtra("Type Sign In",typeSignIn)
         startActivity(intent)
         finish()
-    }
-
-    fun saveDatabase(email: String?,password: String?, user_id: String?, name: String?, profilePhoto: String?)
-    {
-        mDatafaceReference = mFirebaseDatabase.getReference("User").child("Google")
-
-        val data = UserData(email,password,user_id,name,profilePhoto)
-
-        mDatafaceReference.child(user_id).setValue(data).addOnCompleteListener {
-            System.out.println("Save Done !!!!!!!")
-        }
     }
 
     fun loginProcess() {
@@ -210,7 +194,6 @@ class LoginMain : AppCompatActivity(), LoginView.view{
                     if (task.isSuccessful) {
 
                         var intent = Intent(applicationContext,MainPage::class.java)
-                        intent.putExtra("Type Sign In",typeSignIn)
                         finish()
                         startActivity(intent)
 
