@@ -30,6 +30,7 @@ class MainPage : AppCompatActivity() {
         mAuth = FirebaseAuth.getInstance()
 
         user_id = mAuth.currentUser!!.uid
+        UserDetail.user_id = user_id
 
         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -53,6 +54,10 @@ class MainPage : AppCompatActivity() {
 
         getUserDataFromDatabase()
 
+        historyBtn.setOnClickListener {
+            finish()
+            startActivity(Intent(applicationContext,ChatHistory::class.java)) }
+
     }
 
     fun getUserDataFromDatabase()
@@ -65,6 +70,10 @@ class MainPage : AppCompatActivity() {
                 val data = dataSnapshot.getValue(UserData::class.java)
                 personName = data?.name
                 personEmail = data?.email
+
+                UserDetail.email = data?.email
+                UserDetail.username = data?.name
+                System.out.println("..................."+UserDetail.username+" "+ UserDetail.user_id)
 
                 setUIUpdate()
             }

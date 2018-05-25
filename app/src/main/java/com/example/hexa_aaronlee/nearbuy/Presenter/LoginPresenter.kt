@@ -6,7 +6,9 @@ import android.support.v4.app.ActivityCompat.startActivityForResult
 import android.widget.Toast
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
 import com.example.hexa_aaronlee.nearbuy.Model.User
+import com.example.hexa_aaronlee.nearbuy.R
 import com.example.hexa_aaronlee.nearbuy.View.LoginView
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
@@ -28,7 +30,6 @@ public class LoginPresenter(internal var view: LoginView.view) : LoginView.prese
 
     override fun clickGoogleBtn() {
         view.loginGoogle()
-
     }
 
 

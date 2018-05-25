@@ -20,7 +20,8 @@
         </activity>
         <activity android:name=".RegisterMain" />
         <activity android:name=".MainPage" />
-        <activity android:name=".ChatRoom"></activity>
+        <activity android:name=".ChatRoom" />
+        <activity android:name=".ChatHistory"></activity>
     </application>
 
 </manifest>

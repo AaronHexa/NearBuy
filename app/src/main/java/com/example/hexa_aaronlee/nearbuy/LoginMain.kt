@@ -50,6 +50,7 @@ class LoginMain : AppCompatActivity(), LoginView.view{
         firebaseAuth = FirebaseAuth.getInstance()
 
 
+
         //if the objects getcurrentuser method is not null
         //means user is already logged in
 
