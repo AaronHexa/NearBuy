@@ -36,13 +36,16 @@ class ChatRoom : AppCompatActivity() {
 
         chatName.text = UserDetail.chatWithName
 
-        System.out.println(UserDetail.user_id)
+        System.out.println(selectedUser)
 
         getDataMessage()
 
         sendButton.setOnClickListener { saveMeassageData()}
 
-        backFromChat.setOnClickListener{ startActivity(Intent(applicationContext, MainPage::class.java)) }
+        backFromChat.setOnClickListener{
+            startActivity(Intent(applicationContext, ChatHistory::class.java))
+            finish()
+        }
 
         layout1.setOnClickListener{ v -> hideKeyboard(v) }
 
@@ -57,8 +60,8 @@ class ChatRoom : AppCompatActivity() {
 
     fun saveMeassageData() {
 
-        databaseRef = FirebaseDatabase.getInstance().reference.child("History").child(UserDetail.user_id).child(selectedUser)
-        databaseRef2 = FirebaseDatabase.getInstance().reference.child("History").child(UserDetail.chatWithID).child(UserDetail.user_id)
+        databaseRef = FirebaseDatabase.getInstance().reference.child("History")
+        databaseRef2 = FirebaseDatabase.getInstance().reference.child("History")
 
         val messageText = messageArea.text.toString()
 
@@ -74,8 +77,8 @@ class ChatRoom : AppCompatActivity() {
                 map["userSend"] = UserDetail.user_id
                 map["message_id"] = num.toString()
 
-                databaseRef.child(num.toString()).setValue(map)
-                databaseRef2.child(num.toString()).setValue(map)
+                databaseRef.child(UserDetail.user_id).child(selectedUser).child(num.toString()).setValue(map)
+                databaseRef2.child(UserDetail.chatWithID).child(UserDetail.user_id).child(num.toString()).setValue(map)
                 messageArea?.text = null
             }
         } else if (newMessagePage == 1) {
@@ -91,8 +94,8 @@ class ChatRoom : AppCompatActivity() {
                 map["userSend"] = UserDetail.user_id
                 map["message_id"] = num.toString()
 
-                databaseRef.child(num.toString()).setValue(map)
-                databaseRef2.child(num.toString()).setValue(map)
+                databaseRef.child(UserDetail.user_id).child(selectedUser).child(num.toString()).setValue(map)
+                databaseRef2.child(UserDetail.chatWithID).child(UserDetail.user_id).child(num.toString()).setValue(map)
                 messageArea?.text = null
             }
         }
@@ -105,7 +108,7 @@ class ChatRoom : AppCompatActivity() {
 
         databaseRef.addChildEventListener(object : ChildEventListener {
 
-            override fun onChildAdded(dataSnapshot: DataSnapshot, s: String) {
+            override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
                 newMessagePage = 1
                 val map = dataSnapshot.getValue(MessageData::class.java)
                 arrayMsgIDList?.add(map?.messageText!!)
@@ -168,7 +171,7 @@ class ChatRoom : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        startActivity(Intent(applicationContext, MainPage::class.java))
+        startActivity(Intent(applicationContext, ChatHistory::class.java))
         finish()
     }
 }
