@@ -58,6 +58,16 @@ class MainPage : AppCompatActivity() {
             finish()
             startActivity(Intent(applicationContext,ChatHistory::class.java)) }
 
+        profileBtn.setOnClickListener{
+            finish()
+            startActivity(Intent(applicationContext,ProfileInfo::class.java))
+        }
+
+        mapBtn.setOnClickListener {
+            finish()
+            startActivity(Intent(applicationContext,MapDisplay::class.java))
+        }
+
     }
 
     fun getUserDataFromDatabase()

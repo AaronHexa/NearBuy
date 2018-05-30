@@ -19,7 +19,9 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.StorageTask
 import com.google.firebase.storage.UploadTask
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_register_main.*
 
 
@@ -41,6 +43,9 @@ class RegisterMain : AppCompatActivity() {
 
     private val PICK_IMAGE_REQUEST = 1234
     var imageEdited : Int = 0
+    var uriTxt: String = ""
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,6 +101,8 @@ class RegisterMain : AppCompatActivity() {
                         try {
                             mReference.child(tmpID).putFile(filePath).addOnSuccessListener {
                                 taskSnapshot: UploadTask.TaskSnapshot? -> var url = taskSnapshot!!.downloadUrl
+                                uriTxt = url.toString()
+                                System.out.println("...................$url")
                                 Toast.makeText(this, "Successfully Uploaded :)", Toast.LENGTH_LONG).show()
                             }
                         }catch (e: Exception) {
@@ -121,10 +128,7 @@ class RegisterMain : AppCompatActivity() {
         mDatafaceReference = FirebaseDatabase.getInstance().reference.child("User")
 
 
-        var photoPic = filePath.toString()
-
-
-        val data = UserData(email,password,name,id,photoPic,"Email")
+        val data = UserData(email,password,name,id,uriTxt,"Email")
 
         mDatafaceReference.child(id).setValue(data)
 
@@ -140,13 +144,15 @@ class RegisterMain : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        var uriTxt: String = ""
+
         if (resultCode == RESULT_OK) {
             if (requestCode == PICK_IMAGE_REQUEST) {
                 filePath = data!!.data
-                uriTxt = filePath.toString()
-                val bitmap = MediaStore.Images.Media.getBitmap(contentResolver,filePath)
-                userPicSet.setImageBitmap(bitmap)
+                Picasso.get()
+                        .load(filePath)
+                        .resize(200, 200)
+                        .centerCrop()
+                        .into(userPicSet)
 
             }
             super.onActivityResult(requestCode, resultCode, data)

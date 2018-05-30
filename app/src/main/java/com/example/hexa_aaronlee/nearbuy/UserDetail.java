@@ -9,4 +9,6 @@ public class UserDetail {
 
     static String email ="";
     static String chatWithEmail ="";
+
+    static String imageUrl = " ";
 }
