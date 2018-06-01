@@ -100,7 +100,7 @@ class RegisterMain : AppCompatActivity() {
                         var mReference = mStorage.reference.child("ProfilePicture")
                         try {
                             mReference.child(tmpID).putFile(filePath).addOnSuccessListener {
-                                taskSnapshot: UploadTask.TaskSnapshot? -> var url = taskSnapshot!!.downloadUrl
+                                taskSnapshot: UploadTask.TaskSnapshot? -> var url = taskSnapshot!!.uploadSessionUri
                                 uriTxt = url.toString()
                                 System.out.println("...................$url")
                                 Toast.makeText(this, "Successfully Uploaded :)", Toast.LENGTH_LONG).show()

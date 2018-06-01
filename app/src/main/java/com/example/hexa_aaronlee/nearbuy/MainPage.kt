@@ -21,7 +21,7 @@ class MainPage : AppCompatActivity() {
 
     var personName : String? = null
     var personEmail : String?= null
-    var user_id : String?= null
+    var user_id : String= ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +65,7 @@ class MainPage : AppCompatActivity() {
 
         mapBtn.setOnClickListener {
             finish()
-            startActivity(Intent(applicationContext,MapDisplay::class.java))
+            startActivity(Intent(applicationContext,MapsActivity::class.java))
         }
 
     }

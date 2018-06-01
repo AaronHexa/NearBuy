@@ -131,7 +131,7 @@ class ProfileInfo : AppCompatActivity() {
                     }
 
                     mReference.child(UserDetail.user_id).putFile(filePath).addOnSuccessListener {
-                        taskSnapshot: UploadTask.TaskSnapshot? -> var url = taskSnapshot!!.downloadUrl
+                        taskSnapshot: UploadTask.TaskSnapshot? -> var url = taskSnapshot!!.uploadSessionUri
                         val uriTxt = url.toString()
                         System.out.println(".......$tmpName............$url")
                         Toast.makeText(view.context, "Successfully Uploaded :)", Toast.LENGTH_LONG).show()

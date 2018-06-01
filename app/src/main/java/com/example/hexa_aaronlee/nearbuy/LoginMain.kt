@@ -135,7 +135,7 @@ class LoginMain : AppCompatActivity(), LoginView.view{
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
                         System.out.println("signInWithCredential:success")
-                        val uid = mAuth.currentUser?.uid
+                        val uid = mAuth.currentUser!!.uid
                         getDetailGoogle(uid)
                         progressDialog.dismiss()
                     } else {
@@ -149,17 +149,17 @@ class LoginMain : AppCompatActivity(), LoginView.view{
                 }
     }
 
-    fun getDetailGoogle(user_id:String?){
+    fun getDetailGoogle(user_id:String){
 
-        var personName :String? = null
-        var personEmail:String? = null
-        var personPhoto :String? = null
+        var personName :String = ""
+        var personEmail:String = ""
+        var personPhoto :String = ""
         var password = "---"
 
         val acct = GoogleSignIn.getLastSignedInAccount(applicationContext)
         if (acct != null) {
-            personName = acct.displayName
-            personEmail = acct.email
+            personName = acct.displayName.toString()
+            personEmail = acct.email.toString()
             personPhoto = acct.photoUrl.toString()
             System.out.println(personName + " " + user_id + " " +personEmail + " " +personPhoto + " " )
             updateNextPage(personEmail,password,user_id,personName,personPhoto)
@@ -167,7 +167,7 @@ class LoginMain : AppCompatActivity(), LoginView.view{
 
     }
 
-    fun updateNextPage(email: String?,password: String?,user_id: String?,name: String?,profilePhoto: String?){
+    fun updateNextPage(email: String,password: String,user_id: String,name: String,profilePhoto: String){
 
         presenter?.saveDataProcess(email,password,user_id,name,profilePhoto)
 

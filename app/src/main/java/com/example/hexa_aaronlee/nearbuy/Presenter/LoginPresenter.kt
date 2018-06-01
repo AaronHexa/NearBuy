@@ -16,7 +16,7 @@ public class LoginPresenter(internal var view: LoginView.view) : LoginView.prese
 
     lateinit var mDatafaceReference : DatabaseReference
 
-    override fun saveDataProcess(email: String?,password: String?, user_id: String?, name: String?, profilePhoto: String?)
+    override fun saveDataProcess(email: String,password: String, user_id: String, name: String, profilePhoto: String)
     {
         mDatafaceReference = FirebaseDatabase.getInstance().getReference("User")
 

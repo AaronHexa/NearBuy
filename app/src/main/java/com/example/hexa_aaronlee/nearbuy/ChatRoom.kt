@@ -20,7 +20,7 @@ import java.util.HashMap
 
 class ChatRoom : AppCompatActivity() {
 
-    private var selectedUser: String? = null
+    private var selectedUser: String = ""
     private lateinit var databaseRef: DatabaseReference
     private lateinit var databaseRef2:DatabaseReference
 
@@ -108,7 +108,7 @@ class ChatRoom : AppCompatActivity() {
 
         databaseRef.addChildEventListener(object : ChildEventListener {
 
-            override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
+            override fun onChildAdded(dataSnapshot: DataSnapshot, p1: String?) {
                 newMessagePage = 1
                 val map = dataSnapshot.getValue(MessageData::class.java)
                 arrayMsgIDList?.add(map?.messageText!!)
@@ -117,7 +117,7 @@ class ChatRoom : AppCompatActivity() {
                 addMessageBox(map?.messageText.toString(), map?.userSend.toString())
             }
 
-            override fun onChildChanged(dataSnapshot: DataSnapshot, s: String) {
+            override fun onChildChanged(dataSnapshot: DataSnapshot, p1: String?) {
 
             }
 
@@ -125,7 +125,7 @@ class ChatRoom : AppCompatActivity() {
 
             }
 
-            override fun onChildMoved(dataSnapshot: DataSnapshot, s: String) {
+            override fun onChildMoved(dataSnapshot: DataSnapshot, p1: String?) {
 
             }
 
