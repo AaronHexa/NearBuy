@@ -131,4 +131,11 @@ class ChatHistory : AppCompatActivity() {
         }
 
     }
+
+    override fun onBackPressed() {
+        startActivity(Intent(applicationContext, MainPage::class.java))
+        finish()
+    }
 }
+
+

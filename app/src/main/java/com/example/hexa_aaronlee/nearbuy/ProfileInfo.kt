@@ -1,6 +1,7 @@
 package com.example.hexa_aaronlee.nearbuy
 
 import android.app.Dialog
+import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
@@ -18,6 +19,11 @@ import com.google.firebase.storage.UploadTask
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_profile_info.*
 import kotlinx.android.synthetic.main.editing_dialog.view.*
+import com.google.firebase.storage.StorageReference
+import android.support.annotation.NonNull
+import com.google.android.gms.tasks.*
+import com.google.firebase.storage.OnProgressListener
+
 
 class ProfileInfo : AppCompatActivity() {
 
@@ -77,7 +83,7 @@ class ProfileInfo : AppCompatActivity() {
 
         Picasso.get()
                 .load(profileUri)
-                .resize(200, 200)
+                .resize(700, 700)
                 .centerCrop()
                 .into(profileImage)
 
@@ -123,21 +129,50 @@ class ProfileInfo : AppCompatActivity() {
                 var tmpName = view.nameEdit.text.toString().trim()
 
                 mStorage = FirebaseStorage.getInstance()
-                var mReference = mStorage.reference.child("ProfilePicture")
+                var mReference = mStorage.reference.child("ProfilePicture").child(UserDetail.user_id)
+
                 try {
                     if(selectedImage == 0)
                     {
                         filePath = Uri.parse(UserDetail.imageUrl)
                     }
 
-                    mReference.child(UserDetail.user_id).putFile(filePath).addOnSuccessListener {
-                        taskSnapshot: UploadTask.TaskSnapshot? -> var url = taskSnapshot!!.uploadSessionUri
-                        val uriTxt = url.toString()
-                        System.out.println(".......$tmpName............$url")
-                        Toast.makeText(view.context, "Successfully Uploaded :)", Toast.LENGTH_LONG).show()
+                    mReference.putFile(filePath)
+                            .addOnSuccessListener({ taskSnapshot ->
+                                //if the upload is successfull
+                                //hiding the progress dialog
 
-                        saveDatabase(uriTxt,tmpName)
-                    }
+                                //and displaying a success toast
+                                Toast.makeText(applicationContext, "File Uploaded ", Toast.LENGTH_LONG).show()
+                            })
+                            .addOnFailureListener({ exception ->
+                                //if the upload is not successfull
+                                //hiding the progress dialog
+
+                                //and displaying error message
+                                Toast.makeText(applicationContext, exception.message, Toast.LENGTH_LONG).show()
+                            })
+                            .continueWithTask({ task ->
+                                if (!task.isSuccessful) {
+                                    throw task.exception!!
+                                }
+
+                                // Continue with the task to get the download URL
+                                mReference.downloadUrl
+                            }).addOnCompleteListener({ task ->
+                                if (task.isSuccessful) {
+                                    val downloadUri = task.result
+
+                                    println("....Download url....>>>" + downloadUri.toString())
+
+                                    saveDatabase(downloadUri.toString(), tmpName)
+
+                                } else {
+                                    // Handle failures
+                                    Toast.makeText(applicationContext, "File Fail To Upload  ", Toast.LENGTH_LONG).show()
+                                }
+                            })
+
                 }catch (e: Exception) {
                     Toast.makeText(view.context, e.toString(), Toast.LENGTH_LONG).show()
                 }
@@ -160,7 +195,7 @@ class ProfileInfo : AppCompatActivity() {
 
                 Picasso.get()
                         .load(filePath)
-                        .resize(200, 200)
+                        .resize(700, 700)
                         .centerCrop()
                         .into(edit)
             }

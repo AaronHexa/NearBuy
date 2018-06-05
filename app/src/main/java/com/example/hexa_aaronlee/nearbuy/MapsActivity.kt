@@ -1,5 +1,6 @@
 package com.example.hexa_aaronlee.nearbuy
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -258,5 +259,9 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
         this.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
     }
 
+    override fun onBackPressed() {
+        startActivity(Intent(applicationContext, MainPage::class.java))
+        finish()
+    }
 
 }

@@ -3,6 +3,7 @@ package com.example.hexa_aaronlee.nearbuy
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -10,6 +11,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main_page.*
+import android.R.string.cancel
+import android.content.DialogInterface
+
+
 
 
 class MainPage : AppCompatActivity() {
@@ -97,5 +102,35 @@ class MainPage : AppCompatActivity() {
     fun setUIUpdate()
     {
         nameTxt.text = personName
+    }
+
+    override fun onBackPressed() {
+
+        val builder = AlertDialog.Builder(this)
+
+        builder.setIcon(R.drawable.ic_power_settings_new_black_24dp)
+        builder.setTitle("Logout")
+        builder.setMessage("Are You Sure You Want Logout?")
+        builder.setCancelable(true)
+
+        builder.setPositiveButton("Yes", { dialog, whichButton ->
+
+            //Sign out from Firebase Auth
+            FirebaseAuth.getInstance().signOut()
+
+            //Sign out From Google
+            mGoogleSignInClient.signOut()
+            startActivity(Intent(applicationContext, LoginMain::class.java))
+            finish()
+
+            dialog.dismiss()
+        })
+
+        builder.setNegativeButton("Cancel", { dialog, whichButton ->
+            dialog.dismiss()
+        })
+
+        val dialog = builder.create()
+        dialog.show()
     }
 }
