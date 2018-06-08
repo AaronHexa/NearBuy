@@ -11,4 +11,6 @@ public class UserDetail {
     static String chatWithEmail ="";
 
     static String imageUrl = " ";
+
+    static String locationSelected = "";
 }

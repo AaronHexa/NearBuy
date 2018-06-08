@@ -23,6 +23,22 @@
         android:layout_gravity="center"
         android:layout_marginTop="20dp"/>
 
+    <Button
+        android:id="@+id/dealBtn"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="Create Sales"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"/>
+
+    <Button
+        android:id="@+id/totalSalesBtn"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="Show all sales"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"/>
+
 
     <Button
         android:id="@+id/profileBtn"

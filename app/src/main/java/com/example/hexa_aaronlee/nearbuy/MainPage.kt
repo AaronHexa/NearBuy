@@ -11,10 +11,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main_page.*
-import android.R.string.cancel
-import android.content.DialogInterface
-
-
 
 
 class MainPage : AppCompatActivity() {
@@ -71,6 +67,16 @@ class MainPage : AppCompatActivity() {
         mapBtn.setOnClickListener {
             finish()
             startActivity(Intent(applicationContext,MapsActivity::class.java))
+        }
+
+        dealBtn.setOnClickListener{
+            finish()
+            startActivity(Intent(applicationContext,CreateSale::class.java))
+        }
+
+        totalSalesBtn.setOnClickListener {
+            finish()
+            startActivity(Intent(applicationContext,ShowTotalSales::class.java))
         }
 
     }

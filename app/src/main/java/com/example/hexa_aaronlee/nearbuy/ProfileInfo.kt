@@ -138,19 +138,19 @@ class ProfileInfo : AppCompatActivity() {
                     }
 
                     mReference.putFile(filePath)
-                            .addOnSuccessListener({ taskSnapshot ->
-                                //if the upload is successfull
-                                //hiding the progress dialog
+                                        .addOnSuccessListener({ taskSnapshot ->
+                                            //if the upload is successfull
+                                            //hiding the progress dialog
 
-                                //and displaying a success toast
-                                Toast.makeText(applicationContext, "File Uploaded ", Toast.LENGTH_LONG).show()
-                            })
-                            .addOnFailureListener({ exception ->
-                                //if the upload is not successfull
-                                //hiding the progress dialog
+                                            //and displaying a success toast
+                                            Toast.makeText(applicationContext, "File Uploaded ", Toast.LENGTH_LONG).show()
+                                        })
+                                        .addOnFailureListener({ exception ->
+                                            //if the upload is not successfull
+                                            //hiding the progress dialog
 
-                                //and displaying error message
-                                Toast.makeText(applicationContext, exception.message, Toast.LENGTH_LONG).show()
+                                            //and displaying error message
+                                            Toast.makeText(applicationContext, exception.message, Toast.LENGTH_LONG).show()
                             })
                             .continueWithTask({ task ->
                                 if (!task.isSuccessful) {
