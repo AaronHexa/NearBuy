@@ -5,6 +5,8 @@ import android.widget.TextView
 import android.support.v7.widget.RecyclerView
 import android.support.v4.content.ContextCompat.startActivity
 import android.content.Intent
+import android.location.Location
+import android.net.LocalServerSocket
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -36,10 +38,16 @@ class RecyclerViewAdapter(private val mDistance: String ,private val mContext: C
         holder.title.text = mData[position].itemTitle
         holder.price.text = "MYR " + mData[position].itemPrice
         holder.offerBy.text = mData[position].offerBy
-        holder.distance.text = mDistance
+        var result : FloatArray = FloatArray(10)
+        Location.distanceBetween(UserDetail.mLatitude,UserDetail.mLongitude,mData[position].mLatitude.toDouble(),mData[position].mLongitude.toDouble(),result)
+        holder.distance.text = result[0].toString() + " m"
 
-        holder.cardView.setOnClickListener {
-            System.out.println("Clicked")
+                holder.cardView.setOnClickListener {
+            UserDetail.saleSelectedId = mData[position].sales_id
+
+            val intent = Intent(mContext,ViewSaleDetails::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            mContext.startActivity(intent)
         }
     }
 

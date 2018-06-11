@@ -55,6 +55,14 @@ class ChatRoom : AppCompatActivity() {
 
         chatName.text = UserDetail.chatWithName
 
+        val tmpUri = Uri.parse(UserDetail.chatWithImageUri)
+
+        Picasso.get()
+                .load(tmpUri)
+                .centerCrop()
+                .resize(700,700)
+                .into(chatPic)
+
         System.out.println(selectedUser)
 
         getDataMessage()

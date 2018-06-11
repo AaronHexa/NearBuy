@@ -11,6 +11,11 @@ public class UserDetail {
     static String chatWithEmail ="";
 
     static String imageUrl = " ";
+    static String chatWithImageUri = "";
 
     static String locationSelected = "";
+    static String saleSelectedId = "";
+
+    static Double mLatitude = 0.0;
+    static Double mLongitude = 0.0;
 }

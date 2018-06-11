@@ -16,6 +16,7 @@ import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.Toast
+import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetail
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationListener
@@ -28,6 +29,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.places.GeoDataClient
 import com.google.android.gms.location.places.Places
 import com.google.android.gms.maps.model.*
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_maps.*
 import java.io.IOException
 
@@ -39,6 +41,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
     private lateinit var mMap: GoogleMap
     private lateinit var client: GoogleApiClient
     private lateinit var mGoogleApiClient :GoogleApiClient
+    lateinit var  mDataRef : DatabaseReference
 
     private lateinit var locationRequest: LocationRequest
     lateinit var locationMain: Location
@@ -50,6 +53,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
     var LAT_LNG_BOUNDS : LatLngBounds = LatLngBounds(LatLng(-40.0,-168.0),LatLng(71.0,136.0))
 
     val REQUEST_LOCATION_CODE = 99
+    var result : FloatArray = FloatArray(10)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,6 +104,10 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
             bulidGoogleApiClient()
         }
 
+        scan_ic.setOnClickListener {
+            goGetDistanceData()
+        }
+
         mGoogleApiClient = GoogleApiClient.Builder(this)
                 .addApi(Places.GEO_DATA_API)
                 .addApi(Places.PLACE_DETECTION_API)
@@ -146,6 +154,9 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
 
         var latitude = location.latitude
         var longitude = location.longitude
+
+        UserDetail.mLatitude = latitude
+        UserDetail.mLongitude = longitude
 
         latLng = LatLng(latitude, longitude)
 
@@ -254,6 +265,50 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
         HidSoftKeyboard()
     }
 
+    fun goGetDistanceData()
+    {
+        mDataRef = FirebaseDatabase.getInstance().reference.child("SaleDetail")
+
+        mDataRef.addChildEventListener(object : ChildEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onChildRemoved(p0: DataSnapshot) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onChildAdded(dataSnapshot: DataSnapshot, p1: String?) {
+                val map = dataSnapshot.getValue(DealsDetail::class.java)
+                if (map != null) {
+
+                    Location.distanceBetween(UserDetail.mLatitude,UserDetail.mLongitude,map.mLatitude.toDouble(),map.mLongitude.toDouble(),result)
+
+                    if (result[0] <= 500)
+                    {
+
+                        System.out.println("............location .......${map.mLongitude}........${map.mLatitude}....${result[0]} ")
+
+                        var latLng = LatLng(map.mLatitude.toDouble(),map.mLongitude.toDouble())
+
+                        val options : MarkerOptions = MarkerOptions()
+                                .position(latLng)
+                                .title("<${map.itemTitle}> ${map.itemLocation}")
+                        mMap.addMarker(options)
+                    }
+                }
+
+            }
+
+            override fun onChildChanged(dataSnapshot: DataSnapshot, p1: String?) {
+            }
+        })
+    }
+
     fun HidSoftKeyboard()
     {
         this.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
@@ -263,5 +318,4 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
         startActivity(Intent(applicationContext, MainPage::class.java))
         finish()
     }
-
 }

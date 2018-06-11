@@ -133,6 +133,9 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
         mLatitude = latitude
         mLongitude = longitude
 
+        UserDetail.mLatitude = latitude
+        UserDetail.mLongitude = longitude
+
         latLng = LatLng(latitude, longitude)
 
         moveCamera(latLng,"My Location")
@@ -283,6 +286,13 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
 
         createBtn.setOnClickListener {
             saveDataStorage()
+            finish()
+            startActivity(Intent(applicationContext,MainPage::class.java))
+        }
+
+        cancelCreateBtn.setOnClickListener{
+            finish()
+            startActivity(Intent(applicationContext,MainPage::class.java))
         }
 
     }
@@ -347,10 +357,10 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
             System.out.println("..........>>>>>>>>$tmpLocation<<<<........")
         }
 
-        var data = DealsDetail(tmpTitle, tmpPrice, tmpDescription, tmpLocation,mLatitude.toString() ,mLongitude.toString(), UserDetail.username,salesId,imageData1)
+        var data = DealsDetail(tmpTitle, tmpPrice, tmpDescription, tmpLocation,mLatitude.toString() ,mLongitude.toString(), UserDetail.username,salesId,imageData1,UserDetail.user_id)
 
 
-        databaseR.child(UserDetail.user_id).child(salesId).setValue(data)
+        databaseR.child(salesId).setValue(data)
 
     }
 
@@ -364,7 +374,7 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
 
         mStorage = FirebaseStorage.getInstance()
 
-        storageM = mStorage.reference.child("SalesImage").child(UserDetail.user_id).child(salesId).child("image0")
+        storageM = mStorage.reference.child("SalesImage").child(salesId).child("image0")
 
         storageM.putFile(filePath)
                 .addOnSuccessListener({ taskSnapshot ->
