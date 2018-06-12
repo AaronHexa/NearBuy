@@ -10,6 +10,8 @@ import android.text.TextUtils
 import android.view.View
 import android.widget.Toast
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
+import com.example.hexa_aaronlee.nearbuy.Presenter.RegisterPresenter
+import com.example.hexa_aaronlee.nearbuy.View.RegisterView
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
@@ -25,17 +27,18 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_register_main.*
 
 
-class RegisterMain : AppCompatActivity() {
+class RegisterMain : AppCompatActivity(),RegisterView.view {
 
     var email :String = ""
     var password :String = ""
     var name :String = ""
     var tmpID : String = ""
 
-    lateinit var mFirebaseDatabase: FirebaseDatabase
+
     lateinit var mDatafaceReference: DatabaseReference
     lateinit var firebaseAuth : FirebaseAuth
-    lateinit var mCurrentUser : FirebaseUser
+
+    lateinit var mPresenter : RegisterPresenter
 
     lateinit var filePath : Uri
     lateinit var mStorage : FirebaseStorage
@@ -57,6 +60,8 @@ class RegisterMain : AppCompatActivity() {
         }
 
         firebaseAuth = FirebaseAuth.getInstance()
+
+        mPresenter = RegisterPresenter(this)
 
         registerBtn.setOnClickListener{
             registerProcess()
@@ -87,7 +92,7 @@ class RegisterMain : AppCompatActivity() {
         progressDialog.show()
 
         //creating a new user
-        firebaseAuth.createUserWithEmailAndPassword(email!!, password!!)
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     //checking if success
                     if (task.isSuccessful) {
@@ -96,20 +101,11 @@ class RegisterMain : AppCompatActivity() {
                         tmpID = user!!.uid
                         println(" This is the current uid : $tmpID")
 
-                        mStorage = FirebaseStorage.getInstance()
-                        var mReference = mStorage.reference.child("ProfilePicture")
-                        try {
-                            mReference.child(tmpID).putFile(filePath).addOnSuccessListener {
-                                taskSnapshot: UploadTask.TaskSnapshot? -> var url = taskSnapshot!!.uploadSessionUri
-                                uriTxt = url.toString()
-                                System.out.println("...................$url")
-                                Toast.makeText(this, "Successfully Uploaded :)", Toast.LENGTH_LONG).show()
-                            }
-                        }catch (e: Exception) {
-                            Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()
-                        }
+                        //save Profile Pic to Storage
+                        mPresenter.saveProfilePicToStorage(tmpID,filePath)
+
                         //save in database
-                        saveUserDataToDatabase(tmpID)
+                        mPresenter.saveUserDataToDatabase(email,password,name,tmpID,uriTxt)
 
                         finish()
                         startActivity(Intent(applicationContext, MainPage::class.java))
@@ -121,17 +117,13 @@ class RegisterMain : AppCompatActivity() {
                 }
     }
 
+    override fun toastUploadSuccess(uriTxt: String) {
+       this.uriTxt = uriTxt
+        Toast.makeText(this, "Successfully Uploaded :)", Toast.LENGTH_LONG).show()
+    }
 
-    //Save Into Firebase Database
-    fun saveUserDataToDatabase(id: String)
-    {
-        mDatafaceReference = FirebaseDatabase.getInstance().reference.child("User")
-
-
-        val data = UserData(email,password,name,id,uriTxt,"Email")
-
-        mDatafaceReference.child(id).setValue(data)
-
+    override fun toastUploadFailed(e: Exception) {
+        Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()
     }
 
     fun chooseImageProcess(){

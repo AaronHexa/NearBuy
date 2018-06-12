@@ -51,7 +51,8 @@
             android:label="@string/title_activity_maps" />
         <activity android:name=".CreateSale" />
         <activity android:name=".ShowTotalSales" />
-        <activity android:name=".ViewSaleDetails"></activity>
+        <activity android:name=".ViewSaleDetails" />
+        <activity android:name=".MySaleList"></activity>
     </application>
 
 </manifest>

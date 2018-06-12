@@ -1,5 +1,7 @@
 package com.example.hexa_aaronlee.nearbuy.View
 
+import android.content.Context
+
 public interface LoginView {
 
     interface view {

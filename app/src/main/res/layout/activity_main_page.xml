@@ -7,61 +7,144 @@
     tools:context=".MainPage"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/nameTxt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/historyBtn"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:text="Chat History"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <Button
-        android:id="@+id/dealBtn"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:text="Create Sales"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/totalSalesBtn"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:text="Show all sales"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"/>
+                <de.hdodenhof.circleimageview.CircleImageView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/userImage"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/ic_launcher_background"
+                    android:layout_gravity="center"
+                    android:layout_margin="12dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+
+                    <TextView
+                        android:id="@+id/nameTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="20dp"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimary"
+                        />
+
+                    <TextView
+                        android:id="@+id/emailTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
+                        android:layout_margin="10dp"
+                        />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/currentLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="My Current Location"
+                android:layout_margin="10dp"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_gravity="center"
+                />
 
 
-    <Button
-        android:id="@+id/profileBtn"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:text="Profile" />
+            <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:id="@+id/map2"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_margin="8dp"
+                />
 
-    <Button
-        android:id="@+id/mapBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:text="Map" />
+            <TextView
+                android:id="@+id/currentLocationTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="My Current Location"
+                android:layout_margin="10dp"
+                android:textSize="15sp"
+                android:layout_gravity="center"
+                />
 
-    <Button
-        android:id="@+id/signOutBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:text="Log out" />
+
+            <Button
+                android:id="@+id/historyBtn"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="Chat History"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"/>
+
+            <Button
+                android:id="@+id/dealBtn"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="Create Sales"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"/>
+
+            <Button
+                android:id="@+id/totalSalesBtn"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="Show all sales"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"/>
+
+
+            <Button
+                android:id="@+id/profileBtn"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:text="Profile" />
+
+            <Button
+                android:id="@+id/mapBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:text="Map" />
+
+            <Button
+                android:id="@+id/signOutBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:text="Log out" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

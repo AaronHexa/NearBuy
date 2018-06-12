@@ -54,6 +54,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
 
     val REQUEST_LOCATION_CODE = 99
     var result : FloatArray = FloatArray(10)
+    var arrayMarker : ArrayList<Marker> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,6 +102,12 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
         }
 
         icon_gps.setOnClickListener {
+
+            for(i in arrayMarker.indices)
+            {
+                arrayMarker[i].remove()
+            }
+
             bulidGoogleApiClient()
         }
 
@@ -253,7 +260,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
                 .title(title)
         currentMarker = mMap.addMarker(options)
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
         val cameraPosition = CameraPosition.Builder()
                 .target(latLng)
                 .zoom(16f)                   // Sets the zoom
@@ -287,8 +294,9 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
                 if (map != null) {
 
                     Location.distanceBetween(UserDetail.mLatitude,UserDetail.mLongitude,map.mLatitude.toDouble(),map.mLongitude.toDouble(),result)
+                    var tmpDistance = String.format("%.2f",(result[0]/1000))
 
-                    if (result[0] <= 500)
+                    if (result[0] <= 3000)
                     {
 
                         System.out.println("............location .......${map.mLongitude}........${map.mLatitude}....${result[0]} ")
@@ -298,7 +306,17 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
                         val options : MarkerOptions = MarkerOptions()
                                 .position(latLng)
                                 .title("<${map.itemTitle}> ${map.itemLocation}")
-                        mMap.addMarker(options)
+                        arrayMarker.add(mMap.addMarker(options))
+
+                        val cameraPosition = CameraPosition.Builder()
+                                .target(latLng)
+                                .zoom(15f)                   // Sets the zoom
+                                .bearing(90f)                // Sets the orientation of the camera to east
+                                .tilt(30f)                   // Sets the tilt of the camera to 30 degrees
+                                .build()
+                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+
+
                     }
                 }
 

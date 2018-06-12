@@ -40,8 +40,7 @@ class RecyclerViewAdapter(private val mDistance: String ,private val mContext: C
         holder.offerBy.text = mData[position].offerBy
         var result : FloatArray = FloatArray(10)
         Location.distanceBetween(UserDetail.mLatitude,UserDetail.mLongitude,mData[position].mLatitude.toDouble(),mData[position].mLongitude.toDouble(),result)
-        holder.distance.text = result[0].toString() + " m"
-
+        holder.distance.text = String.format("%.2f",(result[0]/1000))+ " km"
                 holder.cardView.setOnClickListener {
             UserDetail.saleSelectedId = mData[position].sales_id
 

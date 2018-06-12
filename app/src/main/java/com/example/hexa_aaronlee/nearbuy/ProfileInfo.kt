@@ -53,6 +53,10 @@ class ProfileInfo : AppCompatActivity() {
             showDialog()
         }
 
+        linkToMySale.setOnClickListener{
+            startActivity(Intent(applicationContext, MySaleList::class.java))
+            finish()
+        }
     }
 
     fun getProfileData()
