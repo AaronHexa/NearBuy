@@ -15,6 +15,8 @@ import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.widget.Toast
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
+import com.example.hexa_aaronlee.nearbuy.Presenter.MainPagePresenter
+import com.example.hexa_aaronlee.nearbuy.View.MainPageView
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -38,7 +40,9 @@ import java.io.IOException
 
 class MainPage : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        com.google.android.gms.location.LocationListener {
+        com.google.android.gms.location.LocationListener,
+        MainPageView.view{
+
     private lateinit var mMap: GoogleMap
     private lateinit var client: GoogleApiClient
     private lateinit var mGoogleApiClient :GoogleApiClient
@@ -55,12 +59,14 @@ class MainPage : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Connec
     lateinit var mGoogleSignInClient : GoogleSignInClient
     lateinit var gso : GoogleSignInOptions
     lateinit var databaseR : DatabaseReference
+    lateinit var geocoder : Geocoder
 
-    var personName : String? = null
-    var personEmail : String?= null
+    var personName : String= ""
+    var personEmail : String= ""
     var user_id : String= ""
 
     val REQUEST_LOCATION_CODE = 99
+    lateinit var mPresenter : MainPagePresenter
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
@@ -124,31 +130,20 @@ class MainPage : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Connec
 
         latLng = LatLng(latitude, longitude)
 
-        moveCamera(latLng,"My Location")
+        mPresenter.moveCamera(latLng,"My Location",mMap)
 
         if (client != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(client, this)
         }
 
-        var geocoder = Geocoder(applicationContext)
-        var list : List<Address> = ArrayList()
+        geocoder = Geocoder(this)
 
-        try {
-            list = geocoder.getFromLocation(latitude,longitude,1)
-        }catch (e : IOException)
-        {
-            Log.e("MapsActivity","geolocate : IOException" + e.message)
-        }
+        mPresenter.getAddress(geocoder,latitude,longitude)
 
-        if(list.isNotEmpty())
-        {
-            var address: Address = list[0]
+    }
 
-            currentLocationTxt.text = address.getAddressLine(0)
-
-            Log.e("MapsActivity","geolocate : Found a location : " + address.toString())
-        }
-
+    override fun displayLocationAddress(address: String) {
+        currentLocationTxt.text = address
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -188,30 +183,6 @@ class MainPage : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Connec
             return true
     }
 
-    fun moveCamera(latLng: LatLng, title : String)
-    {
-
-        if (currentMarker != null) {
-            currentMarker!!.remove()
-        }
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,16f))
-
-        val options : MarkerOptions = MarkerOptions()
-                .position(latLng)
-                .title(title)
-        currentMarker = mMap.addMarker(options)
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
-        val cameraPosition = CameraPosition.Builder()
-                .target(latLng)
-                .zoom(16f)                   // Sets the zoom
-                .bearing(90f)                // Sets the orientation of the camera to east
-                .tilt(30f)                   // Sets the tilt of the camera to 30 degrees
-                .build()
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_page)
@@ -220,6 +191,8 @@ class MainPage : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Connec
 
         user_id = mAuth.currentUser!!.uid
         UserDetail.user_id = user_id
+
+        mPresenter = MainPagePresenter(this)
 
         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -235,7 +208,6 @@ class MainPage : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Connec
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map2) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
 
         mGoogleSignInClient = GoogleSignIn.getClient(this,gso)
 
@@ -275,35 +247,21 @@ class MainPage : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Connec
             startActivity(Intent(applicationContext,ShowTotalSales::class.java))
         }
 
-        getUserDataFromDatabase()
+        mPresenter.getUserDataFromDatabase(user_id)
     }
 
 
-    fun getUserDataFromDatabase()
-    {
-        databaseR = FirebaseDatabase.getInstance().reference.child("User").child(user_id)
+    override fun setUserDataToView(email: String, name: String, profilePic: String) {
+        personName = name
+        personEmail =email
 
+        UserDetail.email = email
+        UserDetail.username = name
+        UserDetail.imageUrl = profilePic
 
-        databaseR.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val data = dataSnapshot.getValue(UserData::class.java)!!
-                personName = data.name
-                personEmail = data.email
-
-                UserDetail.email = data.email
-                UserDetail.username = data.name
-                UserDetail.imageUrl = data.profilePhoto
-
-                System.out.println("..................."+UserDetail.username+" "+ UserDetail.user_id)
-
-                setUIUpdate()
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                println("The read failed: " + databaseError.code)
-            }
-        })
+        setUIUpdate()
     }
+
 
     fun setUIUpdate()
     {

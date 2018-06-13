@@ -27,11 +27,12 @@ import java.util.HashMap
 import android.widget.Toast
 import android.app.ProgressDialog
 import android.content.DialogInterface
+import com.example.hexa_aaronlee.nearbuy.View.ChatRoomView
 import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.share_pic_box.*
 
 
-class ChatRoom : AppCompatActivity() {
+class ChatRoom : AppCompatActivity(),ChatRoomView.view {
 
     private var selectedUser: String = ""
     private lateinit var databaseRef: DatabaseReference
@@ -87,6 +88,10 @@ class ChatRoom : AppCompatActivity() {
         }
     }
 
+    override fun setEditTextEmpty() {
+        messageArea?.text = null
+    }
+
     fun saveMeassageData() {
 
         databaseRef = FirebaseDatabase.getInstance().reference.child("History")
@@ -109,7 +114,7 @@ class ChatRoom : AppCompatActivity() {
 
                 databaseRef.child(UserDetail.user_id).child(selectedUser).child(num.toString()).setValue(map)
                 databaseRef2.child(UserDetail.chatWithID).child(UserDetail.user_id).child(num.toString()).setValue(map)
-                messageArea?.text = null
+
             }
         } else if (newMessagePage == 1) {
             if (messageText != "") {

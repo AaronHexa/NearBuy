@@ -16,13 +16,15 @@ import android.widget.Toast
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.HistoryData
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
 import com.example.hexa_aaronlee.nearbuy.Model.User
+import com.example.hexa_aaronlee.nearbuy.Presenter.ChatHistoryPresenter
 import com.example.hexa_aaronlee.nearbuy.R.layout.list_view_design
+import com.example.hexa_aaronlee.nearbuy.View.ChatHistoryView
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_chat_history.*
 import kotlin.collections.ArrayList
 
-class ChatHistory : AppCompatActivity() {
+class ChatHistory : AppCompatActivity(),ChatHistoryView.view {
 
     lateinit var historyData: ArrayList<String>
     lateinit var nameData: ArrayList<String>
@@ -30,56 +32,28 @@ class ChatHistory : AppCompatActivity() {
     lateinit var titleData :ArrayList<String>
 
     lateinit var databaseR: DatabaseReference
-    lateinit var databaseR2: DatabaseReference
+    lateinit var mPresenter: ChatHistoryPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_history)
+
+        mPresenter = ChatHistoryPresenter(this)
 
         historyData = ArrayList()
         imageData = ArrayList()
         nameData = ArrayList()
         titleData = ArrayList()
 
-        getChatHistoryData()
+        mPresenter.getChatHistoryDataFromDatabase(historyData,imageData,nameData,titleData,UserDetail.user_id)
 
     }
 
-    fun getChatHistoryData() {
-        var tmpNum: Int = 0
-        var tmpString: String? = null
-
-        databaseR = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(UserDetail.user_id)
-
-
-        databaseR.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (postSnapshot in dataSnapshot.children) {
-                    val data = postSnapshot.getValue(HistoryData::class.java)!!
-                    historyData.add(data.history_user)
-                    nameData.add(data.history_userName)
-                    imageData.add(data.history_image)
-                    titleData.add(data.history_title)
-
-                    System.out.println("..................." + data.history_user)
-
-                    tmpNum += 1
-                    tmpString = tmpNum.toString()
-                    System.out.println(tmpString + "............" + dataSnapshot.childrenCount.toString())
-
-                    if (tmpString.equals(dataSnapshot.childrenCount.toString())) {
-                        val customAdapter = CustomListView(applicationContext, nameData, historyData, imageData,titleData)
-                        listView.layoutManager = LinearLayoutManager(applicationContext)
-                        listView.adapter = customAdapter
-                        System.out.println(tmpNum)
-                    }
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                println("The read failed: " + databaseError.code)
-            }
-        })
+    override fun setRecyclerViewAdapter(historyData: ArrayList<String>,imageData: ArrayList<String>,nameData: ArrayList<String>,titleData: ArrayList<String>)
+    {
+        val customAdapter = CustomListView(applicationContext, nameData, historyData, imageData,titleData)
+        listView.layoutManager = LinearLayoutManager(applicationContext)
+        listView.adapter = customAdapter
     }
 
 

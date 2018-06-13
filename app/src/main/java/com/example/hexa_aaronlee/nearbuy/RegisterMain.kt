@@ -104,11 +104,6 @@ class RegisterMain : AppCompatActivity(),RegisterView.view {
                         //save Profile Pic to Storage
                         mPresenter.saveProfilePicToStorage(tmpID,filePath)
 
-                        //save in database
-                        mPresenter.saveUserDataToDatabase(email,password,name,tmpID,uriTxt)
-
-                        finish()
-                        startActivity(Intent(applicationContext, MainPage::class.java))
                     } else {
                         //display some message here
                         Toast.makeText(this, "Registration Error", Toast.LENGTH_LONG).show()
@@ -118,8 +113,12 @@ class RegisterMain : AppCompatActivity(),RegisterView.view {
     }
 
     override fun toastUploadSuccess(uriTxt: String) {
-       this.uriTxt = uriTxt
         Toast.makeText(this, "Successfully Uploaded :)", Toast.LENGTH_LONG).show()
+
+        //save in database
+        mPresenter.saveUserDataToDatabase(email,password,name,tmpID,uriTxt)
+        finish()
+        startActivity(Intent(applicationContext, MainPage::class.java))
     }
 
     override fun toastUploadFailed(e: Exception) {
@@ -127,7 +126,6 @@ class RegisterMain : AppCompatActivity(),RegisterView.view {
     }
 
     fun chooseImageProcess(){
-
 
         val intent = Intent()
         intent.type = "image/*"
