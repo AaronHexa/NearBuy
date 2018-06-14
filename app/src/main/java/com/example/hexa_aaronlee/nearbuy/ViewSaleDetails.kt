@@ -9,24 +9,30 @@ import android.widget.Toast
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetail
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.HistoryData
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
+import com.example.hexa_aaronlee.nearbuy.Model.User
+import com.example.hexa_aaronlee.nearbuy.Presenter.ViewSaleDetailPresenter
+import com.example.hexa_aaronlee.nearbuy.View.ViewSaleDetailView
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_view_sale_details.*
 
-class ViewSaleDetails : AppCompatActivity() {
-
+class ViewSaleDetails : AppCompatActivity(),ViewSaleDetailView.View {
     lateinit var mDataRef : DatabaseReference
     lateinit var imageUri : Uri
     var tmpSaleTitle : String = ""
     var tmpSaleUser : String = ""
     var checkDealer : String = ""
     var result : FloatArray = FloatArray(10)
+    lateinit var mPresenter : ViewSaleDetailPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_sale_details)
 
-        getSaleDetail()
+        mPresenter = ViewSaleDetailPresenter(this)
+
+        mPresenter.getSalesDetail(UserDetail.saleSelectedId)
+
 
         floatingActionButton.setOnClickListener {
             if(checkDealer == UserDetail.user_id)
@@ -36,7 +42,7 @@ class ViewSaleDetails : AppCompatActivity() {
             else
             {
                 UserDetail.chatWithID = checkDealer
-                getSaleChatData()
+                mPresenter.getChatDetail(checkDealer)
                 finish()
                 startActivity(Intent(applicationContext,ChatRoom::class.java))
             }
@@ -44,72 +50,35 @@ class ViewSaleDetails : AppCompatActivity() {
         }
     }
 
-    fun getSaleDetail()
+    override fun updateUI(salesImage:String,itemTitle:String,itemPrice:String,itemDescription:String,itemLocation:String,mLatitude:String,mLongitude:String,offerBy:String,offer_id:String)
     {
-        mDataRef = FirebaseDatabase.getInstance().reference.child("SaleDetail").child(UserDetail.saleSelectedId)
+        imageUri = Uri.parse(salesImage)
 
-        mDataRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
+        Picasso.get()
+                .load(imageUri)
+                .centerCrop()
+                .resize(700,700)
+                .into(imageProduct)
 
-                val data = dataSnapshot.getValue(DealsDetail::class.java)!!
+        titleDetail.text = itemTitle
+        priceDetail.text = "MYR $itemPrice"
+        descripeDetail.text = itemDescription
+        locationDetail.text = itemLocation
+        Location.distanceBetween(UserDetail.mLatitude,UserDetail.mLongitude,mLatitude.toDouble(),mLongitude.toDouble(),result)
+        distanceDetail.text = String.format("%.2f",(result[0]/1000)) + " km"
+        offeredDetail2.text = offerBy
 
-                imageUri = Uri.parse(data.sales_image1)
-
-                Picasso.get()
-                        .load(imageUri)
-                        .centerCrop()
-                        .resize(700,700)
-                        .into(imageProduct)
-
-                titleDetail.text = data.itemTitle
-                priceDetail.text = "MYR "+ data.itemPrice
-                descripeDetail.text = data.itemDescription
-                locationDetail.text = data.itemLocation
-                Location.distanceBetween(UserDetail.mLatitude,UserDetail.mLongitude,data.mLatitude.toDouble(),data.mLongitude.toDouble(),result)
-                distanceDetail.text = String.format("%.2f",(result[0]/1000)) + " km"
-                offeredDetail2.text = data.offerBy
-
-                checkDealer = data.offer_id
-                tmpSaleTitle = data.itemTitle
-                tmpSaleUser = data.offerBy
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                println("The read failed: " + databaseError.code)
-            }
-        })
+        checkDealer = offer_id
+        tmpSaleTitle = itemTitle
+        tmpSaleUser = offerBy
     }
 
-    fun getSaleChatData()
-    {
 
-        mDataRef = FirebaseDatabase.getInstance().reference.child("User").child(checkDealer)
+    override fun updateInfo(profilePhoto : String, name : String) {
+        UserDetail.chatWithImageUri = profilePhoto
+        UserDetail.chatWithName = name
 
-        mDataRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-                val data = dataSnapshot.getValue(UserData::class.java)!!
-
-                UserDetail.chatWithImageUri = data.profilePhoto
-                UserDetail.chatWithName = data.name
-                saveUserToHistoryChat(data.profilePhoto)
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                println("The read failed: " + databaseError.code)
-            }
-        })
-    }
-
-    fun saveUserToHistoryChat(imageUri : String)
-    {
-        mDataRef = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(UserDetail.user_id)
-
-        var tmpKey = mDataRef.push().key.toString()
-
-        var data = HistoryData(checkDealer,tmpKey,tmpSaleUser,imageUri,tmpSaleTitle)
-
-        mDataRef.child(tmpKey).setValue(data)
+        mPresenter.saveUserToHistoryChat(profilePhoto,UserDetail.user_id,checkDealer,tmpSaleUser,tmpSaleTitle)
     }
 
     override fun onBackPressed() {

@@ -21,25 +21,29 @@ import kotlinx.android.synthetic.main.activity_profile_info.*
 import kotlinx.android.synthetic.main.editing_dialog.view.*
 import com.google.firebase.storage.StorageReference
 import android.support.annotation.NonNull
+import com.example.hexa_aaronlee.nearbuy.Presenter.ProfileInfoPresenter
+import com.example.hexa_aaronlee.nearbuy.View.ProfileInfoView
 import com.google.android.gms.tasks.*
 import com.google.firebase.storage.OnProgressListener
+import java.net.URI
 
 
-class ProfileInfo : AppCompatActivity() {
+class ProfileInfo : AppCompatActivity(), ProfileInfoView.View {
 
     lateinit var mStorage : FirebaseStorage
-    lateinit var filePath : Uri
+    var filePath : Uri = Uri.EMPTY
     lateinit var databaseR : DatabaseReference
     lateinit var mFirebaseDatabase: FirebaseDatabase
     lateinit var mDatafaceReference: DatabaseReference
 
-    var profileUri: Uri? = null
+    var profileUri: Uri = Uri.EMPTY
     var profileImageUrl : String = ""
     var nameAcc : String = ""
     var PICK_IMAGE_REQUEST = 1
     var selectedImage : Int = 0
 
     lateinit var view : View
+    lateinit var mPresenter : ProfileInfoPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +51,9 @@ class ProfileInfo : AppCompatActivity() {
 
         nameAcc = UserDetail.username
 
-        getProfileData()
+        mPresenter = ProfileInfoPresenter(this)
+
+        mPresenter.getProfileData(UserDetail.user_id)
 
         editProfile.setOnClickListener{
             showDialog()
@@ -59,31 +65,14 @@ class ProfileInfo : AppCompatActivity() {
         }
     }
 
-    fun getProfileData()
-    {
-        databaseR = FirebaseDatabase.getInstance().reference.child("User").child(UserDetail.user_id)
-
-
-        databaseR.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val data = dataSnapshot.getValue(UserData::class.java)
-                profileImageUrl = data?.profilePhoto.toString()
-                UserDetail.imageUrl = profileImageUrl
-                profileUri = Uri.parse(profileImageUrl)
-
-                UpdateUI()
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                println("The read failed: " + databaseError.code)
-            }
-        })
-    }
-
-    fun UpdateUI()
+    override  fun UpdateUI(profileImageUrl : String)
     {
         profileName.text = UserDetail.username
         profileEmail.text = "Email : " + UserDetail.email
+
+        UserDetail.imageUrl = profileImageUrl
+
+        profileUri = Uri.parse(profileImageUrl)
 
         Picasso.get()
                 .load(profileUri)
@@ -93,11 +82,10 @@ class ProfileInfo : AppCompatActivity() {
 
     }
 
-    fun showDialog()
-    {
-        val builder : AlertDialog.Builder = AlertDialog.Builder(this)
-        val inflater : LayoutInflater = layoutInflater
-        view = inflater.inflate(R.layout.editing_dialog,null)
+    fun showDialog() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        val inflater: LayoutInflater = layoutInflater
+        view = inflater.inflate(R.layout.editing_dialog, null)
 
         view.nameEdit.setText(UserDetail.username)
 
@@ -107,7 +95,9 @@ class ProfileInfo : AppCompatActivity() {
                 .centerCrop()
                 .into(view.imageEdited)
 
-        view.imageEdited.setOnClickListener{
+        filePath = profileUri
+
+        view.imageEdited.setOnClickListener {
             selectedImage = 1
             val intent = Intent()
             intent.type = "image/*"
@@ -118,80 +108,39 @@ class ProfileInfo : AppCompatActivity() {
 
         builder.setView(view)
         builder.setTitle("Edit Profile")
-        builder.setNegativeButton("Cancel",object : DialogInterface.OnClickListener{
-            override fun onClick(dialog: DialogInterface?, which: Int) {
-                dialog?.dismiss()
-            }
+        builder.setNegativeButton("Cancel") { dialog, _ -> dialog?.dismiss() }
 
-        })
+        builder.setPositiveButton("Edit") { dialog, _ ->
+            dialog?.dismiss()
 
-        builder.setPositiveButton("Edit",object : DialogInterface.OnClickListener{
-            override fun onClick(dialog: DialogInterface?, which: Int) {
+            mPresenter.saveProfilePic(filePath, UserDetail.user_id, UserDetail.imageUrl, selectedImage)
+        }
 
-                dialog?.dismiss()
-
-                var tmpName = view.nameEdit.text.toString().trim()
-
-                mStorage = FirebaseStorage.getInstance()
-                var mReference = mStorage.reference.child("ProfilePicture").child(UserDetail.user_id)
-
-                try {
-                    if(selectedImage == 0)
-                    {
-                        filePath = Uri.parse(UserDetail.imageUrl)
-                    }
-
-                    mReference.putFile(filePath)
-                                        .addOnSuccessListener({ taskSnapshot ->
-                                            //if the upload is successfull
-                                            //hiding the progress dialog
-
-                                            //and displaying a success toast
-                                            Toast.makeText(applicationContext, "File Uploaded ", Toast.LENGTH_LONG).show()
-                                        })
-                                        .addOnFailureListener({ exception ->
-                                            //if the upload is not successfull
-                                            //hiding the progress dialog
-
-                                            //and displaying error message
-                                            Toast.makeText(applicationContext, exception.message, Toast.LENGTH_LONG).show()
-                            })
-                            .continueWithTask({ task ->
-                                if (!task.isSuccessful) {
-                                    throw task.exception!!
-                                }
-
-                                // Continue with the task to get the download URL
-                                mReference.downloadUrl
-                            }).addOnCompleteListener({ task ->
-                                if (task.isSuccessful) {
-                                    val downloadUri = task.result
-
-                                    println("....Download url....>>>" + downloadUri.toString())
-
-                                    saveDatabase(downloadUri.toString(), tmpName)
-
-                                } else {
-                                    // Handle failures
-                                    Toast.makeText(applicationContext, "File Fail To Upload  ", Toast.LENGTH_LONG).show()
-                                }
-                            })
-
-                }catch (e: Exception) {
-                    Toast.makeText(view.context, e.toString(), Toast.LENGTH_LONG).show()
-                }
-
-            }
-
-        })
-
-        val dialog: Dialog = builder.create()
-        dialog.show()
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
     }
+
+
+    override fun uploadImageError(exception :Exception) {
+        Toast.makeText(applicationContext, exception.message, Toast.LENGTH_LONG).show()
+    }
+
+    override fun uploadImageFailed() {
+
+    }
+
+    override fun uploadImageSuccess(uriTxt: String) {
+        Toast.makeText(applicationContext, "File Uploaded ", Toast.LENGTH_LONG).show()
+
+        val tmpName = view.nameEdit.text.toString().trim()
+
+        mPresenter.saveInDatabse(uriTxt, tmpName, UserDetail.user_id)
+    }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
-        val edit : ImageView = view.findViewById(R.id.imageEdited)
+        val edit: ImageView = view.findViewById(R.id.imageEdited)
 
         if (resultCode == RESULT_OK) {
             if (requestCode == PICK_IMAGE_REQUEST) {
@@ -205,16 +154,6 @@ class ProfileInfo : AppCompatActivity() {
             }
             super.onActivityResult(requestCode, resultCode, data)
         }
-    }
-
-    fun saveDatabase(uriTxt: String, tmpName: String)
-    {
-        mDatafaceReference = FirebaseDatabase.getInstance().reference.child("User")
-
-
-        mDatafaceReference.child(UserDetail.user_id).child("profilePhoto").setValue(uriTxt)
-
-        mDatafaceReference.child(UserDetail.user_id).child("name").setValue(tmpName)
     }
 
     override fun onBackPressed() {

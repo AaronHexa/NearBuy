@@ -20,6 +20,8 @@ import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import android.widget.Toast
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetail
+import com.example.hexa_aaronlee.nearbuy.Presenter.CreateSalePresenter
+import com.example.hexa_aaronlee.nearbuy.View.CreateSaleView
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationListener
@@ -41,7 +43,7 @@ import java.io.IOException
 
 class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener, CreateSaleView.view {
 
     // ...............................Google Map Parts.............................................
 
@@ -63,6 +65,8 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
 
     val REQUEST_LOCATION_CODE = 99
 
+    lateinit var mPresenter : CreateSalePresenter
+
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
@@ -76,7 +80,8 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
                     || actionId == EditorInfo.IME_ACTION_DONE
                     || event.action == KeyEvent.ACTION_DOWN
                     || event.action == KeyEvent.KEYCODE_ENTER){
-                geoLocate()
+                val textSearch = locationSelectionTxt.text.toString()
+                mPresenter.geoLocate(textSearch,applicationContext)
                 true
             } else {
                 false
@@ -127,8 +132,8 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
     override fun onLocationChanged(location: Location) {
         locationMain = location
 
-        var latitude = location.latitude
-        var longitude = location.longitude
+        val latitude = location.latitude
+        val longitude = location.longitude
 
         mLatitude = latitude
         mLongitude = longitude
@@ -136,9 +141,8 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
         UserDetail.mLatitude = latitude
         UserDetail.mLongitude = longitude
 
-        latLng = LatLng(latitude, longitude)
+        mPresenter.moveCamera(latitude, longitude,"My Location",mMap,applicationContext)
 
-        moveCamera(latLng,"My Location")
 
         if (client != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(client, this)
@@ -185,56 +189,20 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
             return true
     }
 
-    fun geoLocate()
-    {
-        var textSearch = locationSelectionTxt.text.toString()
+    override fun getLatLngSetCamera(latitude: Double, longitude: Double, address: String) {
+        mLatitude = latitude
+        mLongitude = longitude
 
-        var geocoder = Geocoder(applicationContext)
-        var list : List<Address> = ArrayList()
-
-        try {
-            list = geocoder.getFromLocationName(textSearch,1)
-        }catch (e : IOException)
-        {
-            Log.e("MapsActivity","geolocate : IOException" + e.message)
-        }
-
-        if(list.isNotEmpty())
-        {
-            var address: Address = list[0]
-
-            mLatitude = address.latitude
-            mLongitude = address.longitude
-
-            Log.e("MapsActivity","geolocate : Found a location : " + address.toString())
-
-            moveCamera(LatLng(address.latitude,address.longitude),address.getAddressLine(0))
-
-        }
+        mPresenter.moveCamera(latitude,longitude,address,mMap,applicationContext)
     }
 
-    fun moveCamera(latLng: LatLng, title : String)
-    {
-
-        if (currentMarker != null) {
-            currentMarker!!.remove()
+    override fun setMarker(currentMarker: Marker,address: String) {
+        if (this.currentMarker != null) {
+            this.currentMarker?.remove()
         }
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,16f))
-
-        val options : MarkerOptions = MarkerOptions()
-                .position(latLng)
-                .title(title)
-        currentMarker = mMap.addMarker(options)
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
-        val cameraPosition = CameraPosition.Builder()
-                .target(latLng)
-                .zoom(16f)                   // Sets the zoom
-                .bearing(90f)                // Sets the orientation of the camera to east
-                .tilt(30f)                   // Sets the tilt of the camera to 30 degrees
-                .build()
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+        this.currentMarker = currentMarker
+        UserDetail.currentAddress = address
 
         HidSoftKeyboard()
     }
@@ -259,10 +227,14 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
     lateinit var mStorage: FirebaseStorage
     lateinit var storageM: StorageReference
     lateinit var databaseR: DatabaseReference
+    lateinit var progressDialog : ProgressDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_sale)
+
+        mPresenter = CreateSalePresenter(this)
+        progressDialog = ProgressDialog(this)
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
@@ -285,9 +257,14 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
         }
 
         createBtn.setOnClickListener {
-            saveDataStorage()
-            finish()
-            startActivity(Intent(applicationContext,MainPage::class.java))
+
+            //displaying a progress dialog
+
+            progressDialog.setMessage("Uploading Please Wait...")
+            progressDialog.show()
+
+            mPresenter.savePicToStorage(applicationContext,filePath,salesId)
+
         }
 
         cancelCreateBtn.setOnClickListener{
@@ -325,94 +302,33 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
         }
     }
 
-    fun saveSalesData(imageData1 : String ) {
+    override fun setLocation(tmpLocation: String,imageData1 : String) {
         val tmpTitle = titleTxt.text.trim().toString()
         val tmpDescription = editTxtDescription.text.trim().toString()
         val tmpPrice = priceTxt.text.trim().toString()
 
-        var geocoder2 = Geocoder(applicationContext)
-        var list2 : List<Address> = ArrayList()
-        var tmpLocation = locationSelectionTxt.text.trim().toString()
-
-        try {
-            list2 = geocoder2.getFromLocation(mLatitude,mLongitude,1)
-        }catch (e : IOException)
-        {
-            Log.e("MapsActivity","geolocate : IOException" + e.message)
-        }
-
-        if(list2.isNotEmpty())
-        {
-            var address2: Address = list2[0]
-
-            if (locationSelectionTxt.text != null)
-            {
-                tmpLocation = address2.getAddressLine(0).toString()
-            }
-            else if (locationSelectionTxt.text == null)
-            {
-                tmpLocation = locationSelectionTxt.text.trim().toString()
-            }
-
-            System.out.println("..........>>>>>>>>$tmpLocation<<<<........")
-        }
-
-        var data = DealsDetail(tmpTitle, tmpPrice, tmpDescription, tmpLocation,mLatitude.toString() ,mLongitude.toString(), UserDetail.username,salesId,imageData1,UserDetail.user_id)
-
-
-        databaseR.child(salesId).setValue(data)
-
+        mPresenter.saveSaleData(tmpTitle,tmpPrice,tmpDescription,tmpLocation,mLatitude.toString(),mLongitude.toString(),UserDetail.username,salesId,imageData1,UserDetail.user_id)
     }
 
-    fun saveDataStorage() {
-
-        val progressDialog = ProgressDialog(this)
-        //displaying a progress dialog
-
-        progressDialog.setMessage("Uploading Please Wait...")
-        progressDialog.show()
-
-        mStorage = FirebaseStorage.getInstance()
-
-        storageM = mStorage.reference.child("SalesImage").child(salesId).child("image0")
-
-        storageM.putFile(filePath)
-                .addOnSuccessListener({ taskSnapshot ->
-                    //if the upload is successfull
-                    //and displaying a success toast
-
-                    progressDialog.dismiss()
-                    Toast.makeText(applicationContext, "File Uploaded ", Toast.LENGTH_LONG).show()
-                })
-                .addOnFailureListener({ exception ->
-                    //if the upload is not successfull
-
-                    //and displaying error message
-                    progressDialog.dismiss()
-                    Toast.makeText(applicationContext, exception.message, Toast.LENGTH_LONG).show()
-                })
-                .continueWithTask({ task ->
-                    if (!task.isSuccessful) {
-                        throw task.exception!!
-                    }
-
-                    // Continue with the task to get the download URL
-                    storageM.downloadUrl
-                }).addOnCompleteListener({ task ->
-                    if (task.isSuccessful) {
-                        val downloadUri = task.result
-
-                        progressDialog.dismiss()
-                        println("....Download url....>>>" + downloadUri.toString())
-                        uriString = downloadUri.toString()
-                        saveSalesData(uriString)
-                    } else {
-                        // Handle failures
-                        Toast.makeText(applicationContext, "File Fail To Upload  ", Toast.LENGTH_LONG).show()
-
-                    }
-                })
-
+    override fun imageUploadError(exception: Exception) {
+        progressDialog.dismiss()
+        Toast.makeText(applicationContext, exception.message, Toast.LENGTH_LONG).show()
     }
 
+    override fun imageUploadFailed() {
+        progressDialog.dismiss()
+        Toast.makeText(applicationContext, "File Fail To Upload  ", Toast.LENGTH_LONG).show()
+    }
+
+    override fun imageUploadSuccess(uriString: String) {
+
+        progressDialog.dismiss()
+        Toast.makeText(applicationContext, " Upload Successfully ", Toast.LENGTH_LONG).show()
+
+        val tmpLocation = locationSelectionTxt.text.trim().toString()
+
+        mPresenter.checkLocationTxt(applicationContext,mLatitude,mLongitude,uriString,UserDetail.currentAddress,tmpLocation)
+        finish()
+        startActivity(Intent(applicationContext,MainPage::class.java))
+    }
 }
