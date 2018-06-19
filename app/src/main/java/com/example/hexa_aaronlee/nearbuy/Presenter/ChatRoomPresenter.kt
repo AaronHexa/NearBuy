@@ -15,6 +15,9 @@ import com.example.hexa_aaronlee.nearbuy.View.ChatRoomView
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
+import com.github.chrisbanes.photoview.PhotoView
+
+
 
 public class ChatRoomPresenter(internal var view : ChatRoomView.view) : ChatRoomView.presenter {
 
@@ -205,6 +208,11 @@ public class ChatRoomPresenter(internal var view : ChatRoomView.view) : ChatRoom
                     .resize(900, 900)
                     .centerCrop()
                     .into(imageView)
+
+            imageView.setOnClickListener {
+                view.viewLargeImage(tmpUri)
+            }
+
         }
     }
 

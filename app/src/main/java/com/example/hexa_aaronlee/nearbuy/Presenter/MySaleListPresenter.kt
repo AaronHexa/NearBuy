@@ -3,10 +3,14 @@ package com.example.hexa_aaronlee.nearbuy.Presenter
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetail
 import com.example.hexa_aaronlee.nearbuy.View.MySaleListView
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 
 class MySaleListPresenter(internal var view : MySaleListView.View) : MySaleListView.Presenter
 {
+
     lateinit var mDataRef : DatabaseReference
+    lateinit var mStorageRef : StorageReference
 
     override fun getSaledata(user_id: String, lstDetail: ArrayList<DealsDetail>) {
         mDataRef = FirebaseDatabase.getInstance().reference.child("SaleDetail")
@@ -21,6 +25,7 @@ class MySaleListPresenter(internal var view : MySaleListView.View) : MySaleListV
                 {
                     lstDetail.add(DealsDetail(data.itemTitle,data.itemPrice,data.itemDescription,data.itemLocation,data.mLatitude,data.mLongitude,data.offerBy,data.sales_id,data.sales_image1,data.offer_id))
                     view.updateList(lstDetail)
+                    view.setDeleteBtn(lstDetail)
                 }
 
 
@@ -42,6 +47,20 @@ class MySaleListPresenter(internal var view : MySaleListView.View) : MySaleListV
                 println("The read failed: " + databaseError.code)
             }
         })
+    }
+
+    override fun deleteSaleInDatabase(mDeletionPos: ArrayList<Int>,lstDetail: ArrayList<DealsDetail>,user_id: String) {
+        mDataRef = FirebaseDatabase.getInstance().reference.child("SaleDetail")
+        mStorageRef = FirebaseStorage.getInstance().reference.child("SalesImage")
+
+        for(i in mDeletionPos.indices)
+        {
+            mDataRef.child(lstDetail[mDeletionPos[i]].sales_id).removeValue()
+            mStorageRef.child(lstDetail[mDeletionPos[i]].sales_id).child("image0").delete()
+        }
+
+        val newLstDetail : ArrayList<DealsDetail> = ArrayList()
+        getSaledata(user_id,newLstDetail)
     }
 
 }

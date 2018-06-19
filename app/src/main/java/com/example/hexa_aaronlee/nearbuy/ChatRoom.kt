@@ -29,6 +29,7 @@ import android.app.ProgressDialog
 import android.content.DialogInterface
 import com.example.hexa_aaronlee.nearbuy.Presenter.ChatRoomPresenter
 import com.example.hexa_aaronlee.nearbuy.View.ChatRoomView
+import com.github.chrisbanes.photoview.PhotoView
 import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.share_pic_box.*
 
@@ -158,6 +159,18 @@ class ChatRoom : AppCompatActivity(),ChatRoomView.view {
             }
             super.onActivityResult(requestCode, resultCode, data)
         }
+    }
+
+    override fun viewLargeImage(tmpUri: Uri) {
+        val mBuilder = android.support.v7.app.AlertDialog.Builder(this)
+        val mView = layoutInflater.inflate(R.layout.dialog_image, null)
+        val photoView = mView.findViewById<PhotoView>(R.id.photoView)
+        Picasso.get()
+                .load(tmpUri)
+                .into(photoView)
+        mBuilder.setView(mView)
+        val mDialog = mBuilder.create()
+        mDialog.show()
     }
 
     fun confirmSharePic()

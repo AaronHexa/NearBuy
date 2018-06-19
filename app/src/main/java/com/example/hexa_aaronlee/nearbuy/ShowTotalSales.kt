@@ -32,7 +32,7 @@ class ShowTotalSales : AppCompatActivity(),ShowTotalSalesView.View {
     override fun updateList(lstSaleData : ArrayList<DealsDetail>)
     {
         val myrv = findViewById<RecyclerView>(R.id.listSalesView)
-        val myAdapter = RecyclerViewAdapter("700",this, lstSaleData)
+        val myAdapter = RecyclerViewAdapter(this, lstSaleData)
         myrv.layoutManager = GridLayoutManager(this, 2)
         myrv.adapter = myAdapter
     }

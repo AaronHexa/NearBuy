@@ -17,7 +17,7 @@ import android.support.v7.widget.CardView
 import com.squareup.picasso.Picasso
 
 
-class RecyclerViewAdapter(private val mDistance: String ,private val mContext: Context, private val mData: List<DealsDetail>) : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
+class RecyclerViewAdapter(private val mContext: Context, private val mData: List<DealsDetail>) : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
@@ -38,7 +38,9 @@ class RecyclerViewAdapter(private val mDistance: String ,private val mContext: C
         holder.title.text = mData[position].itemTitle
         holder.price.text = "MYR " + mData[position].itemPrice
         holder.offerBy.text = mData[position].offerBy
+
         var result : FloatArray = FloatArray(10)
+
         Location.distanceBetween(UserDetail.mLatitude,UserDetail.mLongitude,mData[position].mLatitude.toDouble(),mData[position].mLongitude.toDouble(),result)
         holder.distance.text = String.format("%.2f",(result[0]/1000))+ " km"
                 holder.cardView.setOnClickListener {

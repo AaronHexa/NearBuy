@@ -14,6 +14,7 @@ public interface ChatRoomView{
         fun uploadImageFailed()
         fun saveImageData(uriTxt : String)
         fun addMsgChat(newMessagePage : Int, imageFileName: String,text: String, sender: String, type :String,arrayMsgIDList: ArrayList<String>)
+        fun viewLargeImage(tmpUri: Uri)
     }
 
     interface presenter{
