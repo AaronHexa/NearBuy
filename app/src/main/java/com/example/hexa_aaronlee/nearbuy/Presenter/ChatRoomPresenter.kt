@@ -19,7 +19,7 @@ import com.github.chrisbanes.photoview.PhotoView
 
 
 
-public class ChatRoomPresenter(internal var view : ChatRoomView.view) : ChatRoomView.presenter {
+public class ChatRoomPresenter(internal var view : ChatRoomView.View) : ChatRoomView.Presenter {
 
     lateinit var databaseRef: DatabaseReference
     lateinit var databaseRef2: DatabaseReference

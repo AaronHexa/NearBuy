@@ -6,24 +6,20 @@ import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetail
-import com.example.hexa_aaronlee.nearbuy.DatabaseData.HistoryData
-import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
-import com.example.hexa_aaronlee.nearbuy.Model.User
 import com.example.hexa_aaronlee.nearbuy.Presenter.ViewSaleDetailPresenter
 import com.example.hexa_aaronlee.nearbuy.View.ViewSaleDetailView
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_view_sale_details.*
 
-class ViewSaleDetails : AppCompatActivity(),ViewSaleDetailView.View {
-    lateinit var mDataRef : DatabaseReference
-    lateinit var imageUri : Uri
-    var tmpSaleTitle : String = ""
-    var tmpSaleUser : String = ""
-    var checkDealer : String = ""
-    var result : FloatArray = FloatArray(10)
-    lateinit var mPresenter : ViewSaleDetailPresenter
+class ViewSaleDetailsActivity : AppCompatActivity(), ViewSaleDetailView.View {
+    lateinit var mDataRef: DatabaseReference
+    lateinit var imageUri: Uri
+    var tmpSaleTitle: String = ""
+    var tmpSaleUser: String = ""
+    var checkDealer: String = ""
+    var result: FloatArray = FloatArray(10)
+    lateinit var mPresenter: ViewSaleDetailPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,37 +31,33 @@ class ViewSaleDetails : AppCompatActivity(),ViewSaleDetailView.View {
 
 
         floatingActionButton.setOnClickListener {
-            if(checkDealer == UserDetail.user_id)
-            {
-                Toast.makeText(application,"You are the dealer !!!",Toast.LENGTH_SHORT).show()
-            }
-            else
-            {
+            if (checkDealer == UserDetail.user_id) {
+                Toast.makeText(application, "You are the dealer !!!", Toast.LENGTH_SHORT).show()
+            } else {
                 UserDetail.chatWithID = checkDealer
                 mPresenter.getChatDetail(checkDealer)
                 finish()
-                startActivity(Intent(applicationContext,ChatRoom::class.java))
+                startActivity(Intent(applicationContext, ChatRoomActivity::class.java))
             }
 
         }
     }
 
-    override fun updateUI(salesImage:String,itemTitle:String,itemPrice:String,itemDescription:String,itemLocation:String,mLatitude:String,mLongitude:String,offerBy:String,offer_id:String)
-    {
+    override fun updateUI(salesImage: String, itemTitle: String, itemPrice: String, itemDescription: String, itemLocation: String, mLatitude: String, mLongitude: String, offerBy: String, offer_id: String) {
         imageUri = Uri.parse(salesImage)
 
         Picasso.get()
                 .load(imageUri)
                 .centerCrop()
-                .resize(700,700)
+                .resize(700, 700)
                 .into(imageProduct)
 
         titleDetail.text = itemTitle
         priceDetail.text = "MYR $itemPrice"
         descripeDetail.text = itemDescription
         locationDetail.text = itemLocation
-        Location.distanceBetween(UserDetail.mLatitude,UserDetail.mLongitude,mLatitude.toDouble(),mLongitude.toDouble(),result)
-        distanceDetail.text = String.format("%.2f",(result[0]/1000)) + " km"
+        Location.distanceBetween(UserDetail.mLatitude, UserDetail.mLongitude, mLatitude.toDouble(), mLongitude.toDouble(), result)
+        distanceDetail.text = String.format("%.2f", (result[0] / 1000)) + " km"
         offeredDetail2.text = offerBy
 
         checkDealer = offer_id
@@ -74,17 +66,17 @@ class ViewSaleDetails : AppCompatActivity(),ViewSaleDetailView.View {
     }
 
 
-    override fun updateInfo(profilePhoto : String, name : String) {
+    override fun updateInfo(profilePhoto: String, name: String) {
         UserDetail.chatWithImageUri = profilePhoto
         UserDetail.chatWithName = name
 
-        mPresenter.saveUserToHistoryChat(profilePhoto,UserDetail.user_id,checkDealer,tmpSaleUser,tmpSaleTitle)
+        mPresenter.saveUserToHistoryChat(profilePhoto, UserDetail.user_id, checkDealer, tmpSaleUser, tmpSaleTitle)
     }
 
     override fun onBackPressed() {
 
         finish()
-        startActivity(Intent(applicationContext,MainPage::class.java))
+        startActivity(Intent(applicationContext, MainPageActivity::class.java))
         super.onBackPressed()
     }
 }

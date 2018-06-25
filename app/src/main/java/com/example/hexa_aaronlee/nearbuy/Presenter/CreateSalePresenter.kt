@@ -1,29 +1,24 @@
 package com.example.hexa_aaronlee.nearbuy.Presenter
 
-import android.app.ProgressDialog
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.net.Uri
 import android.util.Log
-import android.widget.AutoCompleteTextView
-import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetail
-import com.example.hexa_aaronlee.nearbuy.R
+import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
 import com.example.hexa_aaronlee.nearbuy.View.CreateSaleView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import kotlinx.android.synthetic.main.activity_create_sale.view.*
 import java.io.IOException
 
-public class CreateSalePresenter(internal var view : CreateSaleView.view) : CreateSaleView.presenter
+public class CreateSalePresenter(internal var view : CreateSaleView.View) : CreateSaleView.Presenter
 {
     lateinit var  mStorage : StorageReference
     lateinit var databaseR : DatabaseReference
@@ -95,7 +90,7 @@ public class CreateSalePresenter(internal var view : CreateSaleView.view) : Crea
 
         databaseR = FirebaseDatabase.getInstance().reference.child("SaleDetail")
 
-        val data = DealsDetail(tmpTitle, tmpPrice, tmpDescription, tmpLocation,mLatitude ,mLongitude, username,salesId,imageData1,user_id)
+        val data = DealsDetailData(tmpTitle, tmpPrice, tmpDescription, tmpLocation,mLatitude ,mLongitude, username,salesId,imageData1,user_id)
 
         databaseR.child(salesId).setValue(data)
     }

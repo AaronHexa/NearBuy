@@ -1,17 +1,15 @@
 package com.example.hexa_aaronlee.nearbuy.View
 
-import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetail
+import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
 
-interface MySaleListView
-{
-    interface View
-    {
-        fun updateList(lstDetail : ArrayList<DealsDetail>)
-        fun setDeleteBtn(lstDetail: ArrayList<DealsDetail>)
+interface MySaleListView {
+    interface View {
+        fun updateList(lstDetail: ArrayList<DealsDetailData>)
+        fun setDeleteBtn(lstDetail: ArrayList<DealsDetailData>)
     }
 
-    interface Presenter{
-        fun getSaledata(user_id : String,lstDetail : ArrayList<DealsDetail>)
-        fun deleteSaleInDatabase (mDeletionPos : ArrayList<Int>,lstDetail: ArrayList<DealsDetail>,user_id: String)
+    interface Presenter {
+        fun getSaledata(user_id: String, lstDetail: ArrayList<DealsDetailData>)
+        fun deleteSaleInDatabase(mDeletionPos: ArrayList<Int>, lstDetail: ArrayList<DealsDetailData>, user_id: String)
     }
 }

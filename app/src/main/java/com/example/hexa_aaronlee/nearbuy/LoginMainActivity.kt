@@ -4,10 +4,8 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.text.TextUtils
 
 import android.widget.Toast
-import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
 import com.example.hexa_aaronlee.nearbuy.Presenter.LoginPresenter
 import com.example.hexa_aaronlee.nearbuy.View.LoginView
 import kotlinx.android.synthetic.main.activity_login_main.*
@@ -22,18 +20,18 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.*
 
 
-class LoginMain : AppCompatActivity(), LoginView.view{
+class LoginMainActivity : AppCompatActivity(), LoginView.View {
 
-    var presenter : LoginPresenter? = null
+    var presenter: LoginPresenter? = null
 
-    lateinit var mGoogleSignInClient : GoogleSignInClient
-    lateinit var gso : GoogleSignInOptions
-    val RC_SIGN_IN : Int = 1
-    private lateinit var mAuth : FirebaseAuth
+    lateinit var mGoogleSignInClient: GoogleSignInClient
+    lateinit var gso: GoogleSignInOptions
+    val RC_SIGN_IN: Int = 1
+    private lateinit var mAuth: FirebaseAuth
 
     lateinit var mFirebaseDatabase: FirebaseDatabase
     lateinit var mDatafaceReference: DatabaseReference
-    lateinit var firebaseAuth : FirebaseAuth
+    lateinit var firebaseAuth: FirebaseAuth
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +48,6 @@ class LoginMain : AppCompatActivity(), LoginView.view{
         firebaseAuth = FirebaseAuth.getInstance()
 
 
-
         //if the objects getcurrentuser method is not null
         //means user is already logged in
 
@@ -58,19 +55,19 @@ class LoginMain : AppCompatActivity(), LoginView.view{
             //close this activity
             finish()
             //opening profile activity
-            startActivity(Intent(applicationContext, MainPage::class.java))
+            startActivity(Intent(applicationContext, MainPageActivity::class.java))
         }
 
         //Button fuction
-        googleBtn.setOnClickListener{
+        googleBtn.setOnClickListener {
             presenter!!.clickGoogleBtn()
         }
 
-        loginBtn.setOnClickListener{
-            presenter!!.clickLoginBtn(emailEdit.text.toString(),passwordEdit.text.toString())
+        loginBtn.setOnClickListener {
+            presenter!!.clickLoginBtn(emailEdit.text.toString(), passwordEdit.text.toString())
         }
 
-        registerDirect.setOnClickListener{
+        registerDirect.setOnClickListener {
             presenter!!.clickRegisterTxt()
         }
 
@@ -79,20 +76,20 @@ class LoginMain : AppCompatActivity(), LoginView.view{
                 .requestEmail()
                 .build()
 
-        mGoogleSignInClient = GoogleSignIn.getClient(this,gso)
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
     }
 
     override fun loginToNext() {
         loginProcess()
-        Toast.makeText(applicationContext,"Login Successfully",Toast.LENGTH_SHORT).show()
+        Toast.makeText(applicationContext, "Login Successfully", Toast.LENGTH_SHORT).show()
     }
 
     override fun regiterDirected() {
-        startActivity( Intent(applicationContext,RegisterMain::class.java))
+        startActivity(Intent(applicationContext, RegisterMainActivity::class.java))
     }
 
     override fun loginFaild() {
-        Toast.makeText(applicationContext,"Login Fail",Toast.LENGTH_SHORT).show()
+        Toast.makeText(applicationContext, "Login Fail", Toast.LENGTH_SHORT).show()
     }
 
     override fun loginGoogle() {
@@ -112,7 +109,7 @@ class LoginMain : AppCompatActivity(), LoginView.view{
                 firebaseAuthWithGoogle(account)
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
-                Toast.makeText(this,"Google sign in failed" + e,Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Google sign in failed" + e, Toast.LENGTH_SHORT).show()
                 // ...
             }
 
@@ -149,11 +146,11 @@ class LoginMain : AppCompatActivity(), LoginView.view{
                 }
     }
 
-    fun getDetailGoogle(user_id:String){
+    fun getDetailGoogle(user_id: String) {
 
-        var personName :String = ""
-        var personEmail:String = ""
-        var personPhoto :String = ""
+        var personName: String = ""
+        var personEmail: String = ""
+        var personPhoto: String = ""
         var password = "---"
 
         val acct = GoogleSignIn.getLastSignedInAccount(applicationContext)
@@ -161,17 +158,17 @@ class LoginMain : AppCompatActivity(), LoginView.view{
             personName = acct.displayName.toString()
             personEmail = acct.email.toString()
             personPhoto = acct.photoUrl.toString()
-            System.out.println(personName + " " + user_id + " " +personEmail + " " +personPhoto + " " )
-            updateNextPage(personEmail,password,user_id,personName,personPhoto)
+            System.out.println(personName + " " + user_id + " " + personEmail + " " + personPhoto + " ")
+            updateNextPage(personEmail, password, user_id, personName, personPhoto)
         }
 
     }
 
-    fun updateNextPage(email: String,password: String,user_id: String,name: String,profilePhoto: String){
+    fun updateNextPage(email: String, password: String, user_id: String, name: String, profilePhoto: String) {
 
-        presenter?.saveDataProcess(email,password,user_id,name,profilePhoto)
+        presenter?.saveDataProcess(email, password, user_id, name, profilePhoto)
 
-        var intent = Intent(applicationContext,MainPage::class.java)
+        var intent = Intent(applicationContext, MainPageActivity::class.java)
         startActivity(intent)
         finish()
     }
@@ -194,7 +191,7 @@ class LoginMain : AppCompatActivity(), LoginView.view{
                     //if the task is successfull
                     if (task.isSuccessful) {
 
-                        var intent = Intent(applicationContext,MainPage::class.java)
+                        var intent = Intent(applicationContext, MainPageActivity::class.java)
                         finish()
                         startActivity(intent)
 

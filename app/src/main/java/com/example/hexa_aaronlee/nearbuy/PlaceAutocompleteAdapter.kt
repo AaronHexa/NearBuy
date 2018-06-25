@@ -13,7 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.google.android.gms.common.api.GoogleApiClient
 
-import com.google.android.gms.common.data .DataBufferUtils
+import com.google.android.gms.common.data.DataBufferUtils
 import com.google.android.gms.location.places.*
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.tasks.RuntimeExecutionException
@@ -27,14 +27,14 @@ import java.util.concurrent.TimeoutException
 
 class PlaceAutocompleteAdapter(context: Context, googleApiClient:
 GoogleApiClient, bounds: LatLngBounds, filter: AutocompleteFilter?)
-    : ArrayAdapter<AutocompletePrediction>(context, android.R.layout.simple_expandable_list_item_2, android.R.id.text1),Filterable {
+    : ArrayAdapter<AutocompletePrediction>(context, android.R.layout.simple_expandable_list_item_2, android.R.id.text1), Filterable {
 
     private val TAG = "PlaceAutoCompleteAd"
     private val STYLE_BOLD = StyleSpan(Typeface.BOLD)
-    private  var  mGoogleApiClient: GoogleApiClient =googleApiClient
-    private  var mBounds: LatLngBounds =bounds
-    private  var mPlaceFilter: AutocompleteFilter?=filter
-    private  var mResultList= ArrayList<AutocompletePrediction>()
+    private var mGoogleApiClient: GoogleApiClient = googleApiClient
+    private var mBounds: LatLngBounds = bounds
+    private var mPlaceFilter: AutocompleteFilter? = filter
+    private var mResultList = ArrayList<AutocompletePrediction>()
 
     fun setBounds(bounds: LatLngBounds) {
         mBounds = bounds

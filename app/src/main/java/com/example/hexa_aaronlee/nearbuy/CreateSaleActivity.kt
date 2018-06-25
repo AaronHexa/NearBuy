@@ -3,8 +3,6 @@ package com.example.hexa_aaronlee.nearbuy
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
 import android.location.Location
 import android.net.Uri
 import android.os.Build
@@ -12,14 +10,11 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
-import android.widget.ImageView
 import android.widget.Toast
-import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetail
 import com.example.hexa_aaronlee.nearbuy.Presenter.CreateSalePresenter
 import com.example.hexa_aaronlee.nearbuy.View.CreateSaleView
 import com.google.android.gms.common.ConnectionResult
@@ -28,7 +23,6 @@ import com.google.android.gms.location.LocationListener
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.places.Places
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -39,17 +33,16 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_create_sale.*
-import java.io.IOException
 
-class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, CreateSaleView.view {
+        LocationListener, CreateSaleView.View {
 
     // ...............................Google Map Parts.............................................
 
     private lateinit var mMap: GoogleMap
     private lateinit var client: GoogleApiClient
-    private lateinit var mGoogleApiClient :GoogleApiClient
+    private lateinit var mGoogleApiClient: GoogleApiClient
 
     private lateinit var locationRequest: LocationRequest
     lateinit var locationMain: Location
@@ -57,15 +50,15 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
     lateinit var markerOptions: MarkerOptions
     lateinit var latLng: LatLng
 
-    var mLatitude :Double = 0.0
-    var mLongitude : Double = 0.0
+    var mLatitude: Double = 0.0
+    var mLongitude: Double = 0.0
 
     lateinit var mAutocompleteAdapter: PlaceAutocompleteAdapter
-    var LAT_LNG_BOUNDS : LatLngBounds = LatLngBounds(LatLng(-40.0,-168.0), LatLng(71.0,136.0))
+    var LAT_LNG_BOUNDS: LatLngBounds = LatLngBounds(LatLng(-40.0, -168.0), LatLng(71.0, 136.0))
 
     val REQUEST_LOCATION_CODE = 99
 
-    lateinit var mPresenter : CreateSalePresenter
+    lateinit var mPresenter: CreateSalePresenter
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
@@ -76,12 +69,12 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
         }
 
         locationSelectionTxt.setOnEditorActionListener() { v, actionId, event ->
-            if(actionId == EditorInfo.IME_ACTION_SEARCH
+            if (actionId == EditorInfo.IME_ACTION_SEARCH
                     || actionId == EditorInfo.IME_ACTION_DONE
                     || event.action == KeyEvent.ACTION_DOWN
-                    || event.action == KeyEvent.KEYCODE_ENTER){
+                    || event.action == KeyEvent.KEYCODE_ENTER) {
                 val textSearch = locationSelectionTxt.text.toString()
-                mPresenter.geoLocate(textSearch,applicationContext)
+                mPresenter.geoLocate(textSearch, applicationContext)
                 true
             } else {
                 false
@@ -94,7 +87,7 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
                 .enableAutoManage(this, this)
                 .build()
 
-        mAutocompleteAdapter = PlaceAutocompleteAdapter(this,mGoogleApiClient,LAT_LNG_BOUNDS,null)
+        mAutocompleteAdapter = PlaceAutocompleteAdapter(this, mGoogleApiClient, LAT_LNG_BOUNDS, null)
         locationSelectionTxt.setAdapter(mAutocompleteAdapter)
 
         HidSoftKeyboard()
@@ -113,9 +106,8 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
         locationRequest.fastestInterval = 1000
         locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
 
-        if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED)
-        {
-            LocationServices.FusedLocationApi.requestLocationUpdates(client,locationRequest,this)
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(client, locationRequest, this)
         }
 
 
@@ -141,7 +133,7 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
         UserDetail.mLatitude = latitude
         UserDetail.mLongitude = longitude
 
-        mPresenter.moveCamera(latitude, longitude,"My Location",mMap,applicationContext)
+        mPresenter.moveCamera(latitude, longitude, "My Location", mMap, applicationContext)
 
 
         if (client != null) {
@@ -154,22 +146,16 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
 
-        if (requestCode == REQUEST_LOCATION_CODE)
-        {
-            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            {
-                if(ContextCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION) !=  PackageManager.PERMISSION_GRANTED)
-                {
-                    if(client == null)
-                    {
+        if (requestCode == REQUEST_LOCATION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    if (client == null) {
                         bulidGoogleApiClient()
                     }
                     mMap.isMyLocationEnabled = false
                 }
-            }
-            else
-            {
-                Toast.makeText(this,"Permission Denied" , Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -193,10 +179,10 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
         mLatitude = latitude
         mLongitude = longitude
 
-        mPresenter.moveCamera(latitude,longitude,address,mMap,applicationContext)
+        mPresenter.moveCamera(latitude, longitude, address, mMap, applicationContext)
     }
 
-    override fun setMarker(currentMarker: Marker,address: String) {
+    override fun setMarker(currentMarker: Marker, address: String) {
         if (this.currentMarker != null) {
             this.currentMarker?.remove()
         }
@@ -207,11 +193,9 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
         HidSoftKeyboard()
     }
 
-    fun HidSoftKeyboard()
-    {
+    fun HidSoftKeyboard() {
         this.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
     }
-
 
 
     //...............................Information Parts..............................................
@@ -220,14 +204,14 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
     val PICK_IMAGE_REQUEST = 1
     lateinit var filePath: Uri
     lateinit var view: View
-    var salesId :String =""
-    var id : String = ""
+    var salesId: String = ""
+    var id: String = ""
 
     var uriString: String = ""
     lateinit var mStorage: FirebaseStorage
     lateinit var storageM: StorageReference
     lateinit var databaseR: DatabaseReference
-    lateinit var progressDialog : ProgressDialog
+    lateinit var progressDialog: ProgressDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -236,8 +220,7 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
         mPresenter = CreateSalePresenter(this)
         progressDialog = ProgressDialog(this)
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission()
         }
 
@@ -263,13 +246,13 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
             progressDialog.setMessage("Uploading Please Wait...")
             progressDialog.show()
 
-            mPresenter.savePicToStorage(applicationContext,filePath,salesId)
+            mPresenter.savePicToStorage(applicationContext, filePath, salesId)
 
         }
 
-        cancelCreateBtn.setOnClickListener{
+        cancelCreateBtn.setOnClickListener {
             finish()
-            startActivity(Intent(applicationContext,MainPage::class.java))
+            startActivity(Intent(applicationContext, MainPageActivity::class.java))
         }
 
     }
@@ -277,37 +260,38 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
     fun choosePicture() {
         val intent = Intent()
         intent.type = "image/*"
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true)
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         intent.action = Intent.ACTION_GET_CONTENT
         startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_REQUEST)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK ) {
-            if (data.data != null)
-            {
-                filePath = data.data
+        if (resultCode != RESULT_CANCELED) {
+            if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK) {
+                if (data!!.data != null) {
+                    filePath = data.data
 
-                Picasso.get()
-                        .load(filePath)
-                        .resize(700, 700)
-                        .centerCrop()
-                        .into(itemPic1)
+                    Picasso.get()
+                            .load(filePath)
+                            .resize(700, 700)
+                            .centerCrop()
+                            .into(itemPic1)
 
-                Toast.makeText(this,"Single",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Single", Toast.LENGTH_SHORT).show()
+                }
+
             }
-
         }
     }
 
-    override fun setLocation(tmpLocation: String,imageData1 : String) {
+    override fun setLocation(tmpLocation: String, imageData1: String) {
         val tmpTitle = titleTxt.text.trim().toString()
         val tmpDescription = editTxtDescription.text.trim().toString()
         val tmpPrice = priceTxt.text.trim().toString()
 
-        mPresenter.saveSaleData(tmpTitle,tmpPrice,tmpDescription,tmpLocation,mLatitude.toString(),mLongitude.toString(),UserDetail.username,salesId,imageData1,UserDetail.user_id)
+        mPresenter.saveSaleData(tmpTitle, tmpPrice, tmpDescription, tmpLocation, mLatitude.toString(), mLongitude.toString(), UserDetail.username, salesId, imageData1, UserDetail.user_id)
     }
 
     override fun imageUploadError(exception: Exception) {
@@ -327,8 +311,8 @@ class CreateSale : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.Conn
 
         val tmpLocation = locationSelectionTxt.text.trim().toString()
 
-        mPresenter.checkLocationTxt(applicationContext,mLatitude,mLongitude,uriString,UserDetail.currentAddress,tmpLocation)
+        mPresenter.checkLocationTxt(applicationContext, mLatitude, mLongitude, uriString, UserDetail.currentAddress, tmpLocation)
         finish()
-        startActivity(Intent(applicationContext,MainPage::class.java))
+        startActivity(Intent(applicationContext, MainPageActivity::class.java))
     }
 }

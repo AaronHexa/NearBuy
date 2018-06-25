@@ -14,9 +14,8 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
-import android.widget.AdapterView
 import android.widget.Toast
-import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetail
+import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationListener
@@ -26,7 +25,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.places.GeoDataClient
 import com.google.android.gms.location.places.Places
 import com.google.android.gms.maps.model.*
 import com.google.firebase.database.*
@@ -34,34 +32,32 @@ import kotlinx.android.synthetic.main.activity_maps.*
 import java.io.IOException
 
 
-class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks,
-                        GoogleApiClient.OnConnectionFailedListener,
-                        LocationListener {
+class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
 
     private lateinit var mMap: GoogleMap
     private lateinit var client: GoogleApiClient
-    private lateinit var mGoogleApiClient :GoogleApiClient
-    lateinit var  mDataRef : DatabaseReference
+    private lateinit var mGoogleApiClient: GoogleApiClient
+    lateinit var mDataRef: DatabaseReference
 
     private lateinit var locationRequest: LocationRequest
     lateinit var locationMain: Location
-     var currentMarker: Marker? = null
-    lateinit var markerOptions: MarkerOptions
+    var currentMarker: Marker? = null
     lateinit var latLng: LatLng
 
     lateinit var mAutocompleteAdapter: PlaceAutocompleteAdapter
-    var LAT_LNG_BOUNDS : LatLngBounds = LatLngBounds(LatLng(-40.0,-168.0),LatLng(71.0,136.0))
+    var LAT_LNG_BOUNDS: LatLngBounds = LatLngBounds(LatLng(-40.0, -168.0), LatLng(71.0, 136.0))
 
     val REQUEST_LOCATION_CODE = 99
-    var result : FloatArray = FloatArray(10)
-    var arrayMarker : ArrayList<Marker> = ArrayList()
+    var result: FloatArray = FloatArray(10)
+    var arrayMarker: ArrayList<Marker> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission()
         }
 
@@ -90,10 +86,10 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
         }
 
         searchTxt.setOnEditorActionListener() { v, actionId, event ->
-            if(actionId == EditorInfo.IME_ACTION_SEARCH
+            if (actionId == EditorInfo.IME_ACTION_SEARCH
                     || actionId == EditorInfo.IME_ACTION_DONE
                     || event.action == KeyEvent.ACTION_DOWN
-                    || event.action == KeyEvent.KEYCODE_ENTER){
+                    || event.action == KeyEvent.KEYCODE_ENTER) {
                 geoLocate()
                 true
             } else {
@@ -103,8 +99,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
 
         icon_gps.setOnClickListener {
 
-            for(i in arrayMarker.indices)
-            {
+            for (i in arrayMarker.indices) {
                 arrayMarker[i].remove()
             }
 
@@ -121,8 +116,10 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
                 .enableAutoManage(this, this)
                 .build()
 
-        mAutocompleteAdapter = PlaceAutocompleteAdapter(this,mGoogleApiClient,LAT_LNG_BOUNDS,null)
+        mAutocompleteAdapter = PlaceAutocompleteAdapter(this, mGoogleApiClient, LAT_LNG_BOUNDS, null)
         searchTxt.setAdapter(mAutocompleteAdapter)
+
+        mMap.uiSettings.isMyLocationButtonEnabled = false
 
         HidSoftKeyboard()
     }
@@ -140,9 +137,8 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
         locationRequest.fastestInterval = 1000
         locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
 
-        if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED)
-        {
-            LocationServices.FusedLocationApi.requestLocationUpdates(client,locationRequest,this)
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(client, locationRequest, this)
         }
 
 
@@ -167,7 +163,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
 
         latLng = LatLng(latitude, longitude)
 
-        moveCamera(latLng,"My Location")
+        moveCamera(latLng, "My Location")
 
         if (client != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(client, this)
@@ -179,62 +175,53 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
 
-        if (requestCode == REQUEST_LOCATION_CODE)
-        {
-            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            {
-                if(ContextCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION) !=  PackageManager.PERMISSION_GRANTED)
-                {
-                    if(client == null)
-                    {
+        if (requestCode == REQUEST_LOCATION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    if (client == null) {
                         bulidGoogleApiClient()
                     }
-                    mMap.isMyLocationEnabled = true;
+                    mMap.isMyLocationEnabled = true
                 }
-            }
-            else
-            {
-                Toast.makeText(this,"Permission Denied" , Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show()
             }
         }
     }
 
-        fun checkLocationPermission(): Boolean {
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+    fun checkLocationPermission(): Boolean {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_CODE);
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_CODE);
 
-                } else {
-                    ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_CODE);
-                }
-                return false
+            } else {
+                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_CODE);
+            }
+            return false
 
-            } else
-                return true
-        }
+        } else
+            return true
+    }
 
-    fun geoLocate()
-    {
-        var textSearch = searchTxt.text.toString()
+    fun geoLocate() {
+        val textSearch = searchTxt.text.toString()
 
-        var geocoder = Geocoder(applicationContext)
-        var list : List<Address> = ArrayList()
+        val geocoder = Geocoder(applicationContext)
+        var list: List<Address> = ArrayList()
 
         try {
-            list = geocoder.getFromLocationName(textSearch,1)
-        }catch (e : IOException)
-        {
-            Log.e("MapsActivity","geolocate : IOException" + e.message)
+            list = geocoder.getFromLocationName(textSearch, 1)
+        } catch (e: IOException) {
+            Log.e("MapsActivity", "geolocate : IOException" + e.message)
         }
 
-        if(list.isNotEmpty())
-        {
+        if (list.isNotEmpty()) {
             var address: Address = list[0]
 
-            Log.e("MapsActivity","geolocate : Found a location : " + address.toString())
+            Log.e("MapsActivity", "geolocate : Found a location : " + address.toString())
 
-            moveCamera(LatLng(address.latitude,address.longitude),address.getAddressLine(0))
+            moveCamera(LatLng(address.latitude, address.longitude), address.getAddressLine(0))
 
             /*
             val address = addresses.get(0).getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
@@ -246,16 +233,15 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
         }
     }
 
-    fun moveCamera(latLng: LatLng, title : String)
-    {
+    fun moveCamera(latLng: LatLng, title: String) {
 
         if (currentMarker != null) {
             currentMarker!!.remove()
         }
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,16f))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
 
-        val options : MarkerOptions = MarkerOptions()
+        val options: MarkerOptions = MarkerOptions()
                 .position(latLng)
                 .title(title)
         currentMarker = mMap.addMarker(options)
@@ -272,8 +258,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
         HidSoftKeyboard()
     }
 
-    fun goGetDistanceData()
-    {
+    fun goGetDistanceData() {
         mDataRef = FirebaseDatabase.getInstance().reference.child("SaleDetail")
 
         mDataRef.addChildEventListener(object : ChildEventListener {
@@ -290,20 +275,19 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
             }
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, p1: String?) {
-                val map = dataSnapshot.getValue(DealsDetail::class.java)
+                val map = dataSnapshot.getValue(DealsDetailData::class.java)
                 if (map != null) {
 
-                    Location.distanceBetween(UserDetail.mLatitude,UserDetail.mLongitude,map.mLatitude.toDouble(),map.mLongitude.toDouble(),result)
-                    var tmpDistance = String.format("%.2f",(result[0]/1000))
+                    Location.distanceBetween(UserDetail.mLatitude, UserDetail.mLongitude, map.mLatitude.toDouble(), map.mLongitude.toDouble(), result)
+                    var tmpDistance = String.format("%.2f", (result[0] / 1000))
 
-                    if (result[0] <= 3000)
-                    {
+                    if (result[0] <= 3000) {
 
                         System.out.println("............location .......${map.mLongitude}........${map.mLatitude}....${result[0]} ")
 
-                        var latLng = LatLng(map.mLatitude.toDouble(),map.mLongitude.toDouble())
+                        var latLng = LatLng(map.mLatitude.toDouble(), map.mLongitude.toDouble())
 
-                        val options : MarkerOptions = MarkerOptions()
+                        val options: MarkerOptions = MarkerOptions()
                                 .position(latLng)
                                 .title("<${map.itemTitle}> ${map.itemLocation}")
                         arrayMarker.add(mMap.addMarker(options))
@@ -327,13 +311,12 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback , GoogleApiClient.Co
         })
     }
 
-    fun HidSoftKeyboard()
-    {
+    fun HidSoftKeyboard() {
         this.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
     }
 
     override fun onBackPressed() {
-        startActivity(Intent(applicationContext, MainPage::class.java))
+        startActivity(Intent(applicationContext, MainPageActivity::class.java))
         finish()
     }
 }

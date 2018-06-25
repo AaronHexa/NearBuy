@@ -2,20 +2,14 @@ package com.example.hexa_aaronlee.nearbuy
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.Dialog
-import android.app.DialogFragment
 import android.content.Intent
-import android.graphics.Typeface
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import com.example.hexa_aaronlee.nearbuy.DatabaseData.MessageData
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
@@ -23,18 +17,14 @@ import kotlinx.android.synthetic.main.activity_chat_room.*
 import kotlinx.android.synthetic.main.media_dialog_box.view.*
 import kotlinx.android.synthetic.main.message_area.*
 import java.util.ArrayList
-import java.util.HashMap
 import android.widget.Toast
-import android.app.ProgressDialog
 import android.content.DialogInterface
 import com.example.hexa_aaronlee.nearbuy.Presenter.ChatRoomPresenter
 import com.example.hexa_aaronlee.nearbuy.View.ChatRoomView
 import com.github.chrisbanes.photoview.PhotoView
-import com.google.firebase.storage.UploadTask
-import kotlinx.android.synthetic.main.share_pic_box.*
 
 
-class ChatRoom : AppCompatActivity(),ChatRoomView.view {
+class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
 
     private var selectedUser: String = ""
     private lateinit var databaseRef: DatabaseReference
@@ -43,12 +33,12 @@ class ChatRoom : AppCompatActivity(),ChatRoomView.view {
     private lateinit var arrayMsgIDList: ArrayList<String>
     private var newMessagePage: Int = 0
 
-    lateinit var mStorage : FirebaseStorage
-    var PICK_IMAGE_REQUEST =1234
-    lateinit var filePath : Uri
-    var imageFileName : String = " "
-    private var uriTxt : String = " "
-    lateinit var mPresenter : ChatRoomPresenter
+    lateinit var mStorage: FirebaseStorage
+    var PICK_IMAGE_REQUEST = 1234
+    lateinit var filePath: Uri
+    var imageFileName: String = " "
+    private var uriTxt: String = " "
+    lateinit var mPresenter: ChatRoomPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,22 +57,22 @@ class ChatRoom : AppCompatActivity(),ChatRoomView.view {
         Picasso.get()
                 .load(tmpUri)
                 .centerCrop()
-                .resize(700,700)
+                .resize(700, 700)
                 .into(chatPic)
 
         System.out.println(selectedUser)
 
         arrayMsgIDList = ArrayList<String>()
 
-        mPresenter.retrieveMsgData(UserDetail.user_id,selectedUser,arrayMsgIDList)
+        mPresenter.retrieveMsgData(UserDetail.user_id, selectedUser, arrayMsgIDList)
 
         sendButton.setOnClickListener {
             val messageText = messageArea.text.toString()
-            mPresenter.saveChatMsg(messageText,UserDetail.user_id,arrayMsgIDList,newMessagePage,selectedUser)
+            mPresenter.saveChatMsg(messageText, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser)
         }
 
         backFromChat.setOnClickListener {
-            startActivity(Intent(applicationContext, ChatHistory::class.java))
+            startActivity(Intent(applicationContext, ChatHistoryActivity::class.java))
             finish()
         }
 
@@ -104,14 +94,14 @@ class ChatRoom : AppCompatActivity(),ChatRoomView.view {
     }
 
 
-    override fun addMsgChat(newMessagePage: Int, imageFileName: String,text: String, sender: String, type :String,arrayMsgIDList: ArrayList<String>) {
+    override fun addMsgChat(newMessagePage: Int, imageFileName: String, text: String, sender: String, type: String, arrayMsgIDList: ArrayList<String>) {
         this.newMessagePage = newMessagePage
-        this. imageFileName = imageFileName
+        this.imageFileName = imageFileName
 
         val lp2 = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         lp2.weight = 1.0f
 
-        mPresenter.createMsgBubble(text,sender,type,applicationContext,UserDetail.user_id,lp2,layout1)
+        mPresenter.createMsgBubble(text, sender, type, applicationContext, UserDetail.user_id, lp2, layout1)
 
         scrollView?.fullScroll(View.FOCUS_DOWN)
     }
@@ -140,7 +130,7 @@ class ChatRoom : AppCompatActivity(),ChatRoomView.view {
         dialog.show()
     }
 
-    fun chooseImageSent(){
+    fun chooseImageSent() {
 
         val intent = Intent()
         intent.type = "image/*"
@@ -173,14 +163,13 @@ class ChatRoom : AppCompatActivity(),ChatRoomView.view {
         mDialog.show()
     }
 
-    fun confirmSharePic()
-    {
+    fun confirmSharePic() {
         val builder = AlertDialog.Builder(this)
         val inflates = this.layoutInflater
         val customDialog = inflates.inflate(R.layout.share_pic_box, null)
         builder.setView(customDialog)
 
-        val tmpImageView : ImageView = customDialog.findViewById(R.id.sharePicConfirm)
+        val tmpImageView: ImageView = customDialog.findViewById(R.id.sharePicConfirm)
 
         Picasso.get()
                 .load(filePath)
@@ -191,7 +180,7 @@ class ChatRoom : AppCompatActivity(),ChatRoomView.view {
 
         builder.setTitle("Confirmation")
         builder.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, whichButton ->
-            mPresenter.comfrimationPicSend(newMessagePage,UserDetail.user_id,selectedUser,filePath,imageFileName,dialog)
+            mPresenter.comfrimationPicSend(newMessagePage, UserDetail.user_id, selectedUser, filePath, imageFileName, dialog)
         })
 
         builder.setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, whichButton ->
@@ -203,7 +192,7 @@ class ChatRoom : AppCompatActivity(),ChatRoomView.view {
     }
 
     override fun saveImageData(uriTxt: String) {
-        mPresenter.savePicMsg(uriTxt,UserDetail.user_id,arrayMsgIDList,newMessagePage,selectedUser)
+        mPresenter.savePicMsg(uriTxt, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser)
     }
 
     override fun uploadImageFailed() {
@@ -221,7 +210,7 @@ class ChatRoom : AppCompatActivity(),ChatRoomView.view {
     }
 
     override fun onBackPressed() {
-        startActivity(Intent(applicationContext, ChatHistory::class.java))
+        startActivity(Intent(applicationContext, ChatHistoryActivity::class.java))
         finish()
     }
 }

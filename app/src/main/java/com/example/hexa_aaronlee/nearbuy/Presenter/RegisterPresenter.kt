@@ -9,7 +9,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 
 
-public class RegisterPresenter(internal var view: RegisterView.view):RegisterView.presenter {
+public class RegisterPresenter(internal var view: RegisterView.View):RegisterView.Presenter {
 
     lateinit var mStorage : FirebaseStorage
     lateinit var mDatafaceReference: DatabaseReference
@@ -25,7 +25,7 @@ public class RegisterPresenter(internal var view: RegisterView.view):RegisterVie
 
     override fun saveProfilePicToStorage(tmpID : String,filePath : Uri) {
         mStorage = FirebaseStorage.getInstance()
-        var mReference = mStorage.reference.child("ProfilePicture").child(tmpID)
+        val mReference = mStorage.reference.child("ProfilePicture").child(tmpID)
         try {
             mReference.putFile(filePath).addOnSuccessListener {
                 taskSnapshot: UploadTask.TaskSnapshot? -> var url = taskSnapshot!!.uploadSessionUri
@@ -42,7 +42,7 @@ public class RegisterPresenter(internal var view: RegisterView.view):RegisterVie
                         if (task.isSuccessful) {
                             val downloadUri = task.result
 
-                            var uriTxt = downloadUri.toString()
+                            val uriTxt = downloadUri.toString()
 
                             view.toastUploadSuccess(uriTxt)
                             println("....Download url....>>>" + downloadUri.toString())

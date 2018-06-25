@@ -1,6 +1,6 @@
 package com.example.hexa_aaronlee.nearbuy.Presenter
 
-import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetail
+import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
 import com.example.hexa_aaronlee.nearbuy.View.ShowTotalSalesView
 import com.google.firebase.database.*
 
@@ -8,15 +8,15 @@ class ShowTotalSalesPresenter(internal var view : ShowTotalSalesView.View) : Sho
 {
     lateinit var mDataRef : DatabaseReference
 
-    override fun getSaleData(lstSaleData: ArrayList<DealsDetail>) {
+    override fun getSaleData(lstSaleData: ArrayList<DealsDetailData>) {
         mDataRef = FirebaseDatabase.getInstance().reference.child("SaleDetail")
 
 
         mDataRef.addChildEventListener(object : ChildEventListener {
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, p1: String?) {
-                val data : DealsDetail = dataSnapshot.getValue(DealsDetail::class.java)!!
-                lstSaleData.add(DealsDetail(data.itemTitle,data.itemPrice,data.itemDescription,data.itemLocation,data.mLatitude,data.mLongitude,data.offerBy,data.sales_id,data.sales_image1,data.offer_id))
+                val data : DealsDetailData = dataSnapshot.getValue(DealsDetailData::class.java)!!
+                lstSaleData.add(DealsDetailData(data.itemTitle,data.itemPrice,data.itemDescription,data.itemLocation,data.mLatitude,data.mLongitude,data.offerBy,data.sales_id,data.sales_image1,data.offer_id))
 
                 view.updateList(lstSaleData)
             }

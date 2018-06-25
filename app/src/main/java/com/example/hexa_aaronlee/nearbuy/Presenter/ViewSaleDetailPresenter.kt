@@ -1,6 +1,6 @@
 package com.example.hexa_aaronlee.nearbuy.Presenter
 
-import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetail
+import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.HistoryData
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
 import com.example.hexa_aaronlee.nearbuy.View.ViewSaleDetailView
@@ -17,7 +17,7 @@ class ViewSaleDetailPresenter(internal var view : ViewSaleDetailView.View) : Vie
         mDataRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-                val data = dataSnapshot.getValue(DealsDetail::class.java)!!
+                val data = dataSnapshot.getValue(DealsDetailData::class.java)!!
 
                 view.updateUI(data.sales_image1,data.itemTitle,data.itemPrice,data.itemDescription,data.itemLocation,data.mLatitude,data.mLongitude,data.offerBy,data.offer_id)
 

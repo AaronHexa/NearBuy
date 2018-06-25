@@ -4,7 +4,7 @@ import com.example.hexa_aaronlee.nearbuy.DatabaseData.HistoryData
 import com.example.hexa_aaronlee.nearbuy.View.ChatHistoryView
 import com.google.firebase.database.*
 
-public class ChatHistoryPresenter(internal var view : ChatHistoryView.view) : ChatHistoryView.presenter
+public class ChatHistoryPresenter(internal var view : ChatHistoryView.View) : ChatHistoryView.Presenter
 {
     lateinit var databaseR: DatabaseReference
 

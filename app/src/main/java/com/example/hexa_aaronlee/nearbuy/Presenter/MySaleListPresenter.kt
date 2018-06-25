@@ -1,6 +1,6 @@
 package com.example.hexa_aaronlee.nearbuy.Presenter
 
-import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetail
+import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
 import com.example.hexa_aaronlee.nearbuy.View.MySaleListView
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
@@ -12,18 +12,18 @@ class MySaleListPresenter(internal var view : MySaleListView.View) : MySaleListV
     lateinit var mDataRef : DatabaseReference
     lateinit var mStorageRef : StorageReference
 
-    override fun getSaledata(user_id: String, lstDetail: ArrayList<DealsDetail>) {
+    override fun getSaledata(user_id: String, lstDetail: ArrayList<DealsDetailData>) {
         mDataRef = FirebaseDatabase.getInstance().reference.child("SaleDetail")
 
 
         mDataRef.addChildEventListener(object : ChildEventListener {
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, p1: String?) {
-                val data : DealsDetail = dataSnapshot.getValue(DealsDetail::class.java)!!
+                val data : DealsDetailData = dataSnapshot.getValue(DealsDetailData::class.java)!!
 
                 if(data.offer_id == user_id)
                 {
-                    lstDetail.add(DealsDetail(data.itemTitle,data.itemPrice,data.itemDescription,data.itemLocation,data.mLatitude,data.mLongitude,data.offerBy,data.sales_id,data.sales_image1,data.offer_id))
+                    lstDetail.add(DealsDetailData(data.itemTitle,data.itemPrice,data.itemDescription,data.itemLocation,data.mLatitude,data.mLongitude,data.offerBy,data.sales_id,data.sales_image1,data.offer_id))
                     view.updateList(lstDetail)
                     view.setDeleteBtn(lstDetail)
                 }
@@ -49,7 +49,7 @@ class MySaleListPresenter(internal var view : MySaleListView.View) : MySaleListV
         })
     }
 
-    override fun deleteSaleInDatabase(mDeletionPos: ArrayList<Int>,lstDetail: ArrayList<DealsDetail>,user_id: String) {
+    override fun deleteSaleInDatabase(mDeletionPos: ArrayList<Int>, lstDetail: ArrayList<DealsDetailData>, user_id: String) {
         mDataRef = FirebaseDatabase.getInstance().reference.child("SaleDetail")
         mStorageRef = FirebaseStorage.getInstance().reference.child("SalesImage")
 
@@ -59,8 +59,8 @@ class MySaleListPresenter(internal var view : MySaleListView.View) : MySaleListV
             mStorageRef.child(lstDetail[mDeletionPos[i]].sales_id).child("image0").delete()
         }
 
-        val newLstDetail : ArrayList<DealsDetail> = ArrayList()
-        getSaledata(user_id,newLstDetail)
+        val newLstDetailData : ArrayList<DealsDetailData> = ArrayList()
+        getSaledata(user_id,newLstDetailData)
     }
 
 }

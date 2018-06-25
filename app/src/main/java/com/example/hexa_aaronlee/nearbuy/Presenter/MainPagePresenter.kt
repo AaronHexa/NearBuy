@@ -16,7 +16,7 @@ import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main_page.*
 import java.io.IOException
 
-public class MainPagePresenter(internal var view : MainPageView.view) : MainPageView.presenter {
+public class MainPagePresenter(internal var view : MainPageView.View) : MainPageView.Presenter {
 
     lateinit var databaseR : DatabaseReference
 

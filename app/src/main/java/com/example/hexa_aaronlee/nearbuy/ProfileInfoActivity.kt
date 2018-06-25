@@ -1,8 +1,5 @@
 package com.example.hexa_aaronlee.nearbuy
 
-import android.app.Dialog
-import android.app.ProgressDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
@@ -12,38 +9,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
-import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
-import com.google.firebase.database.*
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.UploadTask
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_profile_info.*
 import kotlinx.android.synthetic.main.editing_dialog.view.*
-import com.google.firebase.storage.StorageReference
-import android.support.annotation.NonNull
 import com.example.hexa_aaronlee.nearbuy.Presenter.ProfileInfoPresenter
 import com.example.hexa_aaronlee.nearbuy.View.ProfileInfoView
-import com.google.android.gms.tasks.*
-import com.google.firebase.storage.OnProgressListener
-import java.net.URI
 
 
-class ProfileInfo : AppCompatActivity(), ProfileInfoView.View {
+class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
 
-    lateinit var mStorage : FirebaseStorage
-    var filePath : Uri = Uri.EMPTY
-    lateinit var databaseR : DatabaseReference
-    lateinit var mFirebaseDatabase: FirebaseDatabase
-    lateinit var mDatafaceReference: DatabaseReference
+
+    var filePath: Uri = Uri.EMPTY
 
     var profileUri: Uri = Uri.EMPTY
-    var profileImageUrl : String = ""
-    var nameAcc : String = ""
+    var profileImageUrl: String = ""
+    var nameAcc: String = ""
     var PICK_IMAGE_REQUEST = 1
-    var selectedImage : Int = 0
+    var selectedImage: Int = 0
 
-    lateinit var view : View
-    lateinit var mPresenter : ProfileInfoPresenter
+    lateinit var view: View
+    lateinit var mPresenter: ProfileInfoPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,18 +40,17 @@ class ProfileInfo : AppCompatActivity(), ProfileInfoView.View {
 
         mPresenter.getProfileData(UserDetail.user_id)
 
-        editProfile.setOnClickListener{
+        editProfile.setOnClickListener {
             showDialog()
         }
 
-        linkToMySale.setOnClickListener{
+        linkToMySale.setOnClickListener {
             startActivity(Intent(applicationContext, MySaleList::class.java))
             finish()
         }
     }
 
-    override  fun UpdateUI(profileImageUrl : String)
-    {
+    override fun UpdateUI(profileImageUrl: String) {
         profileName.text = UserDetail.username
         profileEmail.text = "Email : " + UserDetail.email
 
@@ -116,12 +100,12 @@ class ProfileInfo : AppCompatActivity(), ProfileInfoView.View {
             mPresenter.saveProfilePic(filePath, UserDetail.user_id, UserDetail.imageUrl, selectedImage)
         }
 
-            val dialog: AlertDialog = builder.create()
-            dialog.show()
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
     }
 
 
-    override fun uploadImageError(exception :Exception) {
+    override fun uploadImageError(exception: Exception) {
         Toast.makeText(applicationContext, exception.message, Toast.LENGTH_LONG).show()
     }
 
@@ -157,7 +141,7 @@ class ProfileInfo : AppCompatActivity(), ProfileInfoView.View {
     }
 
     override fun onBackPressed() {
-        startActivity(Intent(applicationContext, MainPage::class.java))
+        startActivity(Intent(applicationContext, MainPageActivity::class.java))
         finish()
     }
 }

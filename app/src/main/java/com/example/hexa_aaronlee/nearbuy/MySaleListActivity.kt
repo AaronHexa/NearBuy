@@ -12,19 +12,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetail
+import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
 import com.example.hexa_aaronlee.nearbuy.Presenter.MySaleListPresenter
 import com.example.hexa_aaronlee.nearbuy.View.MySaleListView
-import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_my_sale_list.*
 
 class MySaleList : AppCompatActivity(), MySaleListView.View {
 
-    lateinit var lstDetail : ArrayList<DealsDetail>
+    lateinit var lstDetail: ArrayList<DealsDetailData>
 
-    lateinit var mPresenter :MySaleListPresenter
+    lateinit var mPresenter: MySaleListPresenter
 
-    lateinit var mDeletionPos : ArrayList<Int>
+    lateinit var mDeletionPos: ArrayList<Int>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,17 +32,17 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
         lstDetail = ArrayList()
         mPresenter = MySaleListPresenter(this)
 
-        mPresenter.getSaledata(UserDetail.user_id,lstDetail)
+        mPresenter.getSaledata(UserDetail.user_id, lstDetail)
     }
 
-    override fun updateList(lstDetail: ArrayList<DealsDetail>) {
+    override fun updateList(lstDetail: ArrayList<DealsDetailData>) {
         val myrv = findViewById<RecyclerView>(R.id.listMySale)
         val myAdapter = RecyclerViewAdapter(this, lstDetail)
         myrv.layoutManager = GridLayoutManager(this, 2)
         myrv.adapter = myAdapter
     }
 
-    override fun setDeleteBtn(lstDetail: ArrayList<DealsDetail>) {
+    override fun setDeleteBtn(lstDetail: ArrayList<DealsDetailData>) {
         deleteLayoutBtn.setOnClickListener {
             val mBuilder = android.support.v7.app.AlertDialog.Builder(this)
             val mView = layoutInflater.inflate(R.layout.delete_my_sale, null)
@@ -53,7 +52,7 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
 
             mDeletionPos = ArrayList()
 
-            val myAdapter = DeletionRecyclerViewAdapter(this, lstDetail,mDeletionPos)
+            val myAdapter = DeletionRecyclerViewAdapter(this, lstDetail, mDeletionPos)
             val layoutManager = LinearLayoutManager(this)
             recyclerV.layoutManager = layoutManager
             recyclerV.adapter = myAdapter
@@ -61,11 +60,11 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
             mBuilder.setView(mView)
             val mDialog = mBuilder.create()
 
-            cancelBtn.setOnClickListener{ mDialog.dismiss() }
+            cancelBtn.setOnClickListener { mDialog.dismiss() }
 
             deleteBtn.setOnClickListener {
-                mPresenter.deleteSaleInDatabase(mDeletionPos,lstDetail,UserDetail.user_id)
-                Toast.makeText(this,"Delete Success",Toast.LENGTH_SHORT).show()
+                mPresenter.deleteSaleInDatabase(mDeletionPos, lstDetail, UserDetail.user_id)
+                Toast.makeText(this, "Delete Success", Toast.LENGTH_SHORT).show()
                 mDialog.dismiss()
             }
 
@@ -74,13 +73,13 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
     }
 
     override fun onBackPressed() {
-        startActivity(Intent(applicationContext, ProfileInfo::class.java))
+        startActivity(Intent(applicationContext, ProfileInfoActivity::class.java))
         finish()
     }
 
 }
 
-class DeletionRecyclerViewAdapter(private val mContext : Context ,private val mData: List<DealsDetail>,private var mDeletionPos: ArrayList<Int>) : RecyclerView.Adapter<DeletionRecyclerViewAdapter.MyViewHolder>() {
+class DeletionRecyclerViewAdapter(private val mContext: Context, private val mData: List<DealsDetailData>, private var mDeletionPos: ArrayList<Int>) : RecyclerView.Adapter<DeletionRecyclerViewAdapter.MyViewHolder>() {
 
     var mCheckedIds = SparseBooleanArray()
 
@@ -99,17 +98,17 @@ class DeletionRecyclerViewAdapter(private val mContext : Context ,private val mD
         holder.checkBox.isChecked = mCheckedIds.get(position)
 
         holder.checkList.setOnClickListener {
-            checkCheckBox(position,!mCheckedIds.get(position),holder.checkBox)
+            checkCheckBox(position, !mCheckedIds.get(position), holder.checkBox)
         }
 
     }
 
-    fun checkCheckBox(pos:Int,value:Boolean,checkBox: CheckBox){
-        if(value){
+    fun checkCheckBox(pos: Int, value: Boolean, checkBox: CheckBox) {
+        if (value) {
             checkBox.isChecked = true
-            mCheckedIds.put(pos,true)
+            mCheckedIds.put(pos, true)
             mDeletionPos.add(pos)
-        }else{
+        } else {
             checkBox.isChecked = false
             mCheckedIds.delete(pos)
             mDeletionPos.remove(pos)
