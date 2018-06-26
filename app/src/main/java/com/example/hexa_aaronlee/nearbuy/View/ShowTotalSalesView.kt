@@ -10,6 +10,7 @@ interface ShowTotalSalesView {
 
     interface Presenter {
         fun getSaleData(lstSaleData: ArrayList<DealsDetailData>)
+        fun getSaleDataWithLimitDistance(lstSaleData: ArrayList<DealsDetailData>, mLatitude : Double, mLongitude : Double)
     }
 
 }

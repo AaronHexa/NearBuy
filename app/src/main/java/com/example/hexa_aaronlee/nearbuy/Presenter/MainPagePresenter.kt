@@ -52,7 +52,7 @@ public class MainPagePresenter(internal var view : MainPageView.View) : MainPage
 
         if(list.isNotEmpty())
         {
-            var address: Address = list[0]
+            val address: Address = list[0]
 
             view.displayLocationAddress(address.getAddressLine(0).toString())
 

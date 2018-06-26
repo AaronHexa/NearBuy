@@ -1,6 +1,7 @@
 package com.example.hexa_aaronlee.nearbuy
 
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -14,6 +15,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.example.hexa_aaronlee.nearbuy.Presenter.CreateSalePresenter
 import com.example.hexa_aaronlee.nearbuy.View.CreateSaleView
@@ -207,9 +209,6 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
     var salesId: String = ""
     var id: String = ""
 
-    var uriString: String = ""
-    lateinit var mStorage: FirebaseStorage
-    lateinit var storageM: StorageReference
     lateinit var databaseR: DatabaseReference
     lateinit var progressDialog: ProgressDialog
 
@@ -253,6 +252,10 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
         cancelCreateBtn.setOnClickListener {
             finish()
             startActivity(Intent(applicationContext, MainPageActivity::class.java))
+        }
+
+        createSaleLayout.setOnClickListener {
+            hideKeyboard()
         }
 
     }
@@ -315,4 +318,15 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
         finish()
         startActivity(Intent(applicationContext, MainPageActivity::class.java))
     }
+
+    fun hideKeyboard()
+    {
+        val view = this.currentFocus
+        if (view != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+    }
 }
+
+

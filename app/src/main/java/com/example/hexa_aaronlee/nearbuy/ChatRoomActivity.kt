@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.message_area.*
 import java.util.ArrayList
 import android.widget.Toast
 import android.content.DialogInterface
+import android.util.Log
 import com.example.hexa_aaronlee.nearbuy.Presenter.ChatRoomPresenter
 import com.example.hexa_aaronlee.nearbuy.View.ChatRoomView
 import com.github.chrisbanes.photoview.PhotoView
@@ -27,17 +28,13 @@ import com.github.chrisbanes.photoview.PhotoView
 class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
 
     private var selectedUser: String = ""
-    private lateinit var databaseRef: DatabaseReference
-    private lateinit var databaseRef2: DatabaseReference
 
     private lateinit var arrayMsgIDList: ArrayList<String>
     private var newMessagePage: Int = 0
 
-    lateinit var mStorage: FirebaseStorage
     var PICK_IMAGE_REQUEST = 1234
     lateinit var filePath: Uri
     var imageFileName: String = " "
-    private var uriTxt: String = " "
     lateinit var mPresenter: ChatRoomPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +57,7 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
                 .resize(700, 700)
                 .into(chatPic)
 
-        System.out.println(selectedUser)
+        Log.d("Selected User : " , selectedUser)
 
         arrayMsgIDList = ArrayList<String>()
 

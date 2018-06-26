@@ -13,7 +13,7 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_view_sale_details.*
 
 class ViewSaleDetailsActivity : AppCompatActivity(), ViewSaleDetailView.View {
-    lateinit var mDataRef: DatabaseReference
+    
     lateinit var imageUri: Uri
     var tmpSaleTitle: String = ""
     var tmpSaleUser: String = ""

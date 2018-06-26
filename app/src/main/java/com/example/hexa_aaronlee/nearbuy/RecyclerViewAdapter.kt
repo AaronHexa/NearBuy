@@ -37,7 +37,7 @@ class RecyclerViewAdapter(private val mContext: Context, private val mData: List
         holder.price.text = "MYR " + mData[position].itemPrice
         holder.offerBy.text = mData[position].offerBy
 
-        var result: FloatArray = FloatArray(10)
+        val result: FloatArray = FloatArray(10)
 
         Location.distanceBetween(UserDetail.mLatitude, UserDetail.mLongitude, mData[position].mLatitude.toDouble(), mData[position].mLongitude.toDouble(), result)
         holder.distance.text = String.format("%.2f", (result[0] / 1000)) + " km"

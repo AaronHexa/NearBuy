@@ -1,9 +1,12 @@
 package com.example.hexa_aaronlee.nearbuy
 
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.inputmethod.InputMethodManager
 
 import android.widget.Toast
 import com.example.hexa_aaronlee.nearbuy.Presenter.LoginPresenter
@@ -77,6 +80,10 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
                 .build()
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+
+        loginLayout.setOnClickListener {
+            hideKeyboard()
+        }
     }
 
     override fun loginToNext() {
@@ -116,6 +123,15 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
         }
     }
 
+    fun hideKeyboard()
+    {
+        val view = this.currentFocus
+        if (view != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+    }
+
     private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
 
         val progressDialog = ProgressDialog(this)
@@ -124,6 +140,7 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
         progressDialog.setMessage("Logging Please Wait...")
         progressDialog.show()
 
+        Log.d("firebaseAuthWithGoogle:",(acct.id!!))
         System.out.println("firebaseAuthWithGoogle:" + acct.id!!)
 
         val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
@@ -158,7 +175,7 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
             personName = acct.displayName.toString()
             personEmail = acct.email.toString()
             personPhoto = acct.photoUrl.toString()
-            System.out.println(personName + " " + user_id + " " + personEmail + " " + personPhoto + " ")
+            Log.d("Data :","$personName...$user_id...$personEmail...$personPhoto")
             updateNextPage(personEmail, password, user_id, personName, personPhoto)
         }
 
@@ -168,15 +185,15 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
 
         presenter?.saveDataProcess(email, password, user_id, name, profilePhoto)
 
-        var intent = Intent(applicationContext, MainPageActivity::class.java)
+        val intent = Intent(applicationContext, MainPageActivity::class.java)
         startActivity(intent)
         finish()
     }
 
     fun loginProcess() {
 
-        var email = emailEdit.text.toString().trim()
-        var password = passwordEdit.text.toString().trim()
+        val email = emailEdit.text.toString().trim()
+        val password = passwordEdit.text.toString().trim()
 
         val progressDialog = ProgressDialog(this)
         //displaying a progress dialog
@@ -191,7 +208,7 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
                     //if the task is successfull
                     if (task.isSuccessful) {
 
-                        var intent = Intent(applicationContext, MainPageActivity::class.java)
+                        val intent = Intent(applicationContext, MainPageActivity::class.java)
                         finish()
                         startActivity(intent)
 

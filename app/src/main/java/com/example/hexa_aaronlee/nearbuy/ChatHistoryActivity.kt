@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -74,7 +75,7 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
 
             holder.listTxt?.text = nameSource[position]
 
-            var tmpUri = Uri.parse(imageData[position])
+            val tmpUri = Uri.parse(imageData[position])
 
             Picasso.get()
                     .load(tmpUri)
@@ -113,7 +114,7 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
                     UserDetail.chatWithName = nameSource[pos]
                     UserDetail.chatWithImageUri = imageData[pos]
 
-                    System.out.println(UserDetail.chatWithID + "................." + UserDetail.chatWithName)
+                    Log.d("Get Data Chart Users : ", "${UserDetail.chatWithID}....${UserDetail.chatWithName}")
 
                     val intent = Intent(itemView.context, ChatRoomActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK

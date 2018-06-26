@@ -236,6 +236,9 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
         }
 
         mPresenter.getUserDataFromDatabase(user_id)
+
+
+        mapLayout.setOnClickListener { startActivity(Intent(applicationContext,MapsActivity::class.java)) }
     }
 
 

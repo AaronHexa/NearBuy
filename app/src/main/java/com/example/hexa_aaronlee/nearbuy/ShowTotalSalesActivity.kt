@@ -8,6 +8,7 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import com.example.hexa_aaronlee.nearbuy.Presenter.ShowTotalSalesPresenter
 import com.example.hexa_aaronlee.nearbuy.View.ShowTotalSalesView
+import kotlinx.android.synthetic.main.activity_show_total_sales.*
 
 
 class ShowTotalSalesActivity : AppCompatActivity(), ShowTotalSalesView.View {
@@ -25,6 +26,23 @@ class ShowTotalSalesActivity : AppCompatActivity(), ShowTotalSalesView.View {
         mPresenter = ShowTotalSalesPresenter(this)
 
         mPresenter.getSaleData(lstSaleData)
+
+        checkBoxLayout.setOnClickListener {
+            if (!checkBoxLimitation.isChecked)
+            {
+                lstSaleData = ArrayList()
+                checkBoxLimitation.isChecked = true
+                mPresenter.getSaleDataWithLimitDistance(lstSaleData,UserDetail.mLatitude,UserDetail.mLongitude)
+            }
+            else if (checkBoxLimitation.isChecked)
+            {
+                lstSaleData = ArrayList()
+                checkBoxLimitation.isChecked = false
+                mPresenter.getSaleData(lstSaleData)
+            }
+
+
+        }
     }
 
     override fun updateList(lstSaleData: ArrayList<DealsDetailData>) {

@@ -22,7 +22,6 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
     var filePath: Uri = Uri.EMPTY
 
     var profileUri: Uri = Uri.EMPTY
-    var profileImageUrl: String = ""
     var nameAcc: String = ""
     var PICK_IMAGE_REQUEST = 1
     var selectedImage: Int = 0

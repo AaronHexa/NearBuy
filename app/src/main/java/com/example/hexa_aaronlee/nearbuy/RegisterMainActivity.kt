@@ -1,11 +1,13 @@
 package com.example.hexa_aaronlee.nearbuy
 
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.example.hexa_aaronlee.nearbuy.Presenter.RegisterPresenter
 import com.example.hexa_aaronlee.nearbuy.View.RegisterView
@@ -47,6 +49,19 @@ class RegisterMainActivity : AppCompatActivity(), RegisterView.View {
 
         registerBtn.setOnClickListener {
             registerProcess()
+        }
+
+        registerLayout.setOnClickListener {
+            hideKeyboard()
+        }
+    }
+
+    fun hideKeyboard()
+    {
+        val view = this.currentFocus
+        if (view != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
     }
 

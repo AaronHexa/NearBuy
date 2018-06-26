@@ -4,67 +4,81 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginMainActivity"
-    android:orientation="vertical">
+    tools:context=".LoginMainActivity">
 
-    <TextView
-        android:id="@+id/titleApp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="60dp"
-        android:text="NearBuy"
-        android:textSize="35sp"
-        android:textStyle="bold"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/emailEdit"
-        android:layout_width="264dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="30dp"
-        android:ems="10"
-        android:hint="Email"
-        android:inputType="textEmailAddress" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/loginLayout"
+            android:clickable="true"
+            android:focusable="true">
 
-    <EditText
-        android:id="@+id/passwordEdit"
-        android:layout_width="264dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:ems="10"
-        android:hint="Password"
-        android:inputType="textPassword" />
+            <TextView
+                android:id="@+id/titleApp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="60dp"
+                android:text="NearBuy"
+                android:textSize="35sp"
+                android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/loginBtn"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="15dp"
-        android:text="Login"
-        android:background="@drawable/round_corner_box"/>
+            <EditText
+                android:id="@+id/emailEdit"
+                android:layout_width="264dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
+                android:ems="10"
+                android:hint="Email"
+                android:inputType="textEmailAddress" />
 
-    <ImageView
-        android:id="@+id/googleBtn"
-        android:layout_width="260dp"
-        android:layout_height="70dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        app:srcCompat="@drawable/google_login_btn" />
+            <EditText
+                android:id="@+id/passwordEdit"
+                android:layout_width="264dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:ems="10"
+                android:hint="Password"
+                android:inputType="textPassword" />
 
-    <TextView
-        android:id="@+id/registerDirect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="#ffffff"
-        android:background="#F08080"
-        android:padding="6dp"
-        android:text="Please Register Account. Click Here!" />
+            <Button
+                android:id="@+id/loginBtn"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/round_corner_box"
+                android:text="Login" />
+
+            <ImageView
+                android:id="@+id/googleBtn"
+                android:layout_width="260dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                app:srcCompat="@drawable/google_login_btn" />
+
+            <TextView
+                android:id="@+id/registerDirect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:background="#F08080"
+                android:padding="6dp"
+                android:text="Please Register Account. Click Here!"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

@@ -33,6 +33,10 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
         mPresenter = MySaleListPresenter(this)
 
         mPresenter.getSaledata(UserDetail.user_id, lstDetail)
+
+        floatingCreateBtn.setOnClickListener {
+            startActivity(Intent(applicationContext,CreateSaleActivity::class.java))
+        }
     }
 
     override fun updateList(lstDetail: ArrayList<DealsDetailData>) {
@@ -43,7 +47,7 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
     }
 
     override fun setDeleteBtn(lstDetail: ArrayList<DealsDetailData>) {
-        deleteLayoutBtn.setOnClickListener {
+        floatingDeleteBtn.setOnClickListener {
             val mBuilder = android.support.v7.app.AlertDialog.Builder(this)
             val mView = layoutInflater.inflate(R.layout.delete_my_sale, null)
             val cancelBtn = mView.findViewById<Button>(R.id.cancelDeleteSaleBtn)
