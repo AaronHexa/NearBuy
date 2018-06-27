@@ -2,6 +2,7 @@ package com.example.hexa_aaronlee.nearbuy.Presenter
 
 import android.content.Context
 import android.content.DialogInterface
+import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
 import android.support.v7.app.AlertDialog
@@ -16,7 +17,7 @@ import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
 import com.github.chrisbanes.photoview.PhotoView
-
+import com.google.firebase.database.collection.LLRBNode
 
 
 public class ChatRoomPresenter(internal var view : ChatRoomView.View) : ChatRoomView.Presenter {
@@ -168,17 +169,20 @@ public class ChatRoomPresenter(internal var view : ChatRoomView.View) : ChatRoom
             textView.typeface = Typeface.DEFAULT_BOLD
             textView.maxLines = 100
 
+
             if (sender == user_id) {
                 lp2.gravity = Gravity.END
                 lp2.topMargin = 13
                 textView.gravity = Gravity.CENTER or Gravity.START
                 textView.setBackgroundResource(R.drawable.speech_bubble2)
+                textView.setTextColor(Color.parseColor("#696969"))
 
             } else {
                 lp2.gravity = Gravity.START
                 lp2.topMargin = 18
                 textView.gravity = Gravity.CENTER or Gravity.START
                 textView.setBackgroundResource(R.drawable.speech_bubble)
+                textView.setTextColor(Color.parseColor("#D3D3D3"))
             }
 
             textView.layoutParams = lp2
