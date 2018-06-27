@@ -34,7 +34,7 @@ import java.io.IOException
 
 class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener, GoogleMap.OnInfoWindowClickListener {
 
     private lateinit var mMap: GoogleMap
     private lateinit var client: GoogleApiClient
@@ -52,6 +52,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
     val REQUEST_LOCATION_CODE = 99
     var result: FloatArray = FloatArray(10)
     var arrayMarker: ArrayList<Marker> = ArrayList()
+    lateinit var saleArray : ArrayList<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,6 +84,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             bulidGoogleApiClient()
             mMap.isMyLocationEnabled = true
+            mMap.setOnInfoWindowClickListener(this)
         }
 
         searchTxt.setOnEditorActionListener() { v, actionId, event ->
@@ -109,6 +111,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
         scan_ic.setOnClickListener {
             goGetDistanceData()
         }
+
 
         mGoogleApiClient = GoogleApiClient.Builder(this)
                 .addApi(Places.GEO_DATA_API)
@@ -155,8 +158,8 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
     override fun onLocationChanged(location: Location) {
         locationMain = location
 
-        var latitude = location.latitude
-        var longitude = location.longitude
+        val latitude = location.latitude
+        val longitude = location.longitude
 
         UserDetail.mLatitude = latitude
         UserDetail.mLongitude = longitude
@@ -217,7 +220,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
         }
 
         if (list.isNotEmpty()) {
-            var address: Address = list[0]
+            val address: Address = list[0]
 
             Log.e("MapsActivity", "geolocate : Found a location : " + address.toString())
 
@@ -261,6 +264,8 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
     fun goGetDistanceData() {
         mDataRef = FirebaseDatabase.getInstance().reference.child("SaleDetail")
 
+        saleArray = ArrayList()
+
         mDataRef.addChildEventListener(object : ChildEventListener {
             override fun onCancelled(p0: DatabaseError) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -285,12 +290,14 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
 
                         System.out.println("............location .......${map.mLongitude}........${map.mLatitude}....${result[0]} ")
 
-                        var latLng = LatLng(map.mLatitude.toDouble(), map.mLongitude.toDouble())
+                        val latLng = LatLng(map.mLatitude.toDouble(), map.mLongitude.toDouble())
 
                         val options: MarkerOptions = MarkerOptions()
                                 .position(latLng)
                                 .title("<${map.itemTitle}> ${map.itemLocation}")
                         arrayMarker.add(mMap.addMarker(options))
+
+                        saleArray.add(map.sales_id)
 
                         val cameraPosition = CameraPosition.Builder()
                                 .target(latLng)
@@ -300,7 +307,6 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
                                 .build()
                         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
 
-
                     }
                 }
 
@@ -309,6 +315,17 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
             override fun onChildChanged(dataSnapshot: DataSnapshot, p1: String?) {
             }
         })
+    }
+
+    override fun onInfoWindowClick(p0: Marker?) {
+        for (i in arrayMarker.indices)
+        {
+            if (p0 == arrayMarker[i]){
+                Log.i("Location : ",saleArray[i])
+                UserDetail.saleSelectedId = saleArray[i]
+                startActivity(Intent(applicationContext,ViewSaleDetailsActivity::class.java))
+            }
+        }
     }
 
     fun HidSoftKeyboard() {

@@ -127,8 +127,8 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
     }
 
     override fun onBackPressed() {
-        finish()
         startActivity(Intent(applicationContext, MainPageActivity::class.java))
+        finish()
     }
 }
 
