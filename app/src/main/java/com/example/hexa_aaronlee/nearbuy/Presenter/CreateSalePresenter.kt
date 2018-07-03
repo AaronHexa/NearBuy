@@ -6,6 +6,7 @@ import android.location.Geocoder
 import android.net.Uri
 import android.util.Log
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
+import com.example.hexa_aaronlee.nearbuy.UserDetail
 import com.example.hexa_aaronlee.nearbuy.View.CreateSaleView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -30,7 +31,7 @@ public class CreateSalePresenter(internal var view : CreateSaleView.View) : Crea
         val options : MarkerOptions = MarkerOptions()
                 .position(latLng)
                 .title(title)
-         var currentMarker = mMap.addMarker(options)
+         val currentMarker = mMap.addMarker(options)
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
         val cameraPosition = CameraPosition.Builder()
@@ -76,7 +77,7 @@ public class CreateSalePresenter(internal var view : CreateSaleView.View) : Crea
 
         if(list.isNotEmpty())
         {
-            var address: Address = list[0]
+            val address: Address = list[0]
 
 
             view.getLatLngSetCamera(address.latitude,address.longitude,address.getAddressLine(0).toString())
@@ -92,7 +93,7 @@ public class CreateSalePresenter(internal var view : CreateSaleView.View) : Crea
 
         val data = DealsDetailData(tmpTitle, tmpPrice, tmpDescription, tmpLocation,mLatitude ,mLongitude, username,salesId,imageData1,user_id)
 
-        databaseR.child(salesId).setValue(data)
+        databaseR.child(user_id).child(salesId).setValue(data)
     }
 
     override fun checkLocationTxt(context: Context , mLatitude: Double, mLongitude: Double,imageData1 : String,locationTxt : String,tmpLocation :String) {
@@ -128,8 +129,6 @@ public class CreateSalePresenter(internal var view : CreateSaleView.View) : Crea
 
     override fun savePicToStorage(context: Context, filePath: Uri, salesId: String) {
 
-        System.out.println(">>>>>..................$filePath..............<<<<<")
-
         mStorage = FirebaseStorage.getInstance().reference.child("SalesImage").child(salesId).child("image0")
 
         mStorage.putFile(filePath)
@@ -152,7 +151,7 @@ public class CreateSalePresenter(internal var view : CreateSaleView.View) : Crea
                     if (task.isSuccessful) {
                         val downloadUri = task.result
 
-                        println("....Download url....>>>" + downloadUri.toString())
+                        Log.i("Download url :", downloadUri.toString())
 
                         view.imageUploadSuccess(downloadUri.toString())
 

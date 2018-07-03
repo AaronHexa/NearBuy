@@ -45,7 +45,7 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
 
         linkToMySale.setOnClickListener {
             startActivity(Intent(applicationContext, MySaleList::class.java))
-            finish()
+            //finish()
         }
     }
 
@@ -140,7 +140,7 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
     }
 
     override fun onBackPressed() {
-        startActivity(Intent(applicationContext, MainPageActivity::class.java))
+        //startActivity(Intent(applicationContext, MainPageActivity::class.java))
         finish()
     }
 }

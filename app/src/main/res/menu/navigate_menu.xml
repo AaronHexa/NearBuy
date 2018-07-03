@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/historyChat_Nav"
+        android:icon="@drawable/ic_history_black_24dp"
+        android:title="Chat History"/>
+
+    <item android:id="@+id/createSale_Nav"
+        android:icon="@drawable/ic_create_black_24dp"
+        android:title="Create Sale"/>
+
+    <item android:id="@+id/showAllSale_Nav"
+        android:icon="@drawable/ic_shopping_cart_black_24dp"
+        android:title="All Sales"/>
+
+    <item android:id="@+id/profile_Nav"
+        android:icon="@drawable/ic_people_black_24dp"
+        android:title="Profile"/>
+
+    <item android:id="@+id/map_Nav"
+        android:icon="@drawable/ic_map_black_24dp"
+        android:title="Map"/>
+
+    <item android:id="@+id/logout_Nav"
+        android:icon="@drawable/ic_power_settings_new_blue_24dp"
+        android:title="Logout"/>
+
+
+</menu>

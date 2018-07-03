@@ -1,5 +1,6 @@
 package com.example.hexa_aaronlee.nearbuy.Presenter
 
+import android.util.Log
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.HistoryData
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
@@ -8,11 +9,11 @@ import com.google.firebase.database.*
 
 class ViewSaleDetailPresenter(internal var view : ViewSaleDetailView.View) : ViewSaleDetailView.Presenter
 {
-
     lateinit var mDataRef : DatabaseReference
+    lateinit var mDataRef2 : DatabaseReference
 
-    override fun getSalesDetail(saleSelectedId: String) {
-        mDataRef = FirebaseDatabase.getInstance().reference.child("SaleDetail").child(saleSelectedId)
+    override fun getSalesDetail(saleSelectedId: String,saleOfferId : String) {
+        mDataRef = FirebaseDatabase.getInstance().reference.child("SaleDetail").child(saleOfferId).child(saleSelectedId)
 
         mDataRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -37,7 +38,7 @@ class ViewSaleDetailPresenter(internal var view : ViewSaleDetailView.View) : Vie
 
                 val data = dataSnapshot.getValue(UserData::class.java)!!
 
-                view.updateInfo(data.profilePhoto,data.name)
+                view.updateInfo(data.profilePhoto,data.name,data.user_id)
 
             }
 
@@ -46,14 +47,47 @@ class ViewSaleDetailPresenter(internal var view : ViewSaleDetailView.View) : Vie
             }
         })
     }
-    override fun saveUserToHistoryChat(profilePhoto: String,user_id : String, checkDealer: String, tmpSaleUser : String , tmpSaleTitle :String) {
+    override fun saveUserToHistoryChat(profilePhoto: String,user_id : String, checkDealer: String, username : String , tmpSaleTitle :String, saleSelectedId: String,dealerName : String,dealerPic : String,currentDate:String,currentTime:String) {
+
         mDataRef = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(user_id)
 
-        var tmpKey = mDataRef.push().key.toString()
+        mDataRef2 = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(checkDealer)
 
-        var data = HistoryData(checkDealer,tmpKey,tmpSaleUser,profilePhoto,tmpSaleTitle)
 
-        mDataRef.child(tmpKey).setValue(data)
+
+        val data = HistoryData(checkDealer,saleSelectedId,dealerName,dealerPic,tmpSaleTitle,currentDate,currentTime) // save for user
+
+        val data2 = HistoryData(user_id,saleSelectedId,username,profilePhoto,tmpSaleTitle,currentDate,currentTime) // save for dealer
+
+        mDataRef.child(saleSelectedId).setValue(data)
+        mDataRef2.child(saleSelectedId).setValue(data2)
     }
+
+
+    override fun checkHistorySaleData(saleSelectedId: String,user_id: String) {
+        mDataRef = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(user_id).child(saleSelectedId)
+
+        mDataRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                if (dataSnapshot.exists())
+                {
+                    Log.i("Got Data : ", " ..in TotalHistory.... Yes")
+                    view.saveHistoryData(false)
+                }
+                else if (!dataSnapshot.exists())
+                {
+                    Log.i("Got Data : ", " ..in TotalHistory.... No")
+                    view.saveHistoryData(true)
+                }
+
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("The read failed: " + databaseError.code)
+            }
+        })
+    }
+
 
 }

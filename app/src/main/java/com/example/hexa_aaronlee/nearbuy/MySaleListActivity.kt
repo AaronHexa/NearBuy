@@ -32,7 +32,7 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
         lstDetail = ArrayList()
         mPresenter = MySaleListPresenter(this)
 
-        mPresenter.getSaledata(UserDetail.user_id, lstDetail)
+        mPresenter.checkSaleData(UserDetail.user_id, lstDetail)
 
         floatingCreateBtn.setOnClickListener {
             startActivity(Intent(applicationContext,CreateSaleActivity::class.java))
@@ -40,10 +40,23 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
     }
 
     override fun updateList(lstDetail: ArrayList<DealsDetailData>) {
-        val myrv = findViewById<RecyclerView>(R.id.listMySale)
-        val myAdapter = RecyclerViewAdapter(this, lstDetail)
-        myrv.layoutManager = GridLayoutManager(this, 2)
-        myrv.adapter = myAdapter
+        if(lstDetail.isEmpty())
+        {
+            val tmpDataArray = ArrayList<String>()
+            tmpDataArray.add("No More Sale!!")
+            val myrv = findViewById<RecyclerView>(R.id.listMySale)
+            val myAdapter = EmptyListAdapter(this, tmpDataArray)
+            myrv.layoutManager = LinearLayoutManager(this)
+            myrv.adapter = myAdapter
+        }
+        else
+        {
+            val myrv = findViewById<RecyclerView>(R.id.listMySale)
+            val myAdapter = RecyclerViewAdapter(this, lstDetail)
+            myrv.layoutManager = GridLayoutManager(this, 2)
+            myrv.adapter = myAdapter
+        }
+
     }
 
     override fun setDeleteBtn(lstDetail: ArrayList<DealsDetailData>) {
@@ -77,60 +90,61 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
     }
 
     override fun onBackPressed() {
-        startActivity(Intent(applicationContext, ProfileInfoActivity::class.java))
+        //startActivity(Intent(applicationContext, ProfileInfoActivity::class.java))
         finish()
     }
 
-}
+    inner class DeletionRecyclerViewAdapter(private val mContext: Context, private val mData: List<DealsDetailData>, private var mDeletionPos: ArrayList<Int>) : RecyclerView.Adapter<DeletionRecyclerViewAdapter.MyViewHolder>() {
 
-class DeletionRecyclerViewAdapter(private val mContext: Context, private val mData: List<DealsDetailData>, private var mDeletionPos: ArrayList<Int>) : RecyclerView.Adapter<DeletionRecyclerViewAdapter.MyViewHolder>() {
+        var mCheckedIds = SparseBooleanArray()
 
-    var mCheckedIds = SparseBooleanArray()
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+            val view: View
+            val mInflater = LayoutInflater.from(mContext)
+            view = mInflater.inflate(R.layout.delete_sale_list_item, parent, false)
+            return MyViewHolder(view)
+        }
 
-        val view: View
-        val mInflater = LayoutInflater.from(mContext)
-        view = mInflater.inflate(R.layout.delete_sale_list_item, parent, false)
-        return MyViewHolder(view)
-    }
+        override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+            holder.titleDeletion.text = mData[position].itemTitle
 
-        holder.titleDeletion.text = mData[position].itemTitle
+            holder.checkBox.isChecked = mCheckedIds.get(position)
 
-        holder.checkBox.isChecked = mCheckedIds.get(position)
+            holder.checkList.setOnClickListener {
+                checkCheckBox(position, !mCheckedIds.get(position), holder.checkBox)
+            }
 
-        holder.checkList.setOnClickListener {
-            checkCheckBox(position, !mCheckedIds.get(position), holder.checkBox)
+        }
+
+        fun checkCheckBox(pos: Int, value: Boolean, checkBox: CheckBox) {
+            if (value) {
+                checkBox.isChecked = true
+                mCheckedIds.put(pos, true)
+                mDeletionPos.add(pos)
+            } else {
+                checkBox.isChecked = false
+                mCheckedIds.delete(pos)
+                mDeletionPos.remove(pos)
+            }
+        }
+
+        override fun getItemCount(): Int {
+            return mData.size
+        }
+
+        inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+
+            var titleDeletion: TextView = itemView.findViewById(R.id.deleteListTxt)
+            val checkList = itemView.findViewById<LinearLayout>(R.id.checkListItem)
+            var checkBox = itemView.findViewById<CheckBox>(R.id.checkDeleteItem)
+
+
         }
 
     }
 
-    fun checkCheckBox(pos: Int, value: Boolean, checkBox: CheckBox) {
-        if (value) {
-            checkBox.isChecked = true
-            mCheckedIds.put(pos, true)
-            mDeletionPos.add(pos)
-        } else {
-            checkBox.isChecked = false
-            mCheckedIds.delete(pos)
-            mDeletionPos.remove(pos)
-        }
-    }
-
-    override fun getItemCount(): Int {
-        return mData.size
-    }
-
-    class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-
-        var titleDeletion: TextView = itemView.findViewById(R.id.deleteListTxt)
-        val checkList = itemView.findViewById<LinearLayout>(R.id.checkListItem)
-        var checkBox = itemView.findViewById<CheckBox>(R.id.checkDeleteItem)
-
-
-    }
-
 }
+

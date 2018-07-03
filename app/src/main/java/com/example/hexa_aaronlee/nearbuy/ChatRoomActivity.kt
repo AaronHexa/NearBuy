@@ -2,6 +2,7 @@ package com.example.hexa_aaronlee.nearbuy
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
@@ -36,6 +37,7 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
     lateinit var filePath: Uri
     var imageFileName: String = " "
     lateinit var mPresenter: ChatRoomPresenter
+    lateinit var mProgressDialog : ProgressDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,15 +59,16 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
                 .resize(700, 700)
                 .into(chatPic)
 
-        Log.d("Selected User : " , selectedUser)
+        Log.d("Selected User : " , UserDetail.saleSelectedId)
 
         arrayMsgIDList = ArrayList<String>()
+        mProgressDialog = ProgressDialog(this)
 
-        mPresenter.retrieveMsgData(UserDetail.user_id, selectedUser, arrayMsgIDList)
+        mPresenter.retrieveMsgData(UserDetail.user_id, selectedUser, arrayMsgIDList,UserDetail.saleSelectedId)
 
         sendButton.setOnClickListener {
             val messageText = messageArea.text.toString()
-            mPresenter.saveChatMsg(messageText, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser)
+            mPresenter.saveChatMsg(messageText, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser,UserDetail.saleSelectedId)
         }
 
         backFromChat.setOnClickListener {
@@ -131,7 +134,7 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
 
         val intent = Intent()
         intent.type = "image/*"
-        intent.action = Intent.ACTION_GET_CONTENT
+        intent.action = Intent.ACTION_OPEN_DOCUMENT
         startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_REQUEST)
     }
 
@@ -142,7 +145,7 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
             if (requestCode == PICK_IMAGE_REQUEST) {
                 filePath = data!!.data
 
-                confirmSharePic()
+                confirmSharePic(filePath)
             }
             super.onActivityResult(requestCode, resultCode, data)
         }
@@ -160,13 +163,14 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
         mDialog.show()
     }
 
-    fun confirmSharePic() {
+    fun confirmSharePic(filePath:Uri) {
         val builder = AlertDialog.Builder(this)
         val inflates = this.layoutInflater
         val customDialog = inflates.inflate(R.layout.share_pic_box, null)
         builder.setView(customDialog)
 
-        val tmpImageView: ImageView = customDialog.findViewById(R.id.sharePicConfirm)
+        val tmpImageView = customDialog.findViewById<ImageView>(R.id.sharePicConfirm)
+        Log.i("FilePath : ", filePath.toString())
 
         Picasso.get()
                 .load(filePath)
@@ -176,11 +180,14 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
 
 
         builder.setTitle("Confirmation")
-        builder.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, whichButton ->
-            mPresenter.comfrimationPicSend(newMessagePage, UserDetail.user_id, selectedUser, filePath, imageFileName, dialog)
+        builder.setPositiveButton("Yes", { dialog, whichButton ->
+            mProgressDialog.setMessage("Uploading Please Wait...")
+            mProgressDialog.show()
+
+            mPresenter.comfrimationPicSend(newMessagePage, UserDetail.user_id, selectedUser, filePath, imageFileName, dialog,UserDetail.saleSelectedId)
         })
 
-        builder.setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, whichButton ->
+        builder.setNegativeButton("Cancel", { dialog, whichButton ->
             dialog.dismiss()
         })
 
@@ -189,15 +196,18 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
     }
 
     override fun saveImageData(uriTxt: String) {
-        mPresenter.savePicMsg(uriTxt, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser)
+
+        mPresenter.savePicMsg(uriTxt, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser,UserDetail.saleSelectedId)
     }
 
     override fun uploadImageFailed() {
         Toast.makeText(applicationContext, "File Fail To Upload  ", Toast.LENGTH_LONG).show()
+        mProgressDialog.dismiss()
     }
 
     override fun uploadImageSuccess() {
         Toast.makeText(this, "Successfully Uploaded :)", Toast.LENGTH_LONG).show()
+        mProgressDialog.dismiss()
     }
 
 
@@ -207,7 +217,7 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
     }
 
     override fun onBackPressed() {
-        startActivity(Intent(applicationContext, ChatHistoryActivity::class.java))
+        //startActivity(Intent(applicationContext, ChatHistoryActivity::class.java))
         finish()
     }
 }

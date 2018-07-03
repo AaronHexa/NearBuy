@@ -1,5 +1,6 @@
 package com.example.hexa_aaronlee.nearbuy
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -28,8 +29,10 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
     lateinit var nameData: ArrayList<String>
     lateinit var imageData: ArrayList<String>
     lateinit var titleData: ArrayList<String>
+    lateinit var saleData: ArrayList<String>
+    lateinit var chatDate: ArrayList<String>
+    lateinit var chatTime: ArrayList<String>
 
-    lateinit var databaseR: DatabaseReference
     lateinit var mPresenter: ChatHistoryPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,15 +45,30 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
         imageData = ArrayList()
         nameData = ArrayList()
         titleData = ArrayList()
+        saleData = ArrayList()
+        chatDate = ArrayList()
+        chatTime = ArrayList()
 
-        mPresenter.getChatHistoryDataFromDatabase(historyData, imageData, nameData, titleData, UserDetail.user_id)
-
+        mPresenter.checkChatHistiryData(UserDetail.user_id)
     }
 
-    override fun setRecyclerViewAdapter(historyData: ArrayList<String>, imageData: ArrayList<String>, nameData: ArrayList<String>, titleData: ArrayList<String>) {
-        val customAdapter = CustomListView(applicationContext, nameData, historyData, imageData, titleData)
+    override fun setRecyclerViewAdapter(historyData: ArrayList<String>, imageData: ArrayList<String>, nameData: ArrayList<String>, titleData: ArrayList<String>, saleData: ArrayList<String>, chatDate: ArrayList<String>, chatTime: ArrayList<String>) {
+        val customAdapter = CustomListView(applicationContext, nameData, historyData, imageData, titleData, saleData, chatDate, chatTime)
         listView.layoutManager = LinearLayoutManager(applicationContext)
         listView.adapter = customAdapter
+    }
+
+    override fun setEmptyViewAdapter(checkDataExits: Boolean) {
+        if (!checkDataExits) {
+            val arrayData = ArrayList<String>()
+            arrayData.add("No Chat History!")
+            val emptyAdapter = EmptyListAdapter(applicationContext, arrayData)
+            listView.layoutManager = LinearLayoutManager(applicationContext)
+            listView.setHasFixedSize(true)
+            listView.adapter = emptyAdapter
+        } else {
+            mPresenter.getChatHistoryDataFromDatabase(historyData, imageData, nameData, titleData, UserDetail.user_id, saleData, chatDate, chatTime)
+        }
     }
 
 
@@ -58,7 +76,10 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
                          private val nameSource: ArrayList<String>,
                          private val IdSource: ArrayList<String>,
                          private val imageData: ArrayList<String>,
-                         private val titleData: ArrayList<String>) : RecyclerView.Adapter<CustomListView.CustomViewHolder>() {
+                         private val titleData: ArrayList<String>,
+                         private val saleData: ArrayList<String>,
+                         private val chatDate: ArrayList<String>,
+                         private val chatTime: ArrayList<String>) : RecyclerView.Adapter<CustomListView.CustomViewHolder>() {
 
         private var mContext: Context = context
 
@@ -85,7 +106,7 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
 
             holder.listTitle?.text = titleData[position]
 
-            holder.onClickMethod(position, nameSource, IdSource, imageData)
+            holder.onClickMethod(position, nameSource, IdSource, imageData, saleData)
 
         }
 
@@ -106,19 +127,24 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
 
             fun onClickMethod(pos: Int, nameSource: ArrayList<String>,
                               IdSource: ArrayList<String>,
-                              imageData: ArrayList<String>) {
+                              imageData: ArrayList<String>,
+                              saleData: ArrayList<String>) {
                 itemView.setOnClickListener {
                     Toast.makeText(itemView.context, "Position : $position", Toast.LENGTH_SHORT).show()
 
                     UserDetail.chatWithID = IdSource[pos]
                     UserDetail.chatWithName = nameSource[pos]
                     UserDetail.chatWithImageUri = imageData[pos]
+                    UserDetail.saleSelectedId = saleData[pos]
 
-                    Log.d("Get Data Chart Users : ", "${UserDetail.chatWithID}....${UserDetail.chatWithName}")
+                    Log.i("Get Data Chart Users : ", "${UserDetail.chatWithID}....${UserDetail.chatWithName}")
 
                     val intent = Intent(itemView.context, ChatRoomActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                     itemView.context.startActivity(intent)
+
+                    //finish the activity after clicked the list view item
+                    //(itemView.context as Activity).finish()
                 }
             }
 
@@ -127,7 +153,7 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
     }
 
     override fun onBackPressed() {
-        startActivity(Intent(applicationContext, MainPageActivity::class.java))
+        //startActivity(Intent(applicationContext, MainPageActivity::class.java))
         finish()
     }
 }

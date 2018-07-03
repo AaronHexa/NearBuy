@@ -12,7 +12,13 @@ interface ProfileInfoView {
 
     interface Presenter {
         fun getProfileData(user_id: String)
-        fun saveProfilePic(tmpfilePath: Uri, user_id: String, oldImageUri: String, selectedImage: Int)
-        fun saveInDatabse(uriTxt: String, tmpName: String, user_id: String)
+        fun saveProfilePic(tmpfilePath: Uri,
+                           user_id: String,
+                           oldImageUri: String,
+                           selectedImage: Int)
+
+        fun saveInDatabse(uriTxt: String,
+                          tmpName: String,
+                          user_id: String)
     }
 }

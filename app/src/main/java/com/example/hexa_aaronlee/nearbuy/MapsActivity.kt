@@ -16,6 +16,7 @@ import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
+import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationListener
@@ -52,11 +53,17 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
     val REQUEST_LOCATION_CODE = 99
     var result: FloatArray = FloatArray(10)
     var arrayMarker: ArrayList<Marker> = ArrayList()
-    lateinit var saleArray : ArrayList<String>
+    lateinit var saleArray: ArrayList<String>
+    lateinit var userIdArray: ArrayList<String>
+    lateinit var offerIdArray: ArrayList<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+
+        saleArray = ArrayList()
+        userIdArray = ArrayList()
+        offerIdArray = ArrayList()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission()
@@ -109,7 +116,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
         }
 
         scan_ic.setOnClickListener {
-            goGetDistanceData()
+            getAllUserId()
         }
 
 
@@ -193,7 +200,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
     }
 
     fun checkLocationPermission(): Boolean {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        return if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
                 ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_CODE);
@@ -201,10 +208,10 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
             } else {
                 ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_CODE);
             }
-            return false
+            false
 
         } else
-            return true
+            true
     }
 
     fun geoLocate() {
@@ -225,6 +232,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
             Log.e("MapsActivity", "geolocate : Found a location : " + address.toString())
 
             moveCamera(LatLng(address.latitude, address.longitude), address.getAddressLine(0))
+
 
             /*
             val address = addresses.get(0).getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
@@ -252,17 +260,51 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
         val cameraPosition = CameraPosition.Builder()
                 .target(latLng)
-                .zoom(16f)                   // Sets the zoom
+                .zoom(15f)                   // Sets the zoom
                 .bearing(90f)                // Sets the orientation of the camera to east
                 .tilt(30f)                   // Sets the tilt of the camera to 30 degrees
                 .build()
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
 
+        getAllUserId()
         HidSoftKeyboard()
     }
 
-    fun goGetDistanceData() {
-        mDataRef = FirebaseDatabase.getInstance().reference.child("SaleDetail")
+    fun getAllUserId(){
+
+        userIdArray = ArrayList()
+
+        mDataRef = FirebaseDatabase.getInstance().reference.child("User")
+
+        mDataRef.addChildEventListener(object : ChildEventListener {
+
+            override fun onChildAdded(dataSnapshot: DataSnapshot, p1: String?) {
+                val data: UserData = dataSnapshot.getValue(UserData::class.java)!!
+                userIdArray.add(data.user_id)
+                Log.i("Count : ",userIdArray.count().toString())
+                goGetDistanceData(userIdArray,(userIdArray.count()-1))
+            }
+
+            override fun onChildChanged(dataSnapshot: DataSnapshot, p1: String?) {
+
+            }
+
+            override fun onChildRemoved(dataSnapshot: DataSnapshot) {
+
+            }
+
+            override fun onChildMoved(dataSnapshot: DataSnapshot, p1: String?) {
+
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("The read failed: " + databaseError.code)
+            }
+        })
+    }
+
+    fun goGetDistanceData(userIdArray: ArrayList<String>,countNum : Int) {
+        mDataRef = FirebaseDatabase.getInstance().reference.child("SaleDetail").child(userIdArray[countNum])
 
         saleArray = ArrayList()
 
@@ -282,30 +324,24 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
             override fun onChildAdded(dataSnapshot: DataSnapshot, p1: String?) {
                 val map = dataSnapshot.getValue(DealsDetailData::class.java)
                 if (map != null) {
+                    if (map.offer_id == userIdArray[countNum]) {
+                        Location.distanceBetween(UserDetail.mLatitude, UserDetail.mLongitude, map.mLatitude.toDouble(), map.mLongitude.toDouble(), result)
+                        val tmpDistance = String.format("%.2f", (result[0] / 1000))
 
-                    Location.distanceBetween(UserDetail.mLatitude, UserDetail.mLongitude, map.mLatitude.toDouble(), map.mLongitude.toDouble(), result)
-                    var tmpDistance = String.format("%.2f", (result[0] / 1000))
+                        if (result[0] <= 3000) {
 
-                    if (result[0] <= 3000) {
+                            Log.i("Location ... : ","${map.mLongitude}........${map.mLatitude}....${result[0]} ")
 
-                        System.out.println("............location .......${map.mLongitude}........${map.mLatitude}....${result[0]} ")
+                            val latLng = LatLng(map.mLatitude.toDouble(), map.mLongitude.toDouble())
 
-                        val latLng = LatLng(map.mLatitude.toDouble(), map.mLongitude.toDouble())
+                            val options: MarkerOptions = MarkerOptions()
+                                    .position(latLng)
+                                    .title("<${map.itemTitle}> ${map.itemLocation}")
+                            arrayMarker.add(mMap.addMarker(options))
 
-                        val options: MarkerOptions = MarkerOptions()
-                                .position(latLng)
-                                .title("<${map.itemTitle}> ${map.itemLocation}")
-                        arrayMarker.add(mMap.addMarker(options))
-
-                        saleArray.add(map.sales_id)
-
-                        val cameraPosition = CameraPosition.Builder()
-                                .target(latLng)
-                                .zoom(15f)                   // Sets the zoom
-                                .bearing(90f)                // Sets the orientation of the camera to east
-                                .tilt(30f)                   // Sets the tilt of the camera to 30 degrees
-                                .build()
-                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+                            saleArray.add(map.sales_id)
+                            offerIdArray.add(map.offer_id)
+                        }
 
                     }
                 }
@@ -318,12 +354,12 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
     }
 
     override fun onInfoWindowClick(p0: Marker?) {
-        for (i in arrayMarker.indices)
-        {
-            if (p0 == arrayMarker[i]){
-                Log.i("Location : ",saleArray[i])
+        for (i in arrayMarker.indices) {
+            if (p0 == arrayMarker[i]) {
+                Log.i("Location : ", saleArray[i])
                 UserDetail.saleSelectedId = saleArray[i]
-                startActivity(Intent(applicationContext,ViewSaleDetailsActivity::class.java))
+                UserDetail.saleSelectedUserId = offerIdArray[i]
+                startActivity(Intent(applicationContext, ViewSaleDetailsActivity::class.java))
             }
         }
     }
@@ -333,7 +369,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
     }
 
     override fun onBackPressed() {
-        startActivity(Intent(applicationContext, MainPageActivity::class.java))
+        //startActivity(Intent(applicationContext, MainPageActivity::class.java))
         finish()
     }
 }

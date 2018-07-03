@@ -43,6 +43,7 @@ class RecyclerViewAdapter(private val mContext: Context, private val mData: List
         holder.distance.text = String.format("%.2f", (result[0] / 1000)) + " km"
         holder.cardView.setOnClickListener {
             UserDetail.saleSelectedId = mData[position].sales_id
+            UserDetail.saleSelectedUserId = mData[position].offer_id
 
             val intent = Intent(mContext, ViewSaleDetailsActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK

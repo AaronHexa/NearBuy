@@ -9,7 +9,13 @@ public interface RegisterView {
     }
 
     interface Presenter {
-        fun saveUserDataToDatabase(email: String, password: String, name: String, id: String, uriTxt: String)
-        fun saveProfilePicToStorage(tmpID: String, filePath: Uri)
+        fun saveUserDataToDatabase(email: String,
+                                   password: String,
+                                   name: String,
+                                   id: String,
+                                   uriTxt: String)
+
+        fun saveProfilePicToStorage(tmpID: String,
+                                    filePath: Uri)
     }
 }

@@ -8,10 +8,24 @@ import android.net.Uri
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.internal.NavigationMenu
+import android.support.design.widget.NavigationView
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v4.view.GravityCompat
+import android.support.v4.widget.DrawerLayout
+import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.util.Log
+import android.view.MenuItem
+import android.view.MotionEvent
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
+import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
+import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
 import com.example.hexa_aaronlee.nearbuy.Presenter.MainPagePresenter
 import com.example.hexa_aaronlee.nearbuy.View.MainPageView
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -31,12 +45,14 @@ import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 
 import kotlinx.android.synthetic.main.activity_main_page.*
+import kotlinx.android.synthetic.main.navigate_header.*
 
 
 class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         com.google.android.gms.location.LocationListener,
-        MainPageView.View {
+        MainPageView.View,
+        GoogleMap.OnInfoWindowClickListener {
 
     private lateinit var mMap: GoogleMap
     private lateinit var client: GoogleApiClient
@@ -63,12 +79,24 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
     val REQUEST_LOCATION_CODE = 99
     lateinit var mPresenter: MainPagePresenter
 
+    var arrayMarker: ArrayList<Marker> = ArrayList()
+    lateinit var saleArray: ArrayList<String>
+    lateinit var userIdArray: ArrayList<String>
+    lateinit var offerIdArray: ArrayList<String>
+    lateinit var lstSaleData: ArrayList<DealsDetailData>
+    lateinit var lstUserId: ArrayList<String>
+
+    //drawer layout
+    lateinit var mDrawerLayout : DrawerLayout
+    lateinit var mTonggle : ActionBarDrawerToggle
+
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             bulidGoogleApiClient()
             mMap.isMyLocationEnabled = true
+            mMap.setOnInfoWindowClickListener(this)
         }
 
 
@@ -125,6 +153,12 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
 
         mPresenter.moveCamera(latLng, "My Location", mMap)
 
+        //get Area Sale Detail
+        userIdArray = ArrayList()
+        offerIdArray = ArrayList()
+        saleArray = ArrayList()
+
+        mPresenter.getAreaSaleDetail(arrayMarker, saleArray, userIdArray, offerIdArray, mMap, mLongitude, mLatitude)
 
         if (client != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(client, this)
@@ -157,7 +191,7 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
     }
 
     fun checkLocationPermission(): Boolean {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        return if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
                 ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_CODE);
@@ -165,10 +199,28 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
             } else {
                 ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_CODE);
             }
-            return false
+            false
 
         } else
-            return true
+            true
+    }
+
+    override fun setUpUIMarker(arrayMarker: ArrayList<Marker>, saleArray: ArrayList<String>, offerIdArray: ArrayList<String>) {
+        this.arrayMarker = arrayMarker
+        this.saleArray = saleArray
+        this.offerIdArray = offerIdArray
+    }
+
+
+    override fun onInfoWindowClick(p0: Marker?) {
+        for (i in arrayMarker.indices) {
+            if (p0 == arrayMarker[i]) {
+                Log.i("Location : ", saleArray[i])
+                UserDetail.saleSelectedId = saleArray[i]
+                UserDetail.saleSelectedUserId = offerIdArray[i]
+                startActivity(Intent(applicationContext, ViewSaleDetailsActivity::class.java))
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -179,6 +231,10 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
 
         user_id = mAuth.currentUser!!.uid
         UserDetail.user_id = user_id
+
+        mainActivityScrollView.post({
+            mainActivityScrollView.fullScroll(View.FOCUS_UP)
+        })
 
         mPresenter = MainPagePresenter(this)
 
@@ -198,6 +254,9 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
 
+        setUINotScrollable()
+        setDrawerNavi()
+
         signOutBtn.setOnClickListener {
 
             //Sign out from Firebase Auth
@@ -211,34 +270,137 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
         }
 
         historyBtn.setOnClickListener {
-            finish()
+            //finish()
             startActivity(Intent(applicationContext, ChatHistoryActivity::class.java))
         }
 
         profileBtn.setOnClickListener {
-            finish()
+
             startActivity(Intent(applicationContext, ProfileInfoActivity::class.java))
         }
 
         mapBtn.setOnClickListener {
-            finish()
+            //finish()
             startActivity(Intent(applicationContext, MapsActivity::class.java))
         }
 
         dealBtn.setOnClickListener {
-            finish()
+            //finish()
             startActivity(Intent(applicationContext, CreateSaleActivity::class.java))
         }
 
         totalSalesBtn.setOnClickListener {
-            finish()
+            //finish()
             startActivity(Intent(applicationContext, ShowTotalSalesActivity::class.java))
         }
 
         mPresenter.getUserDataFromDatabase(user_id)
 
 
-        mapLayout.setOnClickListener { startActivity(Intent(applicationContext,MapsActivity::class.java)) }
+        mapLayout.setOnClickListener { startActivity(Intent(applicationContext, MapsActivity::class.java)) }
+
+        setSaleArrayList()
+    }
+
+    fun setDrawerNavi(){
+        mDrawerLayout = findViewById(R.id.drawerLayout)
+        mTonggle = ActionBarDrawerToggle(this,mDrawerLayout,R.string.open,R.string.close)
+
+        mDrawerLayout.addDrawerListener(mTonggle)
+        mTonggle.syncState()
+
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (mTonggle.onOptionsItemSelected(item)){
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    fun setUINotScrollable(){
+        transparent_image.setOnTouchListener({ v: View?, event: MotionEvent? ->
+            val action = event!!.action
+            when (action) {
+                MotionEvent.ACTION_DOWN -> {
+                    mainActivityScrollView.requestDisallowInterceptTouchEvent(true)
+                    return@setOnTouchListener false
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    mainActivityScrollView.requestDisallowInterceptTouchEvent(false)
+                    return@setOnTouchListener true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    mainActivityScrollView.requestDisallowInterceptTouchEvent(true)
+                    return@setOnTouchListener false
+                }
+                else -> return@setOnTouchListener true
+            }
+
+        })
+
+        transparent_image2.setOnTouchListener({ v: View?, event: MotionEvent? ->
+            val action = event!!.action
+            when (action) {
+                MotionEvent.ACTION_DOWN -> {
+                    mainActivityScrollView.requestDisallowInterceptTouchEvent(true)
+                    return@setOnTouchListener false
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    mainActivityScrollView.requestDisallowInterceptTouchEvent(false)
+                    return@setOnTouchListener true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    mainActivityScrollView.requestDisallowInterceptTouchEvent(true)
+                    return@setOnTouchListener false
+                }
+                else -> return@setOnTouchListener true
+            }
+
+        })
+    }
+
+    fun setSaleArrayList() {
+
+        lstSaleData = ArrayList()
+        lstUserId = ArrayList()
+
+        mPresenter.getAllUserID(lstUserId)
+
+        switchUI.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (!isChecked) {
+                lstSaleData = ArrayList()
+
+                for (i in lstUserId.indices) {
+                    mPresenter.getSaleData(lstSaleData, lstUserId[i])
+                }
+            } else if (isChecked) {
+                lstSaleData = ArrayList()
+
+                for (i in lstUserId.indices) {
+                    mPresenter.getSaleDataWithLimitDistance(lstSaleData, UserDetail.mLatitude, UserDetail.mLongitude, lstUserId[i])
+                }
+            }
+
+
+        }
+
+    }
+
+    override fun setLoopCheckSale(lstUserId: ArrayList<String>) {
+        for (i in 0 until lstUserId.count() - 1) {
+            mPresenter.getSaleData(lstSaleData, lstUserId[i])
+        }
+    }
+
+    override fun updateList(lstSaleData: ArrayList<DealsDetailData>) {
+        val myrv = findViewById<RecyclerView>(R.id.mainRecyclerView)
+        val myAdapter = RecyclerViewAdapter(this, lstSaleData)
+        myrv.layoutManager = GridLayoutManager(this, 2)
+        myrv.adapter = myAdapter
     }
 
 
@@ -250,9 +412,45 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
         UserDetail.username = name
         UserDetail.imageUrl = profilePic
 
+        setUpInfoForNav()
+
         setUIUpdate()
     }
 
+    fun setUpInfoForNav(){
+        nav_username.text ="Welcome " + UserDetail.username
+
+        val navMenu = findViewById<NavigationView>(R.id.nav_Menu)
+
+        navMenu.setNavigationItemSelectedListener { item: MenuItem ->
+            when(item.itemId){
+
+                R.id.historyChat_Nav ->{
+                    //startActivity(Intent(applicationContext, ChatHistoryActivity::class.java))
+                    item.isChecked = true
+                    Log.i("Clicked : ", "Yes")
+                }
+                R.id.createSale_Nav ->{
+                    //startActivity(Intent(applicationContext, CreateSaleActivity::class.java))
+                }
+                R.id.showAllSale_Nav ->{
+                    //startActivity(Intent(applicationContext, ShowTotalSalesActivity::class.java))
+                }
+                R.id.profile_Nav ->{
+                    //startActivity(Intent(applicationContext, ProfileInfoActivity::class.java))
+                }
+                R.id.map_Nav ->{
+                    //startActivity(Intent(applicationContext, MapsActivity::class.java))
+                }
+                R.id.logout_Nav ->{
+                    //onBackPressed()
+                }
+            }
+
+            //mDrawerLayout.closeDrawer(GravityCompat.START)
+            return@setNavigationItemSelectedListener true
+        }
+    }
 
     fun setUIUpdate() {
         nameTxt.text = personName

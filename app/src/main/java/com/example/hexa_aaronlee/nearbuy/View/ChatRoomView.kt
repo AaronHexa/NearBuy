@@ -13,15 +13,49 @@ public interface ChatRoomView {
         fun uploadImageSuccess()
         fun uploadImageFailed()
         fun saveImageData(uriTxt: String)
-        fun addMsgChat(newMessagePage: Int, imageFileName: String, text: String, sender: String, type: String, arrayMsgIDList: ArrayList<String>)
+        fun addMsgChat(newMessagePage: Int,
+                       imageFileName: String,
+                       text: String,
+                       sender: String,
+                       type: String,
+                       arrayMsgIDList: ArrayList<String>)
+
         fun viewLargeImage(tmpUri: Uri)
     }
 
     interface Presenter {
-        fun saveChatMsg(messageText: String, user_id: String, arrayMsgIDList: ArrayList<String>, newMessagePage: Int, selectedUser: String)
-        fun savePicMsg(uriTxt: String, user_id: String, arrayMsgIDList: ArrayList<String>, newMessagePage: Int, selectedUser: String)
-        fun comfrimationPicSend(newMessagePage: Int, user_id: String, selectedUser: String, filePath: Uri, imageFileName: String, dialog: DialogInterface)
-        fun createMsgBubble(text: String, sender: String, type: String, context: Context, user_id: String, lp2: LinearLayout.LayoutParams, layout1: LinearLayout)
-        fun retrieveMsgData(user_id: String, selectedUser: String, arrayMsgIDList: ArrayList<String>)
+        fun saveChatMsg(messageText: String,
+                        user_id: String,
+                        arrayMsgIDList: ArrayList<String>,
+                        newMessagePage: Int,
+                        selectedUser: String,
+                        sale_id: String)
+
+        fun savePicMsg(uriTxt: String,
+                       user_id: String,
+                       arrayMsgIDList: ArrayList<String>,
+                       newMessagePage: Int,
+                       selectedUser: String,
+                       sale_id: String)
+
+        fun comfrimationPicSend(newMessagePage: Int,
+                                user_id: String,
+                                selectedUser: String,
+                                filePath: Uri,
+                                imageFileName: String,
+                                dialog: DialogInterface, sale_id: String)
+
+        fun createMsgBubble(text: String,
+                            sender: String,
+                            type: String,
+                            context: Context,
+                            user_id: String,
+                            lp2: LinearLayout.LayoutParams,
+                            layout1: LinearLayout)
+
+        fun retrieveMsgData(user_id: String,
+                            selectedUser: String,
+                            arrayMsgIDList: ArrayList<String>,
+                            sale_id: String)
     }
 }

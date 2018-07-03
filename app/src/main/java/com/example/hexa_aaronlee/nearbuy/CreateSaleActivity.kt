@@ -11,7 +11,9 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.util.Log
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
@@ -35,6 +37,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_create_sale.*
+import kotlinx.android.synthetic.main.activity_main_page.*
 
 class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -211,6 +214,7 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
 
     lateinit var databaseR: DatabaseReference
     lateinit var progressDialog: ProgressDialog
+    var imageSelected = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -218,6 +222,7 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
 
         mPresenter = CreateSalePresenter(this)
         progressDialog = ProgressDialog(this)
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission()
@@ -228,30 +233,34 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
                 .findFragmentById(R.id.mapSelection) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-
         databaseR = FirebaseDatabase.getInstance().reference.child("SaleDetail")
 
         salesId = databaseR.push().key.toString()
 
         itemPic1.setOnClickListener {
+
             choosePicture()
 
         }
 
         createBtn.setOnClickListener {
-
             //displaying a progress dialog
 
             progressDialog.setMessage("Uploading Please Wait...")
             progressDialog.show()
 
-            mPresenter.savePicToStorage(applicationContext, filePath, salesId)
+            if (imageSelected == 1) {
+                mPresenter.savePicToStorage(applicationContext, filePath, salesId)
+            } else if (imageSelected == 0) {
+                filePath = Uri.parse("android.resource://" + applicationContext.packageName + "/drawable/gallery_ic")
+                mPresenter.savePicToStorage(applicationContext, filePath, salesId)
+            }
 
         }
 
         cancelCreateBtn.setOnClickListener {
             finish()
-            startActivity(Intent(applicationContext, MainPageActivity::class.java))
+            //startActivity(Intent(applicationContext, MainPageActivity::class.java))
         }
 
         createSaleLayout.setOnClickListener {
@@ -273,6 +282,7 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
 
         if (resultCode != RESULT_CANCELED) {
             if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK) {
+                imageSelected = 1
                 if (data!!.data != null) {
                     filePath = data.data
 
@@ -319,13 +329,17 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
         startActivity(Intent(applicationContext, MainPageActivity::class.java))
     }
 
-    fun hideKeyboard()
-    {
+    fun hideKeyboard() {
         val view = this.currentFocus
         if (view != null) {
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
+    }
+
+    override fun onBackPressed() {
+        //startActivity(Intent(applicationContext, MainPageActivity::class.java))
+        finish()
     }
 }
 

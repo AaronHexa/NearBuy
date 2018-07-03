@@ -9,7 +9,11 @@ interface MySaleListView {
     }
 
     interface Presenter {
-        fun getSaledata(user_id: String, lstDetail: ArrayList<DealsDetailData>)
-        fun deleteSaleInDatabase(mDeletionPos: ArrayList<Int>, lstDetail: ArrayList<DealsDetailData>, user_id: String)
+        fun checkSaleData(user_id: String,
+                          lstDetail: ArrayList<DealsDetailData>)
+
+        fun deleteSaleInDatabase(mDeletionPos: ArrayList<Int>,
+                                 lstDetail: ArrayList<DealsDetailData>,
+                                 user_id: String)
     }
 }

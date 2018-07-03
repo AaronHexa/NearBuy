@@ -26,7 +26,7 @@ public class ChatRoomPresenter(internal var view : ChatRoomView.View) : ChatRoom
     lateinit var databaseRef2: DatabaseReference
     lateinit var mStorage: FirebaseStorage
 
-    override fun saveChatMsg(messageText: String, user_id: String, arrayMsgIDList: ArrayList<String>, newMessagePage: Int, selectedUser: String) {
+    override fun saveChatMsg(messageText: String, user_id: String, arrayMsgIDList: ArrayList<String>, newMessagePage: Int, selectedUser: String,sale_id : String) {
         databaseRef = FirebaseDatabase.getInstance().reference.child("History")
         databaseRef2 = FirebaseDatabase.getInstance().reference.child("History")
 
@@ -38,15 +38,14 @@ public class ChatRoomPresenter(internal var view : ChatRoomView.View) : ChatRoom
 
                 val num = 1
 
-                println("....................>>>$num")
 
                 map["messageText"] = messageText
                 map["userSend"] = user_id
                 map["message_id"] = num.toString()
                 map["msg_type"] = "Text"
 
-                databaseRef.child(user_id).child(selectedUser).child(num.toString()).setValue(map)
-                databaseRef2.child(selectedUser).child(user_id).child(num.toString()).setValue(map)
+                databaseRef.child(user_id).child(selectedUser).child(sale_id).child(num.toString()).setValue(map)
+                databaseRef2.child(selectedUser).child(user_id).child(sale_id).child(num.toString()).setValue(map)
 
                 view.setEditTextEmpty()
 
@@ -58,22 +57,21 @@ public class ChatRoomPresenter(internal var view : ChatRoomView.View) : ChatRoom
                 val i = arrayMsgIDList.get(arrayMsgIDList.size.minus(1))
                 val num = Integer.parseInt(i) + 1
 
-                println("....................>>>$num")
 
                 map["messageText"] = messageText
                 map["userSend"] = user_id
                 map["message_id"] = num.toString()
                 map["msg_type"] = "Text"
 
-                databaseRef.child(user_id).child(selectedUser).child(num.toString()).setValue(map)
-                databaseRef2.child(selectedUser).child(user_id).child(num.toString()).setValue(map)
+                databaseRef.child(user_id).child(selectedUser).child(sale_id).child(num.toString()).setValue(map)
+                databaseRef2.child(selectedUser).child(user_id).child(sale_id).child(num.toString()).setValue(map)
 
                 view.setEditTextEmpty()
             }
         }
     }
 
-    override fun savePicMsg(uriTxt: String, user_id: String, arrayMsgIDList: ArrayList<String>, newMessagePage: Int, selectedUser: String) {
+    override fun savePicMsg(uriTxt: String, user_id: String, arrayMsgIDList: ArrayList<String>, newMessagePage: Int, selectedUser: String,sale_id : String) {
         databaseRef = FirebaseDatabase.getInstance().reference.child("History")
         databaseRef2 = FirebaseDatabase.getInstance().reference.child("History")
 
@@ -84,15 +82,14 @@ public class ChatRoomPresenter(internal var view : ChatRoomView.View) : ChatRoom
 
             val num = 1
 
-            println("....................>>>$num")
 
             map["messageText"] = uriTxt
             map["userSend"] = user_id
             map["message_id"] = num.toString()
             map["msg_type"] = "Picture"
 
-            databaseRef.child(user_id).child(selectedUser).child(num.toString()).setValue(map)
-            databaseRef2.child(selectedUser).child(user_id).child(num.toString()).setValue(map)
+            databaseRef.child(user_id).child(selectedUser).child(sale_id).child(num.toString()).setValue(map)
+            databaseRef2.child(selectedUser).child(user_id).child(sale_id).child(num.toString()).setValue(map)
 
             view.setEditTextEmpty()
 
@@ -104,22 +101,21 @@ public class ChatRoomPresenter(internal var view : ChatRoomView.View) : ChatRoom
             val i = arrayMsgIDList.get(arrayMsgIDList.size.minus(1))
             val num = Integer.parseInt(i) + 1
 
-            println("....................>>>$num")
 
             map["messageText"] = uriTxt
             map["userSend"] = user_id
             map["message_id"] = num.toString()
             map["msg_type"] = "Picture"
 
-            databaseRef.child(user_id).child(selectedUser).child(num.toString()).setValue(map)
-            databaseRef2.child(selectedUser).child(user_id).child(num.toString()).setValue(map)
+            databaseRef.child(user_id).child(selectedUser).child(sale_id).child(num.toString()).setValue(map)
+            databaseRef2.child(selectedUser).child(user_id).child(sale_id).child(num.toString()).setValue(map)
 
             view.setEditTextEmpty()
 
         }
     }
 
-    override fun comfrimationPicSend(newMessagePage: Int, user_id: String, selectedUser: String, filePath: Uri, imageFileName: String, dialog: DialogInterface) {
+    override fun comfrimationPicSend(newMessagePage: Int, user_id: String, selectedUser: String, filePath: Uri, imageFileName: String, dialog: DialogInterface,sale_id : String) {
         var tmpFileName: String = ""
 
         if (newMessagePage == 1) {
@@ -130,7 +126,7 @@ public class ChatRoomPresenter(internal var view : ChatRoomView.View) : ChatRoom
 
 
         mStorage = FirebaseStorage.getInstance()
-        var mReference = mStorage.reference.child("PictureSent").child(user_id).child(selectedUser).child(tmpFileName)
+        val mReference = mStorage.reference.child("PictureSent").child(user_id).child(selectedUser).child(sale_id).child(tmpFileName)
         try {
             mReference.putFile(filePath).addOnSuccessListener {
 
@@ -147,7 +143,6 @@ public class ChatRoomPresenter(internal var view : ChatRoomView.View) : ChatRoom
                 if (task.isSuccessful) {
                     val downloadUri = task.result
 
-                    println("....Download url....>>>" + downloadUri.toString())
                     view.saveImageData(downloadUri.toString())
 
                 } else {
@@ -206,7 +201,7 @@ public class ChatRoomPresenter(internal var view : ChatRoomView.View) : ChatRoom
 
             imageView.layoutParams = lp2
             layout1.addView(imageView)
-            System.out.println("...>>>>>>....$tmpUri")
+
             Picasso.get()
                     .load(tmpUri)
                     .resize(900, 900)
@@ -220,20 +215,18 @@ public class ChatRoomPresenter(internal var view : ChatRoomView.View) : ChatRoom
         }
     }
 
-    override fun retrieveMsgData(user_id: String, selectedUser: String, arrayMsgIDList: ArrayList<String>) {
-        databaseRef = FirebaseDatabase.getInstance().reference.child("History").child(user_id).child(selectedUser)
+    override fun retrieveMsgData(user_id: String, selectedUser: String, arrayMsgIDList: ArrayList<String>,sale_id : String) {
+        databaseRef = FirebaseDatabase.getInstance().reference.child("History").child(user_id).child(selectedUser).child(sale_id)
 
 
         databaseRef.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(dataSnapshot: DataSnapshot, p1: String?) {
-                var newMessagePage = 1 as Int
+                val newMessagePage = 1
                 val map = dataSnapshot.getValue(MessageData::class.java)
 
                 if (map != null) {
-                    var imageFileName = map.message_id
+                    val imageFileName = map.message_id
                     arrayMsgIDList.add(map.message_id)
-
-                    println("----->>>> " + arrayMsgIDList.size)
 
                     view.addMsgChat(newMessagePage,imageFileName,map.messageText, map.userSend, map.msg_type,arrayMsgIDList)
                 }

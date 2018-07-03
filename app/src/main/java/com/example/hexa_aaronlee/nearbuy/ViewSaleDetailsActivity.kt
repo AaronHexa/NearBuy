@@ -5,12 +5,16 @@ import android.location.Location
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
+import com.example.hexa_aaronlee.nearbuy.Model.User
 import com.example.hexa_aaronlee.nearbuy.Presenter.ViewSaleDetailPresenter
 import com.example.hexa_aaronlee.nearbuy.View.ViewSaleDetailView
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_view_sale_details.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ViewSaleDetailsActivity : AppCompatActivity(), ViewSaleDetailView.View {
 
@@ -27,17 +31,16 @@ class ViewSaleDetailsActivity : AppCompatActivity(), ViewSaleDetailView.View {
 
         mPresenter = ViewSaleDetailPresenter(this)
 
-        mPresenter.getSalesDetail(UserDetail.saleSelectedId)
+        mPresenter.getSalesDetail(UserDetail.saleSelectedId,UserDetail.saleSelectedUserId)
 
 
         floatingActionButton.setOnClickListener {
+            Log.i("Sale id : ", UserDetail.saleSelectedId)
             if (checkDealer == UserDetail.user_id) {
                 Toast.makeText(application, "You are the dealer !!!", Toast.LENGTH_SHORT).show()
             } else {
                 UserDetail.chatWithID = checkDealer
                 mPresenter.getChatDetail(checkDealer)
-                finish()
-                startActivity(Intent(applicationContext, ChatRoomActivity::class.java))
             }
 
         }
@@ -66,17 +69,40 @@ class ViewSaleDetailsActivity : AppCompatActivity(), ViewSaleDetailView.View {
     }
 
 
-    override fun updateInfo(profilePhoto: String, name: String) {
+    override fun updateInfo(profilePhoto: String, name: String, chatUserId: String) {
         UserDetail.chatWithImageUri = profilePhoto
         UserDetail.chatWithName = name
+        UserDetail.chatWithID = chatUserId
 
-        mPresenter.saveUserToHistoryChat(profilePhoto, UserDetail.user_id, checkDealer, tmpSaleUser, tmpSaleTitle)
+        mPresenter.checkHistorySaleData(UserDetail.saleSelectedId, UserDetail.user_id)
+    }
+
+    override fun saveHistoryData(checkedResult: Boolean) {
+        if (checkedResult) {
+
+            val df = SimpleDateFormat("yyyy.MM.dd")
+            val currentDate = df.format(Calendar.getInstance().time)
+            Log.i("Date : ", currentDate)
+            val df2 = SimpleDateFormat("HH:mm")
+            val currentTime = df2.format(Calendar.getInstance().time)
+            Log.i("Time : ", currentTime)
+
+            mPresenter.saveUserToHistoryChat(UserDetail.imageUrl, UserDetail.user_id, checkDealer, UserDetail.username, tmpSaleTitle, UserDetail.saleSelectedId, tmpSaleUser, UserDetail.chatWithImageUri, currentDate, currentTime)
+
+            //finish()
+            startActivity(Intent(applicationContext, ChatRoomActivity::class.java))
+
+        } else if (!checkedResult) {
+
+            //finish()
+            startActivity(Intent(applicationContext, ChatRoomActivity::class.java))
+        }
     }
 
     override fun onBackPressed() {
 
         finish()
-        startActivity(Intent(applicationContext, MainPageActivity::class.java))
+        //startActivity(Intent(applicationContext, MainPageActivity::class.java))
         super.onBackPressed()
     }
 }

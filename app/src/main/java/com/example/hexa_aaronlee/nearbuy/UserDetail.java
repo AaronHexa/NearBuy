@@ -15,6 +15,7 @@ public class UserDetail {
 
     static String locationSelected = "";
     static String saleSelectedId = "";
+    static String saleSelectedUserId = "";
 
     static Double mLatitude = 0.0;
     static Double mLongitude = 0.0;

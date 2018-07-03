@@ -13,8 +13,14 @@ public interface LoginView {
 
     interface Presenter {
         fun clickRegisterTxt()
-        fun clickLoginBtn(email: String, password: String)
+        fun clickLoginBtn(email: String,
+                          password: String)
+
         fun clickGoogleBtn()
-        fun saveDataProcess(email: String, password: String, user_id: String, name: String, profilePhoto: String)
+        fun saveDataProcess(email: String,
+                            password: String,
+                            user_id: String,
+                            name: String,
+                            profilePhoto: String)
     }
 }
