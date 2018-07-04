@@ -49,6 +49,7 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
         chatDate = ArrayList()
         chatTime = ArrayList()
 
+
         mPresenter.checkChatHistiryData(UserDetail.user_id)
     }
 

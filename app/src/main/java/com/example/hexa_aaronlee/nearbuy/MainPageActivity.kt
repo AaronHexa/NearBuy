@@ -52,7 +52,15 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
         GoogleApiClient.OnConnectionFailedListener,
         com.google.android.gms.location.LocationListener,
         MainPageView.View,
-        GoogleMap.OnInfoWindowClickListener {
+        GoogleMap.OnInfoWindowClickListener,
+        NavigationView.OnNavigationItemSelectedListener{
+    /**
+     * Called when an item in the navigation menu is selected.
+     *
+     * @param item The selected item
+     *
+     * @return true to display the item as the selected item
+     */
 
     private lateinit var mMap: GoogleMap
     private lateinit var client: GoogleApiClient
@@ -257,43 +265,6 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
         setUINotScrollable()
         setDrawerNavi()
 
-        signOutBtn.setOnClickListener {
-
-            //Sign out from Firebase Auth
-            FirebaseAuth.getInstance().signOut()
-
-            //Sign out From Google
-            mGoogleSignInClient.signOut()
-
-            startActivity(Intent(applicationContext, LoginMainActivity::class.java))
-            finish()
-        }
-
-        historyBtn.setOnClickListener {
-            //finish()
-            startActivity(Intent(applicationContext, ChatHistoryActivity::class.java))
-        }
-
-        profileBtn.setOnClickListener {
-
-            startActivity(Intent(applicationContext, ProfileInfoActivity::class.java))
-        }
-
-        mapBtn.setOnClickListener {
-            //finish()
-            startActivity(Intent(applicationContext, MapsActivity::class.java))
-        }
-
-        dealBtn.setOnClickListener {
-            //finish()
-            startActivity(Intent(applicationContext, CreateSaleActivity::class.java))
-        }
-
-        totalSalesBtn.setOnClickListener {
-            //finish()
-            startActivity(Intent(applicationContext, ShowTotalSalesActivity::class.java))
-        }
-
         mPresenter.getUserDataFromDatabase(user_id)
 
 
@@ -302,14 +273,48 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
         setSaleArrayList()
     }
 
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+
+            R.id.historyChat_Nav ->{
+                startActivity(Intent(applicationContext, ChatHistoryActivity::class.java))
+                Log.i("Clicked : ", "Yes")
+            }
+            R.id.createSale_Nav ->{
+                startActivity(Intent(applicationContext, CreateSaleActivity::class.java))
+            }
+            R.id.showAllSale_Nav ->{
+                startActivity(Intent(applicationContext, ShowTotalSalesActivity::class.java))
+            }
+            R.id.profile_Nav ->{
+                startActivity(Intent(applicationContext, ProfileInfoActivity::class.java))
+            }
+            R.id.map_Nav ->{
+                startActivity(Intent(applicationContext, MapsActivity::class.java))
+            }
+            R.id.logout_Nav ->{
+                onBackPressed()
+            }
+        }
+
+        mDrawerLayout.closeDrawer(GravityCompat.START)
+        return true
+    }
+
     fun setDrawerNavi(){
         mDrawerLayout = findViewById(R.id.drawerLayout)
         mTonggle = ActionBarDrawerToggle(this,mDrawerLayout,R.string.open,R.string.close)
 
+        mTonggle.isDrawerIndicatorEnabled = true
         mDrawerLayout.addDrawerListener(mTonggle)
         mTonggle.syncState()
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        val navMenu = findViewById<NavigationView>(R.id.nav_Menu)
+
+        navMenu.setNavigationItemSelectedListener(this)
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -397,7 +402,7 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
     }
 
     override fun updateList(lstSaleData: ArrayList<DealsDetailData>) {
-        val myrv = findViewById<RecyclerView>(R.id.mainRecyclerView)
+        val myrv:RecyclerView = findViewById(R.id.mainRecyclerView)
         val myAdapter = RecyclerViewAdapter(this, lstSaleData)
         myrv.layoutManager = GridLayoutManager(this, 2)
         myrv.adapter = myAdapter
@@ -420,36 +425,7 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
     fun setUpInfoForNav(){
         nav_username.text ="Welcome " + UserDetail.username
 
-        val navMenu = findViewById<NavigationView>(R.id.nav_Menu)
 
-        navMenu.setNavigationItemSelectedListener { item: MenuItem ->
-            when(item.itemId){
-
-                R.id.historyChat_Nav ->{
-                    //startActivity(Intent(applicationContext, ChatHistoryActivity::class.java))
-                    item.isChecked = true
-                    Log.i("Clicked : ", "Yes")
-                }
-                R.id.createSale_Nav ->{
-                    //startActivity(Intent(applicationContext, CreateSaleActivity::class.java))
-                }
-                R.id.showAllSale_Nav ->{
-                    //startActivity(Intent(applicationContext, ShowTotalSalesActivity::class.java))
-                }
-                R.id.profile_Nav ->{
-                    //startActivity(Intent(applicationContext, ProfileInfoActivity::class.java))
-                }
-                R.id.map_Nav ->{
-                    //startActivity(Intent(applicationContext, MapsActivity::class.java))
-                }
-                R.id.logout_Nav ->{
-                    //onBackPressed()
-                }
-            }
-
-            //mDrawerLayout.closeDrawer(GravityCompat.START)
-            return@setNavigationItemSelectedListener true
-        }
     }
 
     fun setUIUpdate() {

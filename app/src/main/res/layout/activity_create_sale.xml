@@ -8,7 +8,7 @@
     tools:context=".CreateSaleActivity">
 
     <ScrollView
-        android:id="@+id/createActivityScroll"
+        android:id="@+id/scrollViewCreateActivity"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -120,8 +120,8 @@
 
                 <ImageView
                     android:id="@+id/itemPic1"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
                     android:layout_margin="10dp"
                     app:srcCompat="@drawable/clip" />
 
@@ -162,15 +162,25 @@
                 android:inputType="textMultiLine"
                 android:maxLines="5" />
 
-
-            <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:id="@+id/mapSelection"
-                android:name="com.google.android.gms.maps.SupportMapFragment"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp" />
+                android:layout_height="320dp">
 
+                <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:tools="http://schemas.android.com/tools"
+                    android:id="@+id/mapSelection"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp" />
+
+                <ImageView
+                    android:id="@+id/transparent_imagess"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@color/transparent" />
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -183,8 +193,8 @@
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="20dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="20dp"
                     android:text="cancel" />
 
                 <Button

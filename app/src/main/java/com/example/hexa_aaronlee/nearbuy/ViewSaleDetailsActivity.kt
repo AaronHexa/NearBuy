@@ -80,7 +80,7 @@ class ViewSaleDetailsActivity : AppCompatActivity(), ViewSaleDetailView.View {
     override fun saveHistoryData(checkedResult: Boolean) {
         if (checkedResult) {
 
-            val df = SimpleDateFormat("yyyy.MM.dd")
+            val df = SimpleDateFormat("dd/MM/yyyy")
             val currentDate = df.format(Calendar.getInstance().time)
             Log.i("Date : ", currentDate)
             val df2 = SimpleDateFormat("HH:mm")

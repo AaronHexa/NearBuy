@@ -243,9 +243,30 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
 
         }
 
+        transparent_imagess.setOnTouchListener({ v: View?, event: MotionEvent? ->
+            val action = event!!.action
+            when (action) {
+                MotionEvent.ACTION_DOWN -> {
+                    scrollViewCreateActivity.requestDisallowInterceptTouchEvent(true)
+                    return@setOnTouchListener false
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    scrollViewCreateActivity.requestDisallowInterceptTouchEvent(false)
+                    return@setOnTouchListener true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    scrollViewCreateActivity.requestDisallowInterceptTouchEvent(true)
+                    return@setOnTouchListener false
+                }
+                else -> return@setOnTouchListener true
+            }
+
+        })
+
         createBtn.setOnClickListener {
             //displaying a progress dialog
-
+/*
             progressDialog.setMessage("Uploading Please Wait...")
             progressDialog.show()
 
@@ -255,6 +276,8 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
                 filePath = Uri.parse("android.resource://" + applicationContext.packageName + "/drawable/gallery_ic")
                 mPresenter.savePicToStorage(applicationContext, filePath, salesId)
             }
+            */
+            setLocation("sksksk","lklklk")
 
         }
 
@@ -304,7 +327,19 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
         val tmpDescription = editTxtDescription.text.trim().toString()
         val tmpPrice = priceTxt.text.trim().toString()
 
-        mPresenter.saveSaleData(tmpTitle, tmpPrice, tmpDescription, tmpLocation, mLatitude.toString(), mLongitude.toString(), UserDetail.username, salesId, imageData1, UserDetail.user_id)
+        val tmpDecPrice = String.format("%.2f",tmpPrice.toDouble())
+
+        var newDecPrice = ""
+
+       if (tmpDecPrice.substring(0,1) == "0"){
+           newDecPrice = tmpDecPrice.substring(1)
+        }
+        else{
+           newDecPrice = tmpDecPrice
+
+        }
+
+        mPresenter.saveSaleData(tmpTitle, newDecPrice, tmpDescription, tmpLocation, mLatitude.toString(), mLongitude.toString(), UserDetail.username, salesId, imageData1, UserDetail.user_id)
     }
 
     override fun imageUploadError(exception: Exception) {
