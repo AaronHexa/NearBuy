@@ -80,14 +80,7 @@ class ViewSaleDetailsActivity : AppCompatActivity(), ViewSaleDetailView.View {
     override fun saveHistoryData(checkedResult: Boolean) {
         if (checkedResult) {
 
-            val df = SimpleDateFormat("dd/MM/yyyy")
-            val currentDate = df.format(Calendar.getInstance().time)
-            Log.i("Date : ", currentDate)
-            val df2 = SimpleDateFormat("HH:mm")
-            val currentTime = df2.format(Calendar.getInstance().time)
-            Log.i("Time : ", currentTime)
-
-            mPresenter.saveUserToHistoryChat(UserDetail.imageUrl, UserDetail.user_id, checkDealer, UserDetail.username, tmpSaleTitle, UserDetail.saleSelectedId, tmpSaleUser, UserDetail.chatWithImageUri, currentDate, currentTime)
+            mPresenter.saveUserToHistoryChat(UserDetail.imageUrl, UserDetail.user_id, checkDealer, UserDetail.username, tmpSaleTitle, UserDetail.saleSelectedId, tmpSaleUser, UserDetail.chatWithImageUri)
 
             //finish()
             startActivity(Intent(applicationContext, ChatRoomActivity::class.java))

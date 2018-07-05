@@ -10,8 +10,8 @@ interface ChatHistoryView {
                                    nameData: ArrayList<String>,
                                    titleData: ArrayList<String>,
                                    saleData: ArrayList<String>,
-                                   chatDate: ArrayList<String>,
-                                   chatTime: ArrayList<String>)
+                                   msg_status: ArrayList<String>,
+                                   msg_statusCount: ArrayList<Int>)
     }
 
     interface Presenter {
@@ -21,8 +21,8 @@ interface ChatHistoryView {
                                            titleData: ArrayList<String>,
                                            user_id: String,
                                            saleData: ArrayList<String>,
-                                           chatDate: ArrayList<String>,
-                                           chatTime: ArrayList<String>)
+                                           msg_status: ArrayList<String>,
+                                           msg_statusCount: ArrayList<Int>)
         fun checkChatHistiryData(user_id: String)
     }
 }

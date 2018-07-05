@@ -17,13 +17,15 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_chat_room.*
 import kotlinx.android.synthetic.main.media_dialog_box.view.*
 import kotlinx.android.synthetic.main.message_area.*
-import java.util.ArrayList
 import android.widget.Toast
 import android.content.DialogInterface
 import android.util.Log
+import com.example.hexa_aaronlee.nearbuy.Model.User
 import com.example.hexa_aaronlee.nearbuy.Presenter.ChatRoomPresenter
 import com.example.hexa_aaronlee.nearbuy.View.ChatRoomView
 import com.github.chrisbanes.photoview.PhotoView
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
@@ -59,20 +61,21 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
                 .resize(700, 700)
                 .into(chatPic)
 
-        Log.d("Selected User : " , UserDetail.saleSelectedId)
+        Log.d("Selected Sale : " , UserDetail.saleSelectedId)
 
         arrayMsgIDList = ArrayList<String>()
         mProgressDialog = ProgressDialog(this)
 
+        mPresenter.checkHistoryData(UserDetail.user_id,UserDetail.saleSelectedId,UserDetail.chatWithID)
         mPresenter.retrieveMsgData(UserDetail.user_id, selectedUser, arrayMsgIDList,UserDetail.saleSelectedId)
 
         sendButton.setOnClickListener {
             val messageText = messageArea.text.toString()
             mPresenter.saveChatMsg(messageText, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser,UserDetail.saleSelectedId)
+            mPresenter.saveMsgStatus(UserDetail.user_id,UserDetail.saleSelectedId,UserDetail.chatWithID)
         }
 
         backFromChat.setOnClickListener {
-            startActivity(Intent(applicationContext, ChatHistoryActivity::class.java))
             finish()
         }
 
@@ -87,6 +90,13 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
         setting_clip.setOnClickListener {
             showDialogBox()
         }
+
+        val df = SimpleDateFormat("dd/MM/yyyy")
+        val currentDate = df.format(Calendar.getInstance().time)
+        Log.i("Date : ", currentDate)
+        val df2 = SimpleDateFormat("HH:mm")
+        val currentTime = df2.format(Calendar.getInstance().time)
+        Log.i("Time : ", currentTime)
     }
 
     override fun setEditTextEmpty() {

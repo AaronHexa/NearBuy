@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.design.internal.NavigationMenu
 import android.support.design.widget.NavigationView
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
@@ -22,10 +21,8 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
-import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
 import com.example.hexa_aaronlee.nearbuy.Presenter.MainPagePresenter
 import com.example.hexa_aaronlee.nearbuy.View.MainPageView
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -46,6 +43,7 @@ import com.squareup.picasso.Picasso
 
 import kotlinx.android.synthetic.main.activity_main_page.*
 import kotlinx.android.synthetic.main.navigate_header.*
+import kotlinx.android.synthetic.main.navigate_header.view.*
 
 
 class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
@@ -77,7 +75,6 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
     private lateinit var mAuth: FirebaseAuth
     lateinit var mGoogleSignInClient: GoogleSignInClient
     lateinit var gso: GoogleSignInOptions
-    lateinit var databaseR: DatabaseReference
     lateinit var geocoder: Geocoder
 
     var personName: String = ""
@@ -240,6 +237,7 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
         user_id = mAuth.currentUser!!.uid
         UserDetail.user_id = user_id
 
+
         mainActivityScrollView.post({
             mainActivityScrollView.fullScroll(View.FOCUS_UP)
         })
@@ -266,7 +264,6 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
         setDrawerNavi()
 
         mPresenter.getUserDataFromDatabase(user_id)
-
 
         mapLayout.setOnClickListener { startActivity(Intent(applicationContext, MapsActivity::class.java)) }
 
@@ -417,15 +414,15 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
         UserDetail.username = name
         UserDetail.imageUrl = profilePic
 
-        setUpInfoForNav()
+        setNavHeaderText(name)
 
         setUIUpdate()
     }
 
-    fun setUpInfoForNav(){
-        nav_username.text ="Welcome " + UserDetail.username
-
-
+    fun setNavHeaderText(name : String){
+        val navigationView = findViewById<NavigationView>(R.id.nav_Menu)
+        val headerView = navigationView.getHeaderView(0)
+        headerView.navName.text = "Welcome "+ name
     }
 
     fun setUIUpdate() {

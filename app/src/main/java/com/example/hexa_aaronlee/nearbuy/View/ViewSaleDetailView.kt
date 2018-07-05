@@ -32,11 +32,10 @@ interface ViewSaleDetailView {
                                   tmpSaleTitle: String,
                                   saleSelectedId: String,
                                   dealerName: String,
-                                  dealerPic: String,
-                                  currentDate: String,
-                                  currentTime: String)
+                                  dealerPic: String)
 
         fun checkHistorySaleData(saleSelectedId: String,
                                  user_id: String)
+
     }
 }

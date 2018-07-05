@@ -57,5 +57,13 @@ public interface ChatRoomView {
                             selectedUser: String,
                             arrayMsgIDList: ArrayList<String>,
                             sale_id: String)
+
+        fun checkHistoryData(user_id: String,
+                             sale_id: String,
+                             chatWithUser:String)
+
+        fun saveMsgStatus(user_id: String,
+                          sale_id: String,
+                          chatWithUser:String)
     }
 }

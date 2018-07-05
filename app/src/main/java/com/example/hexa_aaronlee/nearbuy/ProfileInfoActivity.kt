@@ -1,10 +1,12 @@
 package com.example.hexa_aaronlee.nearbuy
 
 import android.content.Intent
+import android.graphics.Paint
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -51,7 +53,7 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
 
     override fun UpdateUI(profileImageUrl: String) {
         profileName.text = UserDetail.username
-        profileEmail.text = "Email : " + UserDetail.email
+        profileEmail.text = Editable.Factory.getInstance().newEditable( UserDetail.email)
 
         UserDetail.imageUrl = profileImageUrl
 

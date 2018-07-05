@@ -5,5 +5,5 @@ class HistoryData(var history_user : String= ""
                   ,var  history_userName: String= ""
                   , var history_image: String = ""
                   , var history_title:String = ""
-                  , var created_date:String = ""
-                  , var created_time:String = "") {}
+                  , var msg_status:String = ""
+                  , var msg_statusCount:Int = 0) {}

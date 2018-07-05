@@ -47,7 +47,7 @@ class ViewSaleDetailPresenter(internal var view : ViewSaleDetailView.View) : Vie
             }
         })
     }
-    override fun saveUserToHistoryChat(profilePhoto: String,user_id : String, checkDealer: String, username : String , tmpSaleTitle :String, saleSelectedId: String,dealerName : String,dealerPic : String,currentDate:String,currentTime:String) {
+    override fun saveUserToHistoryChat(profilePhoto: String,user_id : String, checkDealer: String, username : String , tmpSaleTitle :String, saleSelectedId: String,dealerName : String,dealerPic : String) {
 
         mDataRef = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(user_id)
 
@@ -55,9 +55,9 @@ class ViewSaleDetailPresenter(internal var view : ViewSaleDetailView.View) : Vie
 
 
 
-        val data = HistoryData(checkDealer,saleSelectedId,dealerName,dealerPic,tmpSaleTitle,currentDate,currentTime) // save for user
+        val data = HistoryData(checkDealer,saleSelectedId,dealerName,dealerPic,tmpSaleTitle,"New",1) // save for user
 
-        val data2 = HistoryData(user_id,saleSelectedId,username,profilePhoto,tmpSaleTitle,currentDate,currentTime) // save for dealer
+        val data2 = HistoryData(user_id,saleSelectedId,username,profilePhoto,tmpSaleTitle,"New",1) // save for dealer
 
         mDataRef.child(saleSelectedId).setValue(data)
         mDataRef2.child(saleSelectedId).setValue(data2)
@@ -88,6 +88,4 @@ class ViewSaleDetailPresenter(internal var view : ViewSaleDetailView.View) : Vie
             }
         })
     }
-
-
 }

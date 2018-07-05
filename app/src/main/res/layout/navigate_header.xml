@@ -7,7 +7,7 @@
     android:background="#40a0a0">
 
     <TextView
-        android:id="@+id/nav_username"
+        android:id="@+id/navName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
