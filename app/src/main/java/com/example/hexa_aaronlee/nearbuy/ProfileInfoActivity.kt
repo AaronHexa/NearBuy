@@ -1,7 +1,7 @@
 package com.example.hexa_aaronlee.nearbuy
 
 import android.content.Intent
-import android.graphics.Paint
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -10,6 +10,7 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_profile_info.*
@@ -27,6 +28,8 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
     var nameAcc: String = ""
     var PICK_IMAGE_REQUEST = 1
     var selectedImage: Int = 0
+    var tmpPhoneNum : String = ""
+    var genderEdition : String = ""
 
     lateinit var view: View
     lateinit var mPresenter: ProfileInfoPresenter
@@ -51,11 +54,18 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
         }
     }
 
-    override fun UpdateUI(profileImageUrl: String) {
+    override fun UpdateUI(profileImageUrl: String, userPhoneNum : String, userGender : String) {
         profileName.text = UserDetail.username
         profileEmail.text = Editable.Factory.getInstance().newEditable( UserDetail.email)
+        profilePhoneNum.text = Editable.Factory.getInstance().newEditable(userPhoneNum)
+        profileGender.text = userGender
+
+        val imgIcon = findViewById<TextView>(R.id.profileGender)
+        val backgroundGradient = imgIcon.background as GradientDrawable
+        backgroundGradient.setColor(resources.getColor(R.color.colorLightBlue))
 
         UserDetail.imageUrl = profileImageUrl
+        UserDetail.dialog_phoneNum = userPhoneNum
 
         profileUri = Uri.parse(profileImageUrl)
 
@@ -73,6 +83,7 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
         view = inflater.inflate(R.layout.editing_dialog, null)
 
         view.nameEdit.setText(UserDetail.username)
+        view.phoneNumEdit.setText(UserDetail.dialog_phoneNum)
 
         Picasso.get()
                 .load(profileUri)
@@ -88,6 +99,28 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
             intent.type = "image/*"
             intent.action = Intent.ACTION_GET_CONTENT
             startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_REQUEST)
+        }
+
+        view.maleGenderEdit.setOnClickListener {
+            val imgIcon = view.findViewById<TextView>(R.id.maleGenderEdit)
+            val backgroundGradient = imgIcon.background as GradientDrawable
+            backgroundGradient.setColor(resources.getColor(R.color.colorLightBlue))
+
+            val imgIcon2 = view.findViewById<TextView>(R.id.femaleGenderEdit)
+            val backgroundGradient2 = imgIcon2.background as GradientDrawable
+            backgroundGradient2.setColor(resources.getColor(R.color.colorLightGrey))
+            genderEdition = "Male"
+        }
+
+        view.femaleGenderEdit.setOnClickListener {
+            val imgIcon = view.findViewById<TextView>(R.id.femaleGenderEdit)
+            val backgroundGradient = imgIcon.background as GradientDrawable
+            backgroundGradient.setColor(resources.getColor(R.color.colorLightBlue))
+
+            val imgIcon2 = view.findViewById<TextView>(R.id.maleGenderEdit)
+            val backgroundGradient2 = imgIcon2.background as GradientDrawable
+            backgroundGradient2.setColor(resources.getColor(R.color.colorLightGrey))
+            genderEdition = "Female"
         }
 
 
@@ -118,8 +151,13 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
         Toast.makeText(applicationContext, "File Uploaded ", Toast.LENGTH_LONG).show()
 
         val tmpName = view.nameEdit.text.toString().trim()
+        tmpPhoneNum = view.phoneNumEdit.text.toString().trim()
 
-        mPresenter.saveInDatabse(uriTxt, tmpName, UserDetail.user_id)
+        UserDetail.username = tmpName
+        UserDetail.dialog_phoneNum = tmpPhoneNum
+        UserDetail.imageUrl = uriTxt
+
+        mPresenter.saveInDatabse(uriTxt, tmpName, UserDetail.user_id,tmpPhoneNum,genderEdition)
     }
 
 

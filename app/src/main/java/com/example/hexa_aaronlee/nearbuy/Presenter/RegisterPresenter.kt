@@ -14,11 +14,11 @@ public class RegisterPresenter(internal var view: RegisterView.View):RegisterVie
     lateinit var mStorage : FirebaseStorage
     lateinit var mDatafaceReference: DatabaseReference
 
-    override fun saveUserDataToDatabase(email:String,password:String,name:String,id:String,uriTxt:String) {
+    override fun saveUserDataToDatabase(email:String,password:String,name:String,id:String,uriTxt:String,gender : String , phoneNum : String) {
         mDatafaceReference = FirebaseDatabase.getInstance().reference.child("User")
 
 
-        val data = UserData(email,password,name,id,uriTxt,"Email")
+        val data = UserData(email,password,name,id,uriTxt,"Email",gender,phoneNum)
 
         mDatafaceReference.child(id).setValue(data)
     }

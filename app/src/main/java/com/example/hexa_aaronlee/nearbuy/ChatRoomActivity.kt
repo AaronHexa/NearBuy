@@ -63,7 +63,7 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
 
         Log.d("Selected Sale : " , UserDetail.saleSelectedId)
 
-        arrayMsgIDList = ArrayList<String>()
+        arrayMsgIDList = ArrayList()
         mProgressDialog = ProgressDialog(this)
 
         mPresenter.checkHistoryData(UserDetail.user_id,UserDetail.saleSelectedId,UserDetail.chatWithID)
@@ -71,7 +71,13 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
 
         sendButton.setOnClickListener {
             val messageText = messageArea.text.toString()
-            mPresenter.saveChatMsg(messageText, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser,UserDetail.saleSelectedId)
+            val df = SimpleDateFormat("dd/MM/yyyy")
+            val currentDate = df.format(Calendar.getInstance().time)
+            Log.i("Date : ", currentDate)
+            val df2 = SimpleDateFormat("HH:mm")
+            val currentTime = df2.format(Calendar.getInstance().time)
+            Log.i("Time : ", currentTime)
+            mPresenter.saveChatMsg(messageText, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser,UserDetail.saleSelectedId,currentTime,currentDate)
             mPresenter.saveMsgStatus(UserDetail.user_id,UserDetail.saleSelectedId,UserDetail.chatWithID)
         }
 
@@ -90,13 +96,6 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
         setting_clip.setOnClickListener {
             showDialogBox()
         }
-
-        val df = SimpleDateFormat("dd/MM/yyyy")
-        val currentDate = df.format(Calendar.getInstance().time)
-        Log.i("Date : ", currentDate)
-        val df2 = SimpleDateFormat("HH:mm")
-        val currentTime = df2.format(Calendar.getInstance().time)
-        Log.i("Time : ", currentTime)
     }
 
     override fun setEditTextEmpty() {
@@ -104,14 +103,14 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
     }
 
 
-    override fun addMsgChat(newMessagePage: Int, imageFileName: String, text: String, sender: String, type: String, arrayMsgIDList: ArrayList<String>) {
+    override fun addMsgChat(newMessagePage: Int, imageFileName: String, text: String, sender: String, type: String, arrayMsgIDList: ArrayList<String>,msgTime : String, msgDate : String) {
         this.newMessagePage = newMessagePage
         this.imageFileName = imageFileName
 
         val lp2 = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         lp2.weight = 1.0f
 
-        mPresenter.createMsgBubble(text, sender, type, applicationContext, UserDetail.user_id, lp2, layout1)
+        mPresenter.createMsgBubble(text, sender, type, applicationContext, UserDetail.user_id, lp2, layout1,msgTime,msgDate,UserDetail.chatWithName,UserDetail.username)
 
         scrollView?.fullScroll(View.FOCUS_DOWN)
     }
@@ -206,8 +205,13 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
     }
 
     override fun saveImageData(uriTxt: String) {
+        val df = SimpleDateFormat("dd/MM/yyyy")
+        val currentDate = df.format(Calendar.getInstance().time)
+        Log.i("Date : ", currentDate)
+        val df2 = SimpleDateFormat("HH:mm")
+        val currentTime = df2.format(Calendar.getInstance().time)
 
-        mPresenter.savePicMsg(uriTxt, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser,UserDetail.saleSelectedId)
+        mPresenter.savePicMsg(uriTxt, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser,UserDetail.saleSelectedId,currentTime,currentDate)
     }
 
     override fun uploadImageFailed() {

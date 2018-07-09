@@ -168,7 +168,9 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
         var personName: String = ""
         var personEmail: String = ""
         var personPhoto: String = ""
-        var password = "---"
+        val password = "---"
+        val gender = "Male"
+        val phoneNum = "---"
 
         val acct = GoogleSignIn.getLastSignedInAccount(applicationContext)
         if (acct != null) {
@@ -176,14 +178,14 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
             personEmail = acct.email.toString()
             personPhoto = acct.photoUrl.toString()
             Log.d("Data :","$personName...$user_id...$personEmail...$personPhoto")
-            updateNextPage(personEmail, password, user_id, personName, personPhoto)
+            updateNextPage(personEmail, password, user_id, personName, personPhoto,gender,phoneNum)
         }
 
     }
 
-    fun updateNextPage(email: String, password: String, user_id: String, name: String, profilePhoto: String) {
+    fun updateNextPage(email: String, password: String, user_id: String, name: String, profilePhoto: String,gender : String, phoneNum: String) {
 
-        presenter?.saveDataProcess(email, password, user_id, name, profilePhoto)
+        presenter?.saveDataProcess(email, password, user_id, name, profilePhoto,gender,phoneNum)
 
         val intent = Intent(applicationContext, MainPageActivity::class.java)
         startActivity(intent)

@@ -4,7 +4,9 @@ import android.net.Uri
 
 interface ProfileInfoView {
     interface View {
-        fun UpdateUI(profileImageUrl: String)
+        fun UpdateUI(profileImageUrl: String,
+                     userPhoneNum : String,
+                     userGender : String)
         fun uploadImageSuccess(uriTxt: String)
         fun uploadImageFailed()
         fun uploadImageError(exception: Exception)
@@ -19,6 +21,8 @@ interface ProfileInfoView {
 
         fun saveInDatabse(uriTxt: String,
                           tmpName: String,
-                          user_id: String)
+                          user_id: String,
+                          tmpPhoneNum : String,
+                          tmpGender : String)
     }
 }

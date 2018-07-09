@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".RegisterMainActivity"
-    android:background="#464646">
+    android:background="@color/colorGrey">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -106,6 +106,50 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="Gender"
+                android:textColor="@color/colorLightBlue"
+                android:textSize="18sp"
+                android:layout_marginStart="40dp"
+                android:layout_marginBottom="8dp"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/maleGenderRegister"
+                    android:padding="15dp"
+                    android:paddingStart="45dp"
+                    android:paddingEnd="45dp"
+                    android:text="Male"
+                    android:textSize="22sp"
+                    android:background="@drawable/round_btn_selection"
+                    android:textColor="@color/colorBlack"
+                    android:layout_marginEnd="10dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/femaleGenderRegister"
+                    android:padding="15dp"
+                    android:paddingStart="38dp"
+                    android:paddingEnd="38dp"
+                    android:text="Female"
+                    android:textSize="22sp"
+                    android:background="@drawable/round_btn_selection"
+                    android:textColor="@color/colorBlack"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="Phone Number"
                 android:textColor="@color/colorLightBlue"
                 android:textSize="18sp"
@@ -132,7 +176,9 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="18dp"
                 android:text="Register"
-                android:background="@drawable/round_corner_box"/>
+                android:background="@drawable/round_corner_box"
+                android:elevation="5dp"
+                android:translationZ="4dp"/>
 
         </LinearLayout>
 

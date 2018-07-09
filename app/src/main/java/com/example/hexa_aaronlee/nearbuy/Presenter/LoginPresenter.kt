@@ -10,11 +10,11 @@ public class LoginPresenter(internal var view: LoginView.View) : LoginView.Prese
 
     lateinit var mDatafaceReference : DatabaseReference
 
-    override fun saveDataProcess(email: String,password: String, user_id: String, name: String, profilePhoto: String)
+    override fun saveDataProcess(email: String,password: String, user_id: String, name: String, profilePhoto: String,gender :String , phoneNum : String)
     {
         mDatafaceReference = FirebaseDatabase.getInstance().getReference("User")
 
-        val data = UserData(email,password,name,user_id,profilePhoto,"Google")
+        val data = UserData(email,password,name,user_id,profilePhoto,"Google",gender,phoneNum)
 
         mDatafaceReference.child(user_id).setValue(data).addOnCompleteListener {
             System.out.println("Save Done !!!!!!!")
@@ -33,7 +33,7 @@ public class LoginPresenter(internal var view: LoginView.View) : LoginView.Prese
 
 
     override fun clickLoginBtn(email:String,password : String) {
-        var user = User(email,password)
+        val user = User(email,password)
         val isLoginSuccess = user.isDataVaild
         if(isLoginSuccess)
         {

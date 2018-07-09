@@ -14,6 +14,8 @@ import com.example.hexa_aaronlee.nearbuy.View.RegisterView
 import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_register_main.*
+import android.graphics.drawable.GradientDrawable
+import android.widget.TextView
 
 
 class RegisterMainActivity : AppCompatActivity(), RegisterView.View {
@@ -22,6 +24,8 @@ class RegisterMainActivity : AppCompatActivity(), RegisterView.View {
     var password: String = ""
     var name: String = ""
     var tmpID: String = ""
+    var genderSelection: String = ""
+    var numPhone : String = ""
 
 
     lateinit var firebaseAuth: FirebaseAuth
@@ -54,99 +58,121 @@ class RegisterMainActivity : AppCompatActivity(), RegisterView.View {
         registerLayout.setOnClickListener {
             hideKeyboard()
         }
+
+        maleGenderRegister.setOnClickListener {
+            val imgIcon = findViewById<TextView>(R.id.maleGenderRegister)
+            val backgroundGradient = imgIcon.background as GradientDrawable
+            backgroundGradient.setColor(resources.getColor(R.color.colorLightBlue))
+
+            val imgIcon2 = findViewById<TextView>(R.id.femaleGenderRegister)
+            val backgroundGradient2 = imgIcon2.background as GradientDrawable
+            backgroundGradient2.setColor(resources.getColor(R.color.colorLightGrey))
+            genderSelection = "Male"
+        }
+
+        femaleGenderRegister.setOnClickListener {
+            val imgIcon = findViewById<TextView>(R.id.femaleGenderRegister)
+            val backgroundGradient = imgIcon.background as GradientDrawable
+            backgroundGradient.setColor(resources.getColor(R.color.colorLightBlue))
+
+            val imgIcon2 = findViewById<TextView>(R.id.maleGenderRegister)
+            val backgroundGradient2 = imgIcon2.background as GradientDrawable
+            backgroundGradient2.setColor(resources.getColor(R.color.colorLightGrey))
+            genderSelection = "Female"
+        }
+}
+
+fun hideKeyboard() {
+    val view = this.currentFocus
+    if (view != null) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+}
+
+fun registerProcess() {
+    //getting email and password from edit texts
+    email = emailRegister.text.toString().trim()
+    password = passwordRegister.text.toString().trim()
+    name = nameRegister.text.toString().trim()
+    numPhone = phoneRegister.text.toString().trim()
+
+    //checking if email and passwords are empty
+    if (TextUtils.isEmpty(email)) {
+        Toast.makeText(this, "Please enter email", Toast.LENGTH_LONG).show()
+        return
     }
 
-    fun hideKeyboard()
-    {
-        val view = this.currentFocus
-        if (view != null) {
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(view.windowToken, 0)
-        }
+    if (TextUtils.isEmpty(password)) {
+        Toast.makeText(this, "Please enter password", Toast.LENGTH_LONG).show()
+        return
     }
 
-    fun registerProcess() {
-        //getting email and password from edit texts
-        email = emailRegister.text.toString().trim()
-        password = passwordRegister.text.toString().trim()
-        name = nameRegister.text.toString().trim()
+    //if the email and password are not empty
+    //displaying a progress dialog
+    val progressDialog = ProgressDialog(this)
+    progressDialog.setMessage("Registering Please Wait...")
+    progressDialog.show()
 
-        //checking if email and passwords are empty
-        if (TextUtils.isEmpty(email)) {
-            Toast.makeText(this, "Please enter email", Toast.LENGTH_LONG).show()
-            return
-        }
+    //creating a new user
+    firebaseAuth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                //checking if success
+                if (task.isSuccessful) {
 
-        if (TextUtils.isEmpty(password)) {
-            Toast.makeText(this, "Please enter password", Toast.LENGTH_LONG).show()
-            return
-        }
+                    val user = FirebaseAuth.getInstance().currentUser
+                    tmpID = user!!.uid
+                    println(" This is the current uid : $tmpID")
 
-        //if the email and password are not empty
-        //displaying a progress dialog
-        val progressDialog = ProgressDialog(this)
-        progressDialog.setMessage("Registering Please Wait...")
-        progressDialog.show()
-
-        //creating a new user
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) { task ->
-                    //checking if success
-                    if (task.isSuccessful) {
-
-                        val user = FirebaseAuth.getInstance().currentUser
-                        tmpID = user!!.uid
-                        println(" This is the current uid : $tmpID")
-
-                        if (imageEdited == 0) {
-                            filePath = Uri.parse("android.resource://" + applicationContext.packageName + "/drawable/guest_icon")
-                        }
-
-                        //save Profile Pic to Storage
-                        mPresenter.saveProfilePicToStorage(tmpID, filePath)
-
-                    } else {
-                        //display some message here
-                        Toast.makeText(this, "Registration Error", Toast.LENGTH_LONG).show()
+                    if (imageEdited == 0) {
+                        filePath = Uri.parse("android.resource://" + applicationContext.packageName + "/drawable/guest_icon")
                     }
-                    progressDialog.dismiss()
+
+                    //save Profile Pic to Storage
+                    mPresenter.saveProfilePicToStorage(tmpID, filePath)
+
+                } else {
+                    //display some message here
+                    Toast.makeText(this, "Registration Error", Toast.LENGTH_LONG).show()
                 }
-    }
-
-    override fun toastUploadSuccess(uriTxt: String) {
-        Toast.makeText(this, "Successfully Uploaded :)", Toast.LENGTH_LONG).show()
-
-        //save in database
-        mPresenter.saveUserDataToDatabase(email, password, name, tmpID, uriTxt)
-        finish()
-        startActivity(Intent(applicationContext, MainPageActivity::class.java))
-    }
-
-    override fun toastUploadFailed(e: Exception) {
-        Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()
-    }
-
-    fun chooseImageProcess() {
-
-        val intent = Intent()
-        intent.type = "image/*"
-        intent.action = Intent.ACTION_GET_CONTENT
-        startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_REQUEST)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-
-        if (resultCode == RESULT_OK) {
-            if (requestCode == PICK_IMAGE_REQUEST) {
-                filePath = data!!.data
-                Picasso.get()
-                        .load(filePath)
-                        .resize(200, 200)
-                        .centerCrop()
-                        .into(userPicSet)
-
+                progressDialog.dismiss()
             }
-            super.onActivityResult(requestCode, resultCode, data)
+}
+
+override fun toastUploadSuccess(uriTxt: String) {
+    Toast.makeText(this, "Successfully Uploaded :)", Toast.LENGTH_LONG).show()
+
+    //save in database
+    mPresenter.saveUserDataToDatabase(email, password, name, tmpID, uriTxt,genderSelection,numPhone)
+    finish()
+    startActivity(Intent(applicationContext, MainPageActivity::class.java))
+}
+
+override fun toastUploadFailed(e: Exception) {
+    Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()
+}
+
+fun chooseImageProcess() {
+
+    val intent = Intent()
+    intent.type = "image/*"
+    intent.action = Intent.ACTION_GET_CONTENT
+    startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_REQUEST)
+}
+
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+    if (resultCode == RESULT_OK) {
+        if (requestCode == PICK_IMAGE_REQUEST) {
+            filePath = data!!.data
+            Picasso.get()
+                    .load(filePath)
+                    .resize(200, 200)
+                    .centerCrop()
+                    .into(userPicSet)
+
         }
+        super.onActivityResult(requestCode, resultCode, data)
     }
+}
 }

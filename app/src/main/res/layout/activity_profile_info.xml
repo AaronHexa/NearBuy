@@ -85,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/editbox_underline"
-                android:ems="10"
+                android:layout_marginStart="20dp"
                 android:focusable="false"
                 android:inputType="textEmailAddress"
                 android:textSize="22sp"
@@ -104,15 +104,27 @@
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/phoneNum"
+                android:id="@+id/profilePhoneNum"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/editbox_underline"
-                android:ems="10"
+                android:layout_marginStart="20dp"
                 android:focusable="false"
                 android:inputType="phone"
                 android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/profileGenderTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="12dp"
+                android:text="Gender"
+                android:textColor="@color/colorLightBlue"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -129,24 +141,11 @@
                     android:paddingStart="50dp"
                     android:paddingEnd="50dp"
                     android:textStyle="bold"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/colorBlack"
                     android:textSize="22sp"
-                    android:background="@color/colorPrimary"
-                    android:text="Male"
+                    android:background="@drawable/round_btn_selection"
+                    android:id="@+id/profileGender"
                     android:enabled="true" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp"
-                    android:paddingStart="50dp"
-                    android:paddingEnd="50dp"
-                    android:textStyle="bold"
-                    android:textColor="@color/colorLightGrey"
-                    android:textSize="22sp"
-                    android:background="@color/colorDarkBlue"
-                    android:text="Female"
-                    />
 
             </LinearLayout>
 

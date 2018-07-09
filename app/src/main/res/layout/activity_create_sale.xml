@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".CreateSaleActivity">
+    tools:context=".CreateSaleActivity"
+    android:background="@color/colorGrey">
 
     <ScrollView
         android:id="@+id/scrollViewCreateActivity"
@@ -28,8 +29,9 @@
                 android:layout_gravity="center"
                 android:layout_margin="12dp"
                 android:text="Create Sale"
-                android:textSize="30sp"
-                android:textStyle="bold" />
+                android:textSize="33sp"
+                android:textStyle="bold"
+                android:textColor="@color/coloLightOrange"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -44,7 +46,8 @@
                     android:layout_margin="10dp"
                     android:text="Title Sale : "
                     android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textColor="@color/colorPrimaryLight"/>
 
                 <EditText
                     android:id="@+id/titleTxt"
@@ -52,19 +55,23 @@
                     android:layout_height="wrap_content"
                     android:hint="Title"
                     android:inputType="textPersonName"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:textColor="@color/colorLightBlue"
+                    android:textColorHint="@color/colorPrimaryLight"
+                    android:backgroundTint="@color/colorPrimaryLight"/>
 
 
             </LinearLayout>
 
             <TextView
-                android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:text="Description : "
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryLight"
+                />
 
             <EditText
                 android:id="@+id/editTxtDescription"
@@ -75,7 +82,10 @@
                 android:layout_marginStart="18dp"
                 android:hint="Write more about the product"
                 android:inputType="textMultiLine"
-                android:maxLines="12" />
+                android:maxLines="12"
+                android:textColor="@color/colorLightBlue"
+                android:textColorHint="@color/colorPrimaryLight"
+                android:backgroundTint="@color/colorPrimaryLight"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -90,14 +100,18 @@
                     android:layout_margin="10dp"
                     android:text="Price : RM "
                     android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textColor="@color/colorPrimaryLight"/>
 
 
                 <EditText
                     android:id="@+id/priceTxt"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal" />
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/colorLightBlue"
+                    android:textColorHint="@color/colorPrimaryLight"
+                    android:backgroundTint="@color/colorPrimaryLight"/>
 
 
             </LinearLayout>
@@ -110,7 +124,8 @@
                 android:layout_marginTop="10dp"
                 android:text="Item Picture : "
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryLight"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -146,7 +161,8 @@
                     android:layout_marginStart="12dp"
                     android:text="Please Select Shop Location "
                     android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textColor="@color/colorPrimaryLight"/>
 
             </LinearLayout>
 
@@ -160,7 +176,10 @@
                 android:layout_marginRight="15dp"
                 android:hint="Type in Your Address"
                 android:inputType="textMultiLine"
-                android:maxLines="5" />
+                android:maxLines="5"
+                android:textColor="@color/colorLightBlue"
+                android:textColorHint="@color/colorPrimaryLight"
+                android:backgroundTint="@color/colorPrimaryLight"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -195,7 +214,9 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="20dp"
-                    android:text="cancel" />
+                    android:text="cancel"
+                    android:elevation="5dp"
+                    android:translationZ="4dp" />
 
                 <Button
                     android:id="@+id/createBtn"
@@ -203,7 +224,9 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_margin="10dp"
-                    android:text="Done" />
+                    android:text="Done"
+                    android:elevation="5dp"
+                    android:translationZ="4dp"/>
 
             </LinearLayout>
 

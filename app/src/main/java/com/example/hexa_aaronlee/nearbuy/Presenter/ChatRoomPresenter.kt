@@ -14,6 +14,7 @@ import android.widget.TextView
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.HistoryData
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.MessageData
 import com.example.hexa_aaronlee.nearbuy.R
+import com.example.hexa_aaronlee.nearbuy.UserDetail
 import com.example.hexa_aaronlee.nearbuy.View.ChatRoomView
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
@@ -89,7 +90,7 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
 
     }
 
-    override fun saveChatMsg(messageText: String, user_id: String, arrayMsgIDList: ArrayList<String>, newMessagePage: Int, selectedUser: String, sale_id: String) {
+    override fun saveChatMsg(messageText: String, user_id: String, arrayMsgIDList: ArrayList<String>, newMessagePage: Int, selectedUser: String, sale_id: String,currentTime:String, currentDate: String) {
         databaseRef = FirebaseDatabase.getInstance().reference.child("History")
         databaseRef2 = FirebaseDatabase.getInstance().reference.child("History")
 
@@ -106,6 +107,8 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
                 map["userSend"] = user_id
                 map["message_id"] = num.toString()
                 map["msg_type"] = "Text"
+                map["msgTime"] = currentTime
+                map["msgDate"] = currentDate
 
                 databaseRef.child(user_id).child(selectedUser).child(sale_id).child(num.toString()).setValue(map)
                 databaseRef2.child(selectedUser).child(user_id).child(sale_id).child(num.toString()).setValue(map)
@@ -117,7 +120,7 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
             if (messageText != "") {
                 val map = HashMap<String, String>()
 
-                val i = arrayMsgIDList.get(arrayMsgIDList.size.minus(1))
+                val i = arrayMsgIDList[arrayMsgIDList.size.minus(1)]
                 val num = Integer.parseInt(i) + 1
 
 
@@ -125,6 +128,8 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
                 map["userSend"] = user_id
                 map["message_id"] = num.toString()
                 map["msg_type"] = "Text"
+                map["msgTime"] = currentTime
+                map["msgDate"] = currentDate
 
                 databaseRef.child(user_id).child(selectedUser).child(sale_id).child(num.toString()).setValue(map)
                 databaseRef2.child(selectedUser).child(user_id).child(sale_id).child(num.toString()).setValue(map)
@@ -134,7 +139,7 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
         }
     }
 
-    override fun savePicMsg(uriTxt: String, user_id: String, arrayMsgIDList: ArrayList<String>, newMessagePage: Int, selectedUser: String, sale_id: String) {
+    override fun savePicMsg(uriTxt: String, user_id: String, arrayMsgIDList: ArrayList<String>, newMessagePage: Int, selectedUser: String, sale_id: String,currentTime:String, currentDate: String) {
         databaseRef = FirebaseDatabase.getInstance().reference.child("History")
         databaseRef2 = FirebaseDatabase.getInstance().reference.child("History")
 
@@ -150,6 +155,8 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
             map["userSend"] = user_id
             map["message_id"] = num.toString()
             map["msg_type"] = "Picture"
+            map["msgTime"] = currentTime
+            map["msgDate"] = currentDate
 
             databaseRef.child(user_id).child(selectedUser).child(sale_id).child(num.toString()).setValue(map)
             databaseRef2.child(selectedUser).child(user_id).child(sale_id).child(num.toString()).setValue(map)
@@ -169,6 +176,8 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
             map["userSend"] = user_id
             map["message_id"] = num.toString()
             map["msg_type"] = "Picture"
+            map["msgTime"] = currentTime
+            map["msgDate"] = currentDate
 
             databaseRef.child(user_id).child(selectedUser).child(sale_id).child(num.toString()).setValue(map)
             databaseRef2.child(selectedUser).child(user_id).child(sale_id).child(num.toString()).setValue(map)
@@ -218,49 +227,116 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
         dialog.dismiss()
     }
 
-    override fun createMsgBubble(text: String, sender: String, type: String, context: Context, user_id: String, lp2: LinearLayout.LayoutParams, layout1: LinearLayout) {
-        if (type == "Text") {
-            val textView = TextView(context)
-            textView.text = text
-            textView.textSize = 20f
-            textView.typeface = Typeface.DEFAULT_BOLD
-            textView.maxLines = 100
+    override fun createMsgBubble(text: String, sender: String, type: String, context: Context, user_id: String, lp2: LinearLayout.LayoutParams, layout1: LinearLayout, msgTime : String, msgDate : String, chatWithUsername: String,username:String) {
 
+        val layoutChatBox = LinearLayout(context)
+        layoutChatBox.orientation = LinearLayout.VERTICAL
+        val lpChatBox = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT)
+
+        val timeChat = TextView(context) //gravity bottom or start/end
+        timeChat.textSize = 10f
+        val lpTC = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT)
+
+        val senderName = TextView(context) //gravity top or start/end
+        senderName.textSize = 12f
+        senderName.typeface = Typeface.DEFAULT_BOLD
+        val lpSN = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT)
+
+        if (type == "Text") {
+            val chatText = TextView(context)
+            chatText.text = text
+            chatText.textSize = 20f
+            chatText.typeface = Typeface.DEFAULT_BOLD
+            chatText.maxLines = 100
 
             if (sender == user_id) {
-                lp2.gravity = Gravity.END
-                lp2.topMargin = 13
-                textView.gravity = Gravity.CENTER or Gravity.START
-                textView.setBackgroundResource(R.drawable.speech_bubble2)
-                textView.setTextColor(Color.parseColor("#696969"))
+                lpChatBox.gravity = Gravity.END
+                lpChatBox.topMargin = 13
+                lp2.gravity = Gravity.CENTER or Gravity.START
+                layoutChatBox.setBackgroundResource(R.drawable.bubble_txt)
+                chatText.setTextColor(Color.parseColor("#696969"))
+
+                lpTC.gravity = Gravity.BOTTOM or Gravity.END
+                timeChat.setTextColor(Color.parseColor("#000000"))
+                timeChat.text = msgTime
+
+                lpSN.gravity = Gravity.TOP or Gravity.START
+                senderName.setTextColor(Color.parseColor("#ffb732"))
+                senderName.text = username
 
             } else {
-                lp2.gravity = Gravity.START
-                lp2.topMargin = 18
-                textView.gravity = Gravity.CENTER or Gravity.START
-                textView.setBackgroundResource(R.drawable.speech_bubble)
-                textView.setTextColor(Color.parseColor("#D3D3D3"))
+                lpChatBox.gravity = Gravity.START
+                lpChatBox.topMargin = 18
+                lp2.gravity = Gravity.CENTER or Gravity.START
+                layoutChatBox.setBackgroundResource(R.drawable.speech_bubble)
+                chatText.setTextColor(Color.parseColor("#D3D3D3"))
+
+                lpTC.gravity = Gravity.BOTTOM or Gravity.END
+                timeChat.setTextColor(Color.parseColor("#000000"))
+                timeChat.text = msgTime
+
+                lpSN.gravity = Gravity.TOP or Gravity.START
+                senderName.setTextColor(Color.parseColor("#ffb732"))
+
+                senderName.text = chatWithUsername
             }
 
-            textView.layoutParams = lp2
-            layout1.addView(textView)
+            layoutChatBox.layoutParams = lpChatBox
+            chatText.layoutParams = lp2
+            timeChat.layoutParams = lpTC
+            senderName.layoutParams = lpSN
+
+            layoutChatBox.addView(senderName)
+            layoutChatBox.addView(chatText)
+            layoutChatBox.addView(timeChat)
+
+            layout1.addView(layoutChatBox)
+
         } else if (type == "Picture") {
             val tmpUri = Uri.parse(text)
             val imageView = ImageView(context)
 
+            val lpImage=LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT)
+
             if (sender == user_id) {
-                lp2.gravity = Gravity.END
-                lp2.topMargin = 10
-                imageView.setBackgroundResource(R.drawable.speech_bubble2)
+                lpChatBox.gravity = Gravity.END
+                lpChatBox.topMargin = 10
+                layoutChatBox.setBackgroundResource(R.drawable.bubble_txt)
+
+                lpTC.gravity = Gravity.BOTTOM or Gravity.END
+                timeChat.setTextColor(Color.parseColor("#000000"))
+                timeChat.text = msgTime
+
+                lpSN.gravity = Gravity.TOP or Gravity.START
+                senderName.setTextColor(Color.parseColor("#ffb732"))
+                senderName.text = username
 
             } else {
-                lp2.gravity = Gravity.START
-                lp2.topMargin = 15
-                imageView.setBackgroundResource(R.drawable.speech_bubble)
+                lpChatBox.gravity = Gravity.START
+                lpChatBox.topMargin = 15
+
+                layoutChatBox.setBackgroundResource(R.drawable.speech_bubble)
+
+                lpTC.gravity = Gravity.BOTTOM or Gravity.END
+                timeChat.setTextColor(Color.parseColor("#000000"))
+                timeChat.text = msgTime
+
+                lpSN.gravity = Gravity.TOP or Gravity.START
+                senderName.setTextColor(Color.parseColor("#ffb732"))
+                senderName.text = chatWithUsername
             }
 
-            imageView.layoutParams = lp2
-            layout1.addView(imageView)
+            layoutChatBox.layoutParams = lpChatBox
+            imageView.layoutParams = lpImage
+            timeChat.layoutParams = lpTC
+            senderName.layoutParams = lpSN
+
+            layoutChatBox.addView(senderName)
+            layoutChatBox.addView(imageView)
+            layoutChatBox.addView(timeChat)
+
+
+            layout1.addView(layoutChatBox)
 
             Picasso.get()
                     .load(tmpUri)
@@ -283,12 +359,11 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
             override fun onChildAdded(dataSnapshot: DataSnapshot, p1: String?) {
                 val newMessagePage = 1
                 val map = dataSnapshot.getValue(MessageData::class.java)
-                Log.i("hahahaha","iaoskdasjkndak")
                 if (map != null) {
                     val imageFileName = map.message_id
                     arrayMsgIDList.add(map.message_id)
 
-                    view.addMsgChat(newMessagePage, imageFileName, map.messageText, map.userSend, map.msg_type, arrayMsgIDList)
+                    view.addMsgChat(newMessagePage, imageFileName, map.messageText, map.userSend, map.msg_type, arrayMsgIDList,map.msgTime,map.msgDate)
                 }
             }
 

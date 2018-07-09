@@ -18,7 +18,9 @@ public interface ChatRoomView {
                        text: String,
                        sender: String,
                        type: String,
-                       arrayMsgIDList: ArrayList<String>)
+                       arrayMsgIDList: ArrayList<String>,
+                       msgTime : String,
+                       msgDate: String)
 
         fun viewLargeImage(tmpUri: Uri)
     }
@@ -29,14 +31,18 @@ public interface ChatRoomView {
                         arrayMsgIDList: ArrayList<String>,
                         newMessagePage: Int,
                         selectedUser: String,
-                        sale_id: String)
+                        sale_id: String,
+                        currentTime:String,
+                        currentDate: String)
 
         fun savePicMsg(uriTxt: String,
                        user_id: String,
                        arrayMsgIDList: ArrayList<String>,
                        newMessagePage: Int,
                        selectedUser: String,
-                       sale_id: String)
+                       sale_id: String,
+                       currentTime:String,
+                       currentDate: String)
 
         fun comfrimationPicSend(newMessagePage: Int,
                                 user_id: String,
@@ -51,7 +57,11 @@ public interface ChatRoomView {
                             context: Context,
                             user_id: String,
                             lp2: LinearLayout.LayoutParams,
-                            layout1: LinearLayout)
+                            layout1: LinearLayout,
+                            msgTime : String,
+                            msgDate: String,
+                            chatWithUsername : String,
+                            username : String)
 
         fun retrieveMsgData(user_id: String,
                             selectedUser: String,

@@ -21,6 +21,8 @@ public interface LoginView {
                             password: String,
                             user_id: String,
                             name: String,
-                            profilePhoto: String)
+                            profilePhoto: String,
+                            gender : String,
+                            phoneNum : String)
     }
 }

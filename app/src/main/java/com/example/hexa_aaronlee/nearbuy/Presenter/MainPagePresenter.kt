@@ -115,7 +115,7 @@ public class MainPagePresenter(internal var view : MainPageView.View) : MainPage
     fun goGetDistanceData(userIdArray: ArrayList<String>,countNum : Int,arrayMarker: ArrayList<Marker>, saleArray: ArrayList<String>, offerIdArray: ArrayList<String>,mMap: GoogleMap,mLongitude : Double, mLatitude :Double) {
         databaseR = FirebaseDatabase.getInstance().reference.child("SaleDetail").child(userIdArray[countNum])
 
-        val result: FloatArray = FloatArray(10)
+        val result = FloatArray(10)
 
         databaseR.addChildEventListener(object : ChildEventListener {
             override fun onCancelled(p0: DatabaseError) {

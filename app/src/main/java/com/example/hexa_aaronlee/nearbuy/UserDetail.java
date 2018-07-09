@@ -13,6 +13,8 @@ public class UserDetail {
     static String imageUrl = " ";
     static String chatWithImageUri = "";
 
+    static String dialog_phoneNum = "";
+
     static String locationSelected = "";
     static String saleSelectedId = "";
     static String saleSelectedUserId = "";

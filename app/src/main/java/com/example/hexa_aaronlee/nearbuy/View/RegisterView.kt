@@ -13,7 +13,9 @@ public interface RegisterView {
                                    password: String,
                                    name: String,
                                    id: String,
-                                   uriTxt: String)
+                                   uriTxt: String,
+                                   gender : String,
+                                   phoneNum : String)
 
         fun saveProfilePicToStorage(tmpID: String,
                                     filePath: Uri)

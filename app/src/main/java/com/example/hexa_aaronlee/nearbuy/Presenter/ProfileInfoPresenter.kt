@@ -1,6 +1,7 @@
 package com.example.hexa_aaronlee.nearbuy.Presenter
 
 import android.net.Uri
+import android.util.Log
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
 import com.example.hexa_aaronlee.nearbuy.View.ProfileInfoView
 import com.google.firebase.database.*
@@ -20,8 +21,9 @@ class ProfileInfoPresenter(internal var view : ProfileInfoView.View) : ProfileIn
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val data = dataSnapshot.getValue(UserData::class.java)!!
                 val profileImageUrl = data.profilePhoto
+                val userPhoneNum = data.phoneNum
 
-                view.UpdateUI(profileImageUrl)
+                view.UpdateUI(profileImageUrl,userPhoneNum,data.gender)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -64,7 +66,7 @@ class ProfileInfoPresenter(internal var view : ProfileInfoView.View) : ProfileIn
                             if (task.isSuccessful) {
                                 val downloadUri = task.result
 
-                                println("....Download url....>>>" + downloadUri.toString())
+                                Log.i("uri :" , downloadUri.toString())
 
                                 view.uploadImageSuccess(downloadUri.toString())
 
@@ -81,13 +83,17 @@ class ProfileInfoPresenter(internal var view : ProfileInfoView.View) : ProfileIn
         }
     }
 
-    override fun saveInDatabse(uriTxt: String, tmpName: String,user_id: String) {
+    override fun saveInDatabse(uriTxt: String, tmpName: String,user_id: String,tmpPhoneNum:String, tmpGender : String) {
         databaseR = FirebaseDatabase.getInstance().reference.child("User")
 
 
         databaseR.child(user_id).child("profilePhoto").setValue(uriTxt)
 
         databaseR.child(user_id).child("name").setValue(tmpName)
+
+        databaseR.child(user_id).child("phoneNum").setValue(tmpPhoneNum)
+
+        databaseR.child(user_id).child("gender").setValue(tmpGender)
     }
 
 }
