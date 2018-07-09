@@ -246,25 +246,25 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
             when (action) {
                 MotionEvent.ACTION_DOWN -> {
                     scrollViewCreateActivity.requestDisallowInterceptTouchEvent(true)
-                    return@setOnTouchListener false
+                     false
                 }
 
                 MotionEvent.ACTION_UP -> {
                     scrollViewCreateActivity.requestDisallowInterceptTouchEvent(false)
-                    return@setOnTouchListener true
+                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
                     scrollViewCreateActivity.requestDisallowInterceptTouchEvent(true)
-                    return@setOnTouchListener false
+                     false
                 }
-                else -> return@setOnTouchListener true
+                else ->  true
             }
 
         })
 
         createBtn.setOnClickListener {
             //displaying a progress dialog
-/*
+
             progressDialog.setMessage("Uploading Please Wait...")
             progressDialog.show()
 
@@ -274,14 +274,10 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
                 filePath = Uri.parse("android.resource://" + applicationContext.packageName + "/drawable/gallery_ic")
                 mPresenter.savePicToStorage(applicationContext, filePath, salesId)
             }
-            */
-            setLocation("sksksk","lklklk")
-
         }
 
         cancelCreateBtn.setOnClickListener {
             finish()
-            //startActivity(Intent(applicationContext, MainPageActivity::class.java))
         }
 
         createSaleLayout.setOnClickListener {
@@ -371,7 +367,6 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
     }
 
     override fun onBackPressed() {
-        //startActivity(Intent(applicationContext, MainPageActivity::class.java))
         finish()
     }
 }

@@ -46,7 +46,8 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
         setContentView(R.layout.activity_chat_room)
 
         selectedUser = UserDetail.chatWithID
-        newMessagePage = 0
+
+        newMessagePage = 0 //check the message has data a not
 
         chatName.text = UserDetail.chatWithName
 
@@ -70,13 +71,15 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
         mPresenter.retrieveMsgData(UserDetail.user_id, selectedUser, arrayMsgIDList,UserDetail.saleSelectedId)
 
         sendButton.setOnClickListener {
-            val messageText = messageArea.text.toString()
+
+            val messageText = messageArea.text.toString()  //get current date and time
             val df = SimpleDateFormat("dd/MM/yyyy")
             val currentDate = df.format(Calendar.getInstance().time)
             Log.i("Date : ", currentDate)
             val df2 = SimpleDateFormat("HH:mm")
             val currentTime = df2.format(Calendar.getInstance().time)
             Log.i("Time : ", currentTime)
+
             mPresenter.saveChatMsg(messageText, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser,UserDetail.saleSelectedId,currentTime,currentDate)
             mPresenter.saveMsgStatus(UserDetail.user_id,UserDetail.saleSelectedId,UserDetail.chatWithID)
         }
@@ -103,7 +106,15 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
     }
 
 
-    override fun addMsgChat(newMessagePage: Int, imageFileName: String, text: String, sender: String, type: String, arrayMsgIDList: ArrayList<String>,msgTime : String, msgDate : String) {
+    override fun addMsgChat(newMessagePage: Int,
+                            imageFileName: String,
+                            text: String,
+                            sender: String,
+                            type: String,
+                            arrayMsgIDList: ArrayList<String>,
+                            msgTime : String,
+                            msgDate : String) {
+
         this.newMessagePage = newMessagePage
         this.imageFileName = imageFileName
 
@@ -139,7 +150,7 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
         dialog.show()
     }
 
-    fun chooseImageSent() {
+    fun chooseImageSent() { //Select Image from internal storage
 
         val intent = Intent()
         intent.type = "image/*"
@@ -161,6 +172,7 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
     }
 
     override fun viewLargeImage(tmpUri: Uri) {
+
         val mBuilder = android.support.v7.app.AlertDialog.Builder(this)
         val mView = layoutInflater.inflate(R.layout.dialog_image, null)
         val photoView = mView.findViewById<PhotoView>(R.id.photoView)
@@ -170,9 +182,11 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
         mBuilder.setView(mView)
         val mDialog = mBuilder.create()
         mDialog.show()
+
     }
 
     fun confirmSharePic(filePath:Uri) {
+
         val builder = AlertDialog.Builder(this)
         val inflates = this.layoutInflater
         val customDialog = inflates.inflate(R.layout.share_pic_box, null)
@@ -205,6 +219,7 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
     }
 
     override fun saveImageData(uriTxt: String) {
+
         val df = SimpleDateFormat("dd/MM/yyyy")
         val currentDate = df.format(Calendar.getInstance().time)
         Log.i("Date : ", currentDate)
@@ -231,7 +246,6 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
     }
 
     override fun onBackPressed() {
-        //startActivity(Intent(applicationContext, ChatHistoryActivity::class.java))
         finish()
     }
 }
