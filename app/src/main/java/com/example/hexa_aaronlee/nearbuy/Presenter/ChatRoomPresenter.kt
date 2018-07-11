@@ -5,8 +5,6 @@ import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
-import android.support.v7.app.AlertDialog
-import android.util.Log
 import android.view.Gravity
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -14,13 +12,10 @@ import android.widget.TextView
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.HistoryData
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.MessageData
 import com.example.hexa_aaronlee.nearbuy.R
-import com.example.hexa_aaronlee.nearbuy.UserDetail
 import com.example.hexa_aaronlee.nearbuy.View.ChatRoomView
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
-import com.github.chrisbanes.photoview.PhotoView
-import com.google.firebase.database.collection.LLRBNode
 
 
 public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomView.Presenter {

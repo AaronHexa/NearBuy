@@ -1,6 +1,5 @@
-package com.example.hexa_aaronlee.nearbuy
+package com.example.hexa_aaronlee.nearbuy.Activity
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -8,7 +7,6 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.transition.Visibility
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +15,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.HistoryData
+import com.example.hexa_aaronlee.nearbuy.Adapter.EmptyListAdapter
 import com.example.hexa_aaronlee.nearbuy.Presenter.ChatHistoryPresenter
+import com.example.hexa_aaronlee.nearbuy.R
 import com.example.hexa_aaronlee.nearbuy.R.layout.list_view_design
 import com.example.hexa_aaronlee.nearbuy.View.ChatHistoryView
 import com.google.firebase.database.*
@@ -178,7 +178,7 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
 
                     Log.i("Get Data Chart Users : ", "${UserDetail.chatWithID}....${UserDetail.chatWithName}")
 
-                    getHistoryData(UserDetail.user_id,UserDetail.saleSelectedId)
+                    getHistoryData(UserDetail.user_id, UserDetail.saleSelectedId)
 
                     val intent = Intent(itemView.context, ChatRoomActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK

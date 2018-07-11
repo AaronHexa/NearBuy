@@ -1,4 +1,4 @@
-package com.example.hexa_aaronlee.nearbuy;
+package com.example.hexa_aaronlee.nearbuy.Activity;
 
 public class UserDetail {
     static String username = "";

@@ -1,4 +1,4 @@
-package com.example.hexa_aaronlee.nearbuy
+package com.example.hexa_aaronlee.nearbuy.Adapter
 
 import android.content.Context
 import android.widget.TextView
@@ -12,10 +12,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
 import android.support.v7.widget.CardView
+import com.example.hexa_aaronlee.nearbuy.Activity.UserDetail
+import com.example.hexa_aaronlee.nearbuy.Activity.ViewSaleDetailsActivity
+import com.example.hexa_aaronlee.nearbuy.R
 import com.squareup.picasso.Picasso
 
 
-class RecyclerViewAdapter(private val mContext: Context, private val mData: List<DealsDetailData>) : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
+class RecyclerViewAdapter(private val mContext: Context, private val mData: List<DealsDetailData>, private val userLatitude: Double, private val userLongitude:Double) : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
@@ -39,13 +42,16 @@ class RecyclerViewAdapter(private val mContext: Context, private val mData: List
 
         val result: FloatArray = FloatArray(10)
 
-        Location.distanceBetween(UserDetail.mLatitude, UserDetail.mLongitude, mData[position].mLatitude.toDouble(), mData[position].mLongitude.toDouble(), result)
+        Location.distanceBetween(userLatitude, userLongitude, mData[position].mLatitude.toDouble(), mData[position].mLongitude.toDouble(), result)
         holder.distance.text = String.format("%.2f", (result[0] / 1000)) + " km"
         holder.cardView.setOnClickListener {
-            UserDetail.saleSelectedId = mData[position].sales_id
-            UserDetail.saleSelectedUserId = mData[position].offer_id
+
 
             val intent = Intent(mContext, ViewSaleDetailsActivity::class.java)
+
+            intent.putExtra("saleID",mData[position].sales_id)
+            intent.putExtra("offerID",mData[position].offer_id)
+
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             mContext.startActivity(intent)
         }

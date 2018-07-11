@@ -1,4 +1,4 @@
-package com.example.hexa_aaronlee.nearbuy
+package com.example.hexa_aaronlee.nearbuy.Adapter
 
 import android.content.Context
 import android.graphics.Typeface

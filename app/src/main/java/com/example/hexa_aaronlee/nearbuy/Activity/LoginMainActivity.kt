@@ -1,4 +1,4 @@
-package com.example.hexa_aaronlee.nearbuy
+package com.example.hexa_aaronlee.nearbuy.Activity
 
 import android.app.ProgressDialog
 import android.content.Context
@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 
 import android.widget.Toast
 import com.example.hexa_aaronlee.nearbuy.Presenter.LoginPresenter
+import com.example.hexa_aaronlee.nearbuy.R
 import com.example.hexa_aaronlee.nearbuy.View.LoginView
 import kotlinx.android.synthetic.main.activity_login_main.*
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -117,7 +118,7 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
                 Toast.makeText(this, "Google sign in failed" + e, Toast.LENGTH_SHORT).show()
-                // ...
+
             }
 
         }
@@ -159,7 +160,6 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
                         Toast.makeText(applicationContext, "Authentication Failed.", Toast.LENGTH_SHORT).show()
                     }
 
-                    // ...
                 }
     }
 

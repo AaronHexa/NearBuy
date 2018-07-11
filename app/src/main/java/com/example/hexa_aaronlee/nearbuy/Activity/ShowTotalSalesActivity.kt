@@ -1,13 +1,13 @@
-package com.example.hexa_aaronlee.nearbuy
+package com.example.hexa_aaronlee.nearbuy.Activity
 
-import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import com.example.hexa_aaronlee.nearbuy.Presenter.ShowTotalSalesPresenter
+import com.example.hexa_aaronlee.nearbuy.R
+import com.example.hexa_aaronlee.nearbuy.Adapter.RecyclerViewAdapter
 import com.example.hexa_aaronlee.nearbuy.View.ShowTotalSalesView
 import kotlinx.android.synthetic.main.activity_show_total_sales.*
 
@@ -37,7 +37,7 @@ class ShowTotalSalesActivity : AppCompatActivity(), ShowTotalSalesView.View {
                 lstSaleData = ArrayList()
                 checkBoxLimitation.isChecked = true
                 for (i in lstUserId.indices){
-                    mPresenter.getSaleDataWithLimitDistance(lstSaleData,UserDetail.mLatitude,UserDetail.mLongitude,lstUserId[i])
+                    mPresenter.getSaleDataWithLimitDistance(lstSaleData, UserDetail.mLatitude, UserDetail.mLongitude,lstUserId[i])
                 }
 
             }
@@ -61,13 +61,12 @@ class ShowTotalSalesActivity : AppCompatActivity(), ShowTotalSalesView.View {
 
     override fun updateList(lstSaleData: ArrayList<DealsDetailData>) {
         val myrv = findViewById<RecyclerView>(R.id.listSalesView)
-        val myAdapter = RecyclerViewAdapter(this, lstSaleData)
+        val myAdapter = RecyclerViewAdapter(this, lstSaleData,UserDetail.mLatitude,UserDetail.mLongitude)
         myrv.layoutManager = GridLayoutManager(this, 2)
         myrv.adapter = myAdapter
     }
 
     override fun onBackPressed() {
-        //startActivity(Intent(applicationContext, MainPageActivity::class.java))
         finish()
     }
 }

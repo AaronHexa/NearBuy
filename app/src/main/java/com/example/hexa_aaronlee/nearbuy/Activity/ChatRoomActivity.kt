@@ -1,4 +1,4 @@
-package com.example.hexa_aaronlee.nearbuy
+package com.example.hexa_aaronlee.nearbuy.Activity
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -11,17 +11,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import com.google.firebase.database.*
-import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_chat_room.*
 import kotlinx.android.synthetic.main.media_dialog_box.view.*
 import kotlinx.android.synthetic.main.message_area.*
 import android.widget.Toast
-import android.content.DialogInterface
 import android.util.Log
-import com.example.hexa_aaronlee.nearbuy.Model.User
 import com.example.hexa_aaronlee.nearbuy.Presenter.ChatRoomPresenter
+import com.example.hexa_aaronlee.nearbuy.R
 import com.example.hexa_aaronlee.nearbuy.View.ChatRoomView
 import com.github.chrisbanes.photoview.PhotoView
 import java.text.SimpleDateFormat
@@ -67,8 +64,8 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
         arrayMsgIDList = ArrayList()
         mProgressDialog = ProgressDialog(this)
 
-        mPresenter.checkHistoryData(UserDetail.user_id,UserDetail.saleSelectedId,UserDetail.chatWithID)
-        mPresenter.retrieveMsgData(UserDetail.user_id, selectedUser, arrayMsgIDList,UserDetail.saleSelectedId)
+        mPresenter.checkHistoryData(UserDetail.user_id, UserDetail.saleSelectedId, UserDetail.chatWithID)
+        mPresenter.retrieveMsgData(UserDetail.user_id, selectedUser, arrayMsgIDList, UserDetail.saleSelectedId)
 
         sendButton.setOnClickListener {
 
@@ -80,8 +77,8 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
             val currentTime = df2.format(Calendar.getInstance().time)
             Log.i("Time : ", currentTime)
 
-            mPresenter.saveChatMsg(messageText, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser,UserDetail.saleSelectedId,currentTime,currentDate)
-            mPresenter.saveMsgStatus(UserDetail.user_id,UserDetail.saleSelectedId,UserDetail.chatWithID)
+            mPresenter.saveChatMsg(messageText, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser, UserDetail.saleSelectedId,currentTime,currentDate)
+            mPresenter.saveMsgStatus(UserDetail.user_id, UserDetail.saleSelectedId, UserDetail.chatWithID)
         }
 
         backFromChat.setOnClickListener {
@@ -121,7 +118,7 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
         val lp2 = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         lp2.weight = 1.0f
 
-        mPresenter.createMsgBubble(text, sender, type, applicationContext, UserDetail.user_id, lp2, layout1,msgTime,msgDate,UserDetail.chatWithName,UserDetail.username)
+        mPresenter.createMsgBubble(text, sender, type, applicationContext, UserDetail.user_id, lp2, layout1,msgTime,msgDate, UserDetail.chatWithName, UserDetail.username)
 
         scrollView?.fullScroll(View.FOCUS_DOWN)
     }
@@ -207,7 +204,7 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
             mProgressDialog.setMessage("Uploading Please Wait...")
             mProgressDialog.show()
 
-            mPresenter.comfrimationPicSend(newMessagePage, UserDetail.user_id, selectedUser, filePath, imageFileName, dialog,UserDetail.saleSelectedId)
+            mPresenter.comfrimationPicSend(newMessagePage, UserDetail.user_id, selectedUser, filePath, imageFileName, dialog, UserDetail.saleSelectedId)
         })
 
         builder.setNegativeButton("Cancel", { dialog, whichButton ->
@@ -226,7 +223,7 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
         val df2 = SimpleDateFormat("HH:mm")
         val currentTime = df2.format(Calendar.getInstance().time)
 
-        mPresenter.savePicMsg(uriTxt, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser,UserDetail.saleSelectedId,currentTime,currentDate)
+        mPresenter.savePicMsg(uriTxt, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser, UserDetail.saleSelectedId,currentTime,currentDate)
     }
 
     override fun uploadImageFailed() {

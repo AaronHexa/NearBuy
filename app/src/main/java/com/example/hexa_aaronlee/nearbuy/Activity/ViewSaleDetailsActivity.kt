@@ -1,4 +1,4 @@
-package com.example.hexa_aaronlee.nearbuy
+package com.example.hexa_aaronlee.nearbuy.Activity
 
 import android.content.Intent
 import android.location.Location
@@ -7,14 +7,11 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.example.hexa_aaronlee.nearbuy.Model.User
 import com.example.hexa_aaronlee.nearbuy.Presenter.ViewSaleDetailPresenter
+import com.example.hexa_aaronlee.nearbuy.R
 import com.example.hexa_aaronlee.nearbuy.View.ViewSaleDetailView
-import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_view_sale_details.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 class ViewSaleDetailsActivity : AppCompatActivity(), ViewSaleDetailView.View {
 
@@ -31,7 +28,11 @@ class ViewSaleDetailsActivity : AppCompatActivity(), ViewSaleDetailView.View {
 
         mPresenter = ViewSaleDetailPresenter(this)
 
-        mPresenter.getSalesDetail(UserDetail.saleSelectedId,UserDetail.saleSelectedUserId)
+        val bundle = intent.extras
+        UserDetail.saleSelectedId = bundle.getString("saleID")
+        UserDetail.saleSelectedUserId = bundle.getString("offerID")
+
+        mPresenter.getSalesDetail(UserDetail.saleSelectedId, UserDetail.saleSelectedUserId)
 
 
         floatingActionButton.setOnClickListener {
@@ -93,9 +94,6 @@ class ViewSaleDetailsActivity : AppCompatActivity(), ViewSaleDetailView.View {
     }
 
     override fun onBackPressed() {
-
         finish()
-        //startActivity(Intent(applicationContext, MainPageActivity::class.java))
-        super.onBackPressed()
     }
 }

@@ -4,7 +4,6 @@ import android.location.Location
 import android.util.Log
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
-import com.example.hexa_aaronlee.nearbuy.UserDetail
 import com.example.hexa_aaronlee.nearbuy.View.ShowTotalSalesView
 import com.google.firebase.database.*
 

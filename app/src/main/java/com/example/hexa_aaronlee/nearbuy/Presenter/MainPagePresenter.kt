@@ -1,13 +1,11 @@
 package com.example.hexa_aaronlee.nearbuy.Presenter
 
-import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.util.Log
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
-import com.example.hexa_aaronlee.nearbuy.UserDetail
 import com.example.hexa_aaronlee.nearbuy.View.MainPageView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -16,7 +14,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.*
-import kotlinx.android.synthetic.main.activity_main_page.*
 import java.io.IOException
 
 public class MainPagePresenter(internal var view : MainPageView.View) : MainPageView.Presenter {
@@ -116,6 +113,9 @@ public class MainPagePresenter(internal var view : MainPageView.View) : MainPage
         databaseR = FirebaseDatabase.getInstance().reference.child("SaleDetail").child(userIdArray[countNum])
 
         val result = FloatArray(10)
+        val newArrayMarker = ArrayList<Marker>()
+        val newSaleArray = ArrayList<String>()
+        val newOfferIdArray = ArrayList<String>()
 
         databaseR.addChildEventListener(object : ChildEventListener {
             override fun onCancelled(p0: DatabaseError) {
@@ -127,7 +127,31 @@ public class MainPagePresenter(internal var view : MainPageView.View) : MainPage
             }
 
             override fun onChildRemoved(p0: DataSnapshot) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                val map = p0.getValue(DealsDetailData::class.java)
+                if (map != null) {
+                    if (map.offer_id == userIdArray[countNum]) {
+                        Location.distanceBetween(mLatitude,mLongitude, map.mLatitude.toDouble(), map.mLongitude.toDouble(), result)
+                        val tmpDistance = String.format("%.2f", (result[0] / 1000))
+
+                        if (result[0] <= 3000) {
+
+                            Log.i("Location ... : ","${map.mLongitude}........${map.mLatitude}....${result[0]} ")
+
+                            val latLng = LatLng(map.mLatitude.toDouble(), map.mLongitude.toDouble())
+
+                            val options: MarkerOptions = MarkerOptions()
+                                    .position(latLng)
+                                    .title("<${map.itemTitle}> ${map.itemLocation}")
+                            newArrayMarker.add(mMap.addMarker(options))
+
+                            newSaleArray.add(map.sales_id)
+                            newOfferIdArray.add(map.offer_id)
+
+                            view.setUpUIMarker(newArrayMarker,newSaleArray,newOfferIdArray)
+                        }
+
+                    }
+                }
             }
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, p1: String?) {
@@ -146,12 +170,12 @@ public class MainPagePresenter(internal var view : MainPageView.View) : MainPage
                             val options: MarkerOptions = MarkerOptions()
                                     .position(latLng)
                                     .title("<${map.itemTitle}> ${map.itemLocation}")
-                            arrayMarker.add(mMap.addMarker(options))
+                            newArrayMarker.add(mMap.addMarker(options))
 
-                            saleArray.add(map.sales_id)
-                            offerIdArray.add(map.offer_id)
+                            newSaleArray.add(map.sales_id)
+                            newOfferIdArray.add(map.offer_id)
 
-                            view.setUpUIMarker(arrayMarker,saleArray,offerIdArray)
+                            view.setUpUIMarker(newArrayMarker,newSaleArray,newOfferIdArray)
                         }
 
                     }

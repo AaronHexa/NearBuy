@@ -1,4 +1,4 @@
-package com.example.hexa_aaronlee.nearbuy
+package com.example.hexa_aaronlee.nearbuy.Activity
 
 import android.content.Context
 import android.content.Intent
@@ -13,7 +13,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
+import com.example.hexa_aaronlee.nearbuy.Adapter.EmptyListAdapter
 import com.example.hexa_aaronlee.nearbuy.Presenter.MySaleListPresenter
+import com.example.hexa_aaronlee.nearbuy.R
+import com.example.hexa_aaronlee.nearbuy.Adapter.RecyclerViewAdapter
 import com.example.hexa_aaronlee.nearbuy.View.MySaleListView
 import kotlinx.android.synthetic.main.activity_my_sale_list.*
 
@@ -35,7 +38,7 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
         mPresenter.checkSaleData(UserDetail.user_id, lstDetail)
 
         floatingCreateBtn.setOnClickListener {
-            startActivity(Intent(applicationContext,CreateSaleActivity::class.java))
+            startActivity(Intent(applicationContext, CreateSaleActivity::class.java))
         }
     }
 
@@ -52,7 +55,7 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
         else
         {
             val myrv = findViewById<RecyclerView>(R.id.listMySale)
-            val myAdapter = RecyclerViewAdapter(this, lstDetail)
+            val myAdapter = RecyclerViewAdapter(this, lstDetail,UserDetail.mLatitude,UserDetail.mLongitude)
             myrv.layoutManager = GridLayoutManager(this, 2)
             myrv.adapter = myAdapter
         }
@@ -60,7 +63,9 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
     }
 
     override fun setDeleteBtn(lstDetail: ArrayList<DealsDetailData>) {
+
         floatingDeleteBtn.setOnClickListener {
+
             val mBuilder = android.support.v7.app.AlertDialog.Builder(this)
             val mView = layoutInflater.inflate(R.layout.delete_my_sale, null)
             val cancelBtn = mView.findViewById<Button>(R.id.cancelDeleteSaleBtn)
@@ -80,8 +85,7 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
             cancelBtn.setOnClickListener { mDialog.dismiss() }
 
             deleteBtn.setOnClickListener {
-                mPresenter.deleteSaleInDatabase(mDeletionPos, lstDetail, UserDetail.user_id)
-                Toast.makeText(this, "Delete Success", Toast.LENGTH_SHORT).show()
+                mPresenter.deleteSaleInDatabase(mDeletionPos, lstDetail,UserDetail.user_id)
                 mDialog.dismiss()
             }
 
@@ -89,8 +93,11 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
         }
     }
 
+    override fun FinishDeletion() {
+        Toast.makeText(this, "Delete Success", Toast.LENGTH_SHORT).show()
+    }
+
     override fun onBackPressed() {
-        //startActivity(Intent(applicationContext, ProfileInfoActivity::class.java))
         finish()
     }
 
@@ -119,6 +126,7 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
         }
 
         fun checkCheckBox(pos: Int, value: Boolean, checkBox: CheckBox) {
+
             if (value) {
                 checkBox.isChecked = true
                 mCheckedIds.put(pos, true)

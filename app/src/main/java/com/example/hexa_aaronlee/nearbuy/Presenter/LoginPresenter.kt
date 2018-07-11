@@ -17,7 +17,7 @@ public class LoginPresenter(internal var view: LoginView.View) : LoginView.Prese
         val data = UserData(email,password,name,user_id,profilePhoto,"Google",gender,phoneNum)
 
         mDatafaceReference.child(user_id).setValue(data).addOnCompleteListener {
-            System.out.println("Save Done !!!!!!!")
+
         }
     }
 

@@ -1,4 +1,4 @@
-package com.example.hexa_aaronlee.nearbuy
+package com.example.hexa_aaronlee.nearbuy.Activity
 
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -24,6 +24,8 @@ import android.view.View
 import android.widget.Toast
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
 import com.example.hexa_aaronlee.nearbuy.Presenter.MainPagePresenter
+import com.example.hexa_aaronlee.nearbuy.R
+import com.example.hexa_aaronlee.nearbuy.Adapter.RecyclerViewAdapter
 import com.example.hexa_aaronlee.nearbuy.View.MainPageView
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -38,11 +40,9 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 
 import kotlinx.android.synthetic.main.activity_main_page.*
-import kotlinx.android.synthetic.main.navigate_header.*
 import kotlinx.android.synthetic.main.navigate_header.view.*
 
 
@@ -94,6 +94,246 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
     //drawer layout
     lateinit var mDrawerLayout : DrawerLayout
     lateinit var mTonggle : ActionBarDrawerToggle
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main_page)
+
+        mAuth = FirebaseAuth.getInstance()
+
+        user_id = mAuth.currentUser!!.uid
+        UserDetail.user_id = user_id
+
+
+        mainActivityScrollView.post({
+            mainActivityScrollView.fullScroll(View.FOCUS_UP)
+        })
+
+        mPresenter = MainPagePresenter(this)
+
+        gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkLocationPermission()
+        }
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        val mapFragment = supportFragmentManager
+                .findFragmentById(R.id.map2) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+
+        setUINotScrollable()
+        setDrawerNavi()
+
+        mPresenter.getUserDataFromDatabase(user_id)
+
+        mapLayout.setOnClickListener { startActivity(Intent(applicationContext, MapsActivity::class.java)) }
+
+        setSaleArrayList()
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+
+            R.id.historyChat_Nav ->{
+                startActivity(Intent(applicationContext, ChatHistoryActivity::class.java))
+                Log.i("Clicked : ", "Yes")
+            }
+            R.id.createSale_Nav ->{
+                startActivity(Intent(applicationContext, CreateSaleActivity::class.java))
+            }
+            R.id.showAllSale_Nav ->{
+                startActivity(Intent(applicationContext, ShowTotalSalesActivity::class.java))
+            }
+            R.id.profile_Nav ->{
+                startActivity(Intent(applicationContext, ProfileInfoActivity::class.java))
+            }
+            R.id.map_Nav ->{
+                startActivity(Intent(applicationContext, MapsActivity::class.java))
+            }
+            R.id.logout_Nav ->{
+                onBackPressed()
+            }
+        }
+
+        mDrawerLayout.closeDrawer(GravityCompat.START)
+        return true
+    }
+
+    fun setDrawerNavi(){
+        mDrawerLayout = findViewById(R.id.drawerLayout)
+        mTonggle = ActionBarDrawerToggle(this,mDrawerLayout, R.string.open, R.string.close)
+
+        mTonggle.isDrawerIndicatorEnabled = true
+        mDrawerLayout.addDrawerListener(mTonggle)
+        mTonggle.syncState()
+
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        val navMenu = findViewById<NavigationView>(R.id.nav_Menu)
+
+        navMenu.setNavigationItemSelectedListener(this)
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (mTonggle.onOptionsItemSelected(item)){
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    fun setUINotScrollable(){
+        transparent_image.setOnTouchListener({ v: View?, event: MotionEvent? ->
+            val action = event!!.action
+            when (action) {
+                MotionEvent.ACTION_DOWN -> {
+                    mainActivityScrollView.requestDisallowInterceptTouchEvent(true)
+                    return@setOnTouchListener false
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    mainActivityScrollView.requestDisallowInterceptTouchEvent(false)
+                    return@setOnTouchListener true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    mainActivityScrollView.requestDisallowInterceptTouchEvent(true)
+                    return@setOnTouchListener false
+                }
+                else -> return@setOnTouchListener true
+            }
+
+        })
+
+        transparent_image2.setOnTouchListener({ v: View?, event: MotionEvent? ->
+            val action = event!!.action
+            when (action) {
+                MotionEvent.ACTION_DOWN -> {
+                    mainActivityScrollView.requestDisallowInterceptTouchEvent(true)
+                    return@setOnTouchListener false
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    mainActivityScrollView.requestDisallowInterceptTouchEvent(false)
+                    return@setOnTouchListener true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    mainActivityScrollView.requestDisallowInterceptTouchEvent(true)
+                    return@setOnTouchListener false
+                }
+                else -> return@setOnTouchListener true
+            }
+
+        })
+    }
+
+    fun setSaleArrayList() {
+
+        lstSaleData = ArrayList()
+        lstUserId = ArrayList()
+
+        mPresenter.getAllUserID(lstUserId)
+
+        switchUI.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (!isChecked) {
+                lstSaleData = ArrayList()
+
+                for (i in lstUserId.indices) {
+                    mPresenter.getSaleData(lstSaleData, lstUserId[i])
+                }
+            } else if (isChecked) {
+                lstSaleData = ArrayList()
+
+                for (i in lstUserId.indices) {
+                    mPresenter.getSaleDataWithLimitDistance(lstSaleData, UserDetail.mLatitude, UserDetail.mLongitude, lstUserId[i])
+                }
+            }
+
+
+        }
+
+    }
+
+    override fun setLoopCheckSale(lstUserId: ArrayList<String>) {
+        for (i in 0 until lstUserId.count() - 1) {
+            mPresenter.getSaleData(lstSaleData, lstUserId[i])
+        }
+    }
+
+    override fun updateList(lstSaleData: ArrayList<DealsDetailData>) {
+        val myrv:RecyclerView = findViewById(R.id.mainRecyclerView)
+        val myAdapter = RecyclerViewAdapter(this, lstSaleData,UserDetail.mLatitude,UserDetail.mLongitude)
+        myrv.layoutManager = GridLayoutManager(this, 2)
+        myrv.adapter = myAdapter
+    }
+
+
+    override fun setUserDataToView(email: String, name: String, profilePic: String) {
+        personName = name
+        personEmail = email
+
+        UserDetail.email = email
+        UserDetail.username = name
+        UserDetail.imageUrl = profilePic
+
+        setNavHeaderText(name)
+
+        setUIUpdate()
+    }
+
+    fun setNavHeaderText(name : String){
+        val navigationView = findViewById<NavigationView>(R.id.nav_Menu)
+        val headerView = navigationView.getHeaderView(0)
+        headerView.navName.text = "Welcome "+ name
+    }
+
+    fun setUIUpdate() {
+        nameTxt.text = personName
+        emailTxt.text = personEmail
+
+        Picasso.get()
+                .load(Uri.parse(UserDetail.imageUrl))
+                .resize(700, 700)
+                .centerCrop()
+                .into(userImage)
+    }
+
+    override fun onBackPressed() {
+
+        val builder = AlertDialog.Builder(this)
+
+        builder.setIcon(R.drawable.ic_power_settings_new_black_24dp)
+        builder.setTitle("Logout")
+        builder.setMessage("Are You Sure You Want Logout?")
+        builder.setCancelable(true)
+
+        builder.setPositiveButton("Yes", { dialog, whichButton ->
+
+            //Sign out from Firebase Auth
+            FirebaseAuth.getInstance().signOut()
+
+            //Sign out From Google
+            mGoogleSignInClient.signOut()
+            startActivity(Intent(applicationContext, LoginMainActivity::class.java))
+            finish()
+
+            dialog.dismiss()
+        })
+
+        builder.setNegativeButton("Cancel", { dialog, whichButton ->
+            dialog.dismiss()
+        })
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    //..........GoogleMap Location.......
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
@@ -221,23 +461,18 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
         for (i in arrayMarker.indices) {
             if (p0 == arrayMarker[i]) {
                 Log.i("Location : ", saleArray[i])
-                UserDetail.saleSelectedId = saleArray[i]
-                UserDetail.saleSelectedUserId = offerIdArray[i]
-                startActivity(Intent(applicationContext, ViewSaleDetailsActivity::class.java))
+
+                val intent = Intent(applicationContext, ViewSaleDetailsActivity::class.java)
+
+                intent.putExtra("saleID",saleArray[i])
+                intent.putExtra("offerID",offerIdArray[i])
+
+                startActivity(intent)
             }
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main_page)
-
-        mAuth = FirebaseAuth.getInstance()
-
-        user_id = mAuth.currentUser!!.uid
-        UserDetail.user_id = user_id
-
-
+    fun RefreshPage(){
         mainActivityScrollView.post({
             mainActivityScrollView.fullScroll(View.FOCUS_UP)
         })
@@ -260,209 +495,6 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        setUINotScrollable()
-        setDrawerNavi()
-
-        mPresenter.getUserDataFromDatabase(user_id)
-
-        mapLayout.setOnClickListener { startActivity(Intent(applicationContext, MapsActivity::class.java)) }
-
         setSaleArrayList()
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-
-            R.id.historyChat_Nav ->{
-                startActivity(Intent(applicationContext, ChatHistoryActivity::class.java))
-                Log.i("Clicked : ", "Yes")
-            }
-            R.id.createSale_Nav ->{
-                startActivity(Intent(applicationContext, CreateSaleActivity::class.java))
-            }
-            R.id.showAllSale_Nav ->{
-                startActivity(Intent(applicationContext, ShowTotalSalesActivity::class.java))
-            }
-            R.id.profile_Nav ->{
-                startActivity(Intent(applicationContext, ProfileInfoActivity::class.java))
-            }
-            R.id.map_Nav ->{
-                startActivity(Intent(applicationContext, MapsActivity::class.java))
-            }
-            R.id.logout_Nav ->{
-                onBackPressed()
-            }
-        }
-
-        mDrawerLayout.closeDrawer(GravityCompat.START)
-        return true
-    }
-
-    fun setDrawerNavi(){
-        mDrawerLayout = findViewById(R.id.drawerLayout)
-        mTonggle = ActionBarDrawerToggle(this,mDrawerLayout,R.string.open,R.string.close)
-
-        mTonggle.isDrawerIndicatorEnabled = true
-        mDrawerLayout.addDrawerListener(mTonggle)
-        mTonggle.syncState()
-
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-
-        val navMenu = findViewById<NavigationView>(R.id.nav_Menu)
-
-        navMenu.setNavigationItemSelectedListener(this)
-
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (mTonggle.onOptionsItemSelected(item)){
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    fun setUINotScrollable(){
-        transparent_image.setOnTouchListener({ v: View?, event: MotionEvent? ->
-            val action = event!!.action
-            when (action) {
-                MotionEvent.ACTION_DOWN -> {
-                    mainActivityScrollView.requestDisallowInterceptTouchEvent(true)
-                    return@setOnTouchListener false
-                }
-
-                MotionEvent.ACTION_UP -> {
-                    mainActivityScrollView.requestDisallowInterceptTouchEvent(false)
-                    return@setOnTouchListener true
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    mainActivityScrollView.requestDisallowInterceptTouchEvent(true)
-                    return@setOnTouchListener false
-                }
-                else -> return@setOnTouchListener true
-            }
-
-        })
-
-        transparent_image2.setOnTouchListener({ v: View?, event: MotionEvent? ->
-            val action = event!!.action
-            when (action) {
-                MotionEvent.ACTION_DOWN -> {
-                    mainActivityScrollView.requestDisallowInterceptTouchEvent(true)
-                    return@setOnTouchListener false
-                }
-
-                MotionEvent.ACTION_UP -> {
-                    mainActivityScrollView.requestDisallowInterceptTouchEvent(false)
-                    return@setOnTouchListener true
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    mainActivityScrollView.requestDisallowInterceptTouchEvent(true)
-                    return@setOnTouchListener false
-                }
-                else -> return@setOnTouchListener true
-            }
-
-        })
-    }
-
-    fun setSaleArrayList() {
-
-        lstSaleData = ArrayList()
-        lstUserId = ArrayList()
-
-        mPresenter.getAllUserID(lstUserId)
-
-        switchUI.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (!isChecked) {
-                lstSaleData = ArrayList()
-
-                for (i in lstUserId.indices) {
-                    mPresenter.getSaleData(lstSaleData, lstUserId[i])
-                }
-            } else if (isChecked) {
-                lstSaleData = ArrayList()
-
-                for (i in lstUserId.indices) {
-                    mPresenter.getSaleDataWithLimitDistance(lstSaleData, UserDetail.mLatitude, UserDetail.mLongitude, lstUserId[i])
-                }
-            }
-
-
-        }
-
-    }
-
-    override fun setLoopCheckSale(lstUserId: ArrayList<String>) {
-        for (i in 0 until lstUserId.count() - 1) {
-            mPresenter.getSaleData(lstSaleData, lstUserId[i])
-        }
-    }
-
-    override fun updateList(lstSaleData: ArrayList<DealsDetailData>) {
-        val myrv:RecyclerView = findViewById(R.id.mainRecyclerView)
-        val myAdapter = RecyclerViewAdapter(this, lstSaleData)
-        myrv.layoutManager = GridLayoutManager(this, 2)
-        myrv.adapter = myAdapter
-    }
-
-
-    override fun setUserDataToView(email: String, name: String, profilePic: String) {
-        personName = name
-        personEmail = email
-
-        UserDetail.email = email
-        UserDetail.username = name
-        UserDetail.imageUrl = profilePic
-
-        setNavHeaderText(name)
-
-        setUIUpdate()
-    }
-
-    fun setNavHeaderText(name : String){
-        val navigationView = findViewById<NavigationView>(R.id.nav_Menu)
-        val headerView = navigationView.getHeaderView(0)
-        headerView.navName.text = "Welcome "+ name
-    }
-
-    fun setUIUpdate() {
-        nameTxt.text = personName
-        emailTxt.text = personEmail
-
-        Picasso.get()
-                .load(Uri.parse(UserDetail.imageUrl))
-                .resize(700, 700)
-                .centerCrop()
-                .into(userImage)
-    }
-
-    override fun onBackPressed() {
-
-        val builder = AlertDialog.Builder(this)
-
-        builder.setIcon(R.drawable.ic_power_settings_new_black_24dp)
-        builder.setTitle("Logout")
-        builder.setMessage("Are You Sure You Want Logout?")
-        builder.setCancelable(true)
-
-        builder.setPositiveButton("Yes", { dialog, whichButton ->
-
-            //Sign out from Firebase Auth
-            FirebaseAuth.getInstance().signOut()
-
-            //Sign out From Google
-            mGoogleSignInClient.signOut()
-            startActivity(Intent(applicationContext, LoginMainActivity::class.java))
-            finish()
-
-            dialog.dismiss()
-        })
-
-        builder.setNegativeButton("Cancel", { dialog, whichButton ->
-            dialog.dismiss()
-        })
-
-        val dialog = builder.create()
-        dialog.show()
     }
 }

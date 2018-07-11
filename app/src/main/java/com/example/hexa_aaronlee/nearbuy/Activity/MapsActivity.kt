@@ -1,4 +1,4 @@
-package com.example.hexa_aaronlee.nearbuy
+package com.example.hexa_aaronlee.nearbuy.Activity
 
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -17,6 +17,8 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
+import com.example.hexa_aaronlee.nearbuy.Adapter.PlaceAutocompleteAdapter
+import com.example.hexa_aaronlee.nearbuy.R
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationListener
@@ -108,11 +110,11 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
 
         icon_gps.setOnClickListener {
 
-            for (i in arrayMarker.indices) {
+            for (i in arrayMarker.indices) { //remove the marker on map
                 arrayMarker[i].remove()
             }
 
-            bulidGoogleApiClient()
+            bulidGoogleApiClient() // rebuild Client to get Current Location
         }
 
         scan_ic.setOnClickListener {
@@ -317,8 +319,29 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
-            override fun onChildRemoved(p0: DataSnapshot) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            override fun onChildRemoved(dataSnapshot: DataSnapshot) {
+                val map = dataSnapshot.getValue(DealsDetailData::class.java)
+                if (map != null) {
+                    if (map.offer_id == userIdArray[countNum]) {
+                        Location.distanceBetween(UserDetail.mLatitude, UserDetail.mLongitude, map.mLatitude.toDouble(), map.mLongitude.toDouble(), result)
+                        val tmpDistance = String.format("%.2f", (result[0] / 1000))
+
+                        if (result[0] <= 3000) {
+
+                            Log.i("Location ... : ", "${map.mLongitude}........${map.mLatitude}....${result[0]} ")
+
+                            val latLng = LatLng(map.mLatitude.toDouble(), map.mLongitude.toDouble())
+
+                            val options: MarkerOptions = MarkerOptions()
+                                    .position(latLng)
+                                    .title("<${map.itemTitle}> ${map.itemLocation}")
+                            arrayMarker.add(mMap.addMarker(options))
+
+                            saleArray.add(map.sales_id)
+                            offerIdArray.add(map.offer_id)
+                        }
+                    }
+                }
             }
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, p1: String?) {
@@ -356,10 +379,13 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
     override fun onInfoWindowClick(p0: Marker?) {
         for (i in arrayMarker.indices) {
             if (p0 == arrayMarker[i]) {
-                Log.i("Location : ", saleArray[i])
-                UserDetail.saleSelectedId = saleArray[i]
-                UserDetail.saleSelectedUserId = offerIdArray[i]
-                startActivity(Intent(applicationContext, ViewSaleDetailsActivity::class.java))
+
+                val intent = Intent(applicationContext, ViewSaleDetailsActivity::class.java)
+
+                intent.putExtra("saleID",saleArray[i])
+                intent.putExtra("offerID",offerIdArray[i])
+
+                startActivity(intent)
             }
         }
     }

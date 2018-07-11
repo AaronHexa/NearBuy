@@ -6,6 +6,7 @@ interface MySaleListView {
     interface View {
         fun updateList(lstDetail: ArrayList<DealsDetailData>)
         fun setDeleteBtn(lstDetail: ArrayList<DealsDetailData>)
+        fun FinishDeletion()
     }
 
     interface Presenter {

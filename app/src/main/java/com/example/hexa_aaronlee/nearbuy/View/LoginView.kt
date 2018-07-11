@@ -11,6 +11,12 @@ public interface LoginView {
         fun loginGoogle()
     }
 
+    interface Model{
+        var email: String
+        var password: String
+        var isDataVaild: Boolean
+    }
+
     interface Presenter {
         fun clickRegisterTxt()
         fun clickLoginBtn(email: String,

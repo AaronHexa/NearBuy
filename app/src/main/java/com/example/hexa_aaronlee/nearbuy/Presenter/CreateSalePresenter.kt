@@ -6,7 +6,6 @@ import android.location.Geocoder
 import android.net.Uri
 import android.util.Log
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
-import com.example.hexa_aaronlee.nearbuy.UserDetail
 import com.example.hexa_aaronlee.nearbuy.View.CreateSaleView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -21,6 +20,7 @@ import java.io.IOException
 
 public class CreateSalePresenter(internal var view : CreateSaleView.View) : CreateSaleView.Presenter
 {
+
     lateinit var  mStorage : StorageReference
     lateinit var databaseR : DatabaseReference
 
@@ -59,7 +59,7 @@ public class CreateSalePresenter(internal var view : CreateSaleView.View) : Crea
 
             view.setMarker(currentMarker,address.getAddressLine(0).toString())
 
-            Log.e("MapsActivity","geolocate : Found a location : " + address.toString())
+            Log.i("MapsActivity","geolocate : Found a location : " + address.toString())
 
         }
     }
@@ -121,7 +121,6 @@ public class CreateSalePresenter(internal var view : CreateSaleView.View) : Crea
             {
                 setLocation = locationTxt
             }
-            System.out.println("..........>>>>>>>>$setLocation<<<<........")
 
             view.setLocation(setLocation,imageData1)
         }
@@ -162,6 +161,15 @@ public class CreateSalePresenter(internal var view : CreateSaleView.View) : Crea
                     }
                 })
 
+    }
+
+    override fun checkFillUpText(tmpTitle: String, tmpPrice: String) {
+        if (tmpTitle.isNullOrEmpty()
+                || tmpPrice.isNullOrEmpty()){
+            view.UpdateAlertUI()
+        }else{
+            view.AllowSaveData()
+        }
     }
 
 }

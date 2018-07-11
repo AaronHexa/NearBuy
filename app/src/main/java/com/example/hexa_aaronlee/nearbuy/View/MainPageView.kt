@@ -1,8 +1,11 @@
 package com.example.hexa_aaronlee.nearbuy.View
 
 import android.content.Context
+import android.location.Address
 import android.location.Geocoder
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
+import com.example.hexa_aaronlee.nearbuy.Presenter.LoginPresenter
+import com.example.hexa_aaronlee.nearbuy.Presenter.MainPagePresenter
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker

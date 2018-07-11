@@ -1,4 +1,4 @@
-package com.example.hexa_aaronlee.nearbuy
+package com.example.hexa_aaronlee.nearbuy.Adapter
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.example.hexa_aaronlee.nearbuy.R
 
 class EmptyListAdapter(private val mContext: Context, private val mData: List<String>) : RecyclerView.Adapter<EmptyListAdapter.MyViewHolders>() {
 

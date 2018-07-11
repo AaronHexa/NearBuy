@@ -1,4 +1,4 @@
-package com.example.hexa_aaronlee.nearbuy
+package com.example.hexa_aaronlee.nearbuy.Activity
 
 import android.app.ProgressDialog
 import android.content.Context
@@ -15,7 +15,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_register_main.*
 import android.graphics.drawable.GradientDrawable
+import android.util.Log
 import android.widget.TextView
+import com.example.hexa_aaronlee.nearbuy.R
 
 
 class RegisterMainActivity : AppCompatActivity(), RegisterView.View {
@@ -122,7 +124,7 @@ fun registerProcess() {
 
                     val user = FirebaseAuth.getInstance().currentUser
                     tmpID = user!!.uid
-                    println(" This is the current uid : $tmpID")
+                    Log.i(" Current uid : " ,"$tmpID")
 
                     if (imageEdited == 0) {
                         filePath = Uri.parse("android.resource://" + applicationContext.packageName + "/drawable/guest_icon")

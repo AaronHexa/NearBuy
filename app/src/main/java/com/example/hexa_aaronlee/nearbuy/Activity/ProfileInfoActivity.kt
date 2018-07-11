@@ -1,4 +1,4 @@
-package com.example.hexa_aaronlee.nearbuy
+package com.example.hexa_aaronlee.nearbuy.Activity
 
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
@@ -16,6 +16,7 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_profile_info.*
 import kotlinx.android.synthetic.main.editing_dialog.view.*
 import com.example.hexa_aaronlee.nearbuy.Presenter.ProfileInfoPresenter
+import com.example.hexa_aaronlee.nearbuy.R
 import com.example.hexa_aaronlee.nearbuy.View.ProfileInfoView
 
 
@@ -94,6 +95,7 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
         filePath = profileUri
 
         view.imageEdited.setOnClickListener {
+
             selectedImage = 1
             val intent = Intent()
             intent.type = "image/*"
@@ -102,6 +104,7 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
         }
 
         view.maleGenderEdit.setOnClickListener {
+
             val imgIcon = view.findViewById<TextView>(R.id.maleGenderEdit)
             val backgroundGradient = imgIcon.background as GradientDrawable
             backgroundGradient.setColor(resources.getColor(R.color.colorLightBlue))
@@ -113,6 +116,7 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
         }
 
         view.femaleGenderEdit.setOnClickListener {
+
             val imgIcon = view.findViewById<TextView>(R.id.femaleGenderEdit)
             val backgroundGradient = imgIcon.background as GradientDrawable
             backgroundGradient.setColor(resources.getColor(R.color.colorLightBlue))
@@ -180,7 +184,7 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
     }
 
     override fun onBackPressed() {
-        //startActivity(Intent(applicationContext, MainPageActivity::class.java))
-        finish()
+        finishAffinity()
+        startActivity(Intent(applicationContext,MainPageActivity::class.java))
     }
 }

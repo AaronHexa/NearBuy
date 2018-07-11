@@ -69,16 +69,19 @@ class MySaleListPresenter(internal var view: MySaleListView.View) : MySaleListVi
     }
 
     override fun deleteSaleInDatabase(mDeletionPos: ArrayList<Int>, lstDetail: ArrayList<DealsDetailData>, user_id: String) {
-        mDataRef = FirebaseDatabase.getInstance().reference.child("SaleDetail").child(user_id)
+        mDataRef = FirebaseDatabase.getInstance().reference.child("SaleDetail")
         mStorageRef = FirebaseStorage.getInstance().reference.child("SalesImage")
 
+
         for (i in mDeletionPos.indices) {
-            mDataRef.child(lstDetail[mDeletionPos[i]].sales_id).removeValue()
+            mDataRef.child(lstDetail[mDeletionPos[i]].offer_id).child(lstDetail[mDeletionPos[i]].sales_id).removeValue()
             mStorageRef.child(lstDetail[mDeletionPos[i]].sales_id).child("image0").delete()
         }
 
         val newLstDetailData: ArrayList<DealsDetailData> = ArrayList()
         checkSaleData(user_id, newLstDetailData)
+
+        view.FinishDeletion()
     }
 
 }

@@ -22,6 +22,8 @@ public interface CreateSaleView {
         fun imageUploadSuccess(uriString: String)
         fun imageUploadFailed()
         fun imageUploadError(exception: Exception)
+        fun UpdateAlertUI()
+        fun AllowSaveData()
     }
 
     interface Presenter {
@@ -59,5 +61,6 @@ public interface CreateSaleView {
                              filePath: Uri,
                              salesId: String)
 
+        fun checkFillUpText(tmpTitle: String,tmpPrice: String)
     }
 }

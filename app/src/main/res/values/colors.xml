@@ -18,4 +18,6 @@
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#ffffff</color>
     <color name="colorGrey">#595959</color>
+    <color name="colorBlue">#5a5aff</color>
+    <color name="colorLightRed">#ff3232</color>
 </resources>

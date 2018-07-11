@@ -1,4 +1,4 @@
-package com.example.hexa_aaronlee.nearbuy
+package com.example.hexa_aaronlee.nearbuy.Activity
 
 import android.app.ProgressDialog
 import android.content.Context
@@ -6,20 +6,19 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
+import android.opengl.Visibility
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.util.Log
-import android.view.KeyEvent
-import android.view.MotionEvent
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import com.example.hexa_aaronlee.nearbuy.Adapter.PlaceAutocompleteAdapter
 import com.example.hexa_aaronlee.nearbuy.Presenter.CreateSalePresenter
+import com.example.hexa_aaronlee.nearbuy.R
 import com.example.hexa_aaronlee.nearbuy.View.CreateSaleView
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
@@ -35,6 +34,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_create_sale.*
+import kotlinx.android.synthetic.main.activity_profile_info.*
 
 
 class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
@@ -214,6 +214,12 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
     lateinit var progressDialog: ProgressDialog
     var imageSelected = 0
 
+    var tmpTitle = ""
+    var tmpDescription = ""
+    var tmpPrice = ""
+    var tmpDecPrice = ""
+    var tmpLocation = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_sale)
@@ -265,15 +271,11 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
         createBtn.setOnClickListener {
             //displaying a progress dialog
 
-            progressDialog.setMessage("Uploading Please Wait...")
-            progressDialog.show()
+            tmpTitle = titleTxt.text.trim().toString()
+            tmpDescription = editTxtDescription.text.trim().toString()
+            tmpPrice = priceTxt.text.trim().toString()
 
-            if (imageSelected == 1) {
-                mPresenter.savePicToStorage(applicationContext, filePath, salesId)
-            } else if (imageSelected == 0) {
-                filePath = Uri.parse("android.resource://" + applicationContext.packageName + "/drawable/gallery_ic")
-                mPresenter.savePicToStorage(applicationContext, filePath, salesId)
-            }
+            mPresenter.checkFillUpText(tmpTitle,tmpPrice)
         }
 
         cancelCreateBtn.setOnClickListener {
@@ -317,11 +319,6 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
     }
 
     override fun setLocation(tmpLocation: String, imageData1: String) {
-        val tmpTitle = titleTxt.text.trim().toString()
-        val tmpDescription = editTxtDescription.text.trim().toString()
-        val tmpPrice = priceTxt.text.trim().toString()
-
-        val tmpDecPrice = String.format("%.2f",tmpPrice.toDouble())
 
         var newDecPrice = ""
 
@@ -334,6 +331,31 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
         }
 
         mPresenter.saveSaleData(tmpTitle, newDecPrice, tmpDescription, tmpLocation, mLatitude.toString(), mLongitude.toString(), UserDetail.username, salesId, imageData1, UserDetail.user_id)
+    }
+
+    override fun UpdateAlertUI() {
+        titleAlert.visibility = View.VISIBLE
+        priceAlert.visibility = View.VISIBLE
+    }
+
+    override fun AllowSaveData() {
+
+        titleAlert.visibility = View.INVISIBLE
+        priceAlert.visibility = View.INVISIBLE
+
+        if(tmpPrice != "") {
+            tmpDecPrice = String.format("%.2f", tmpPrice.toDouble())
+        }
+
+        progressDialog.setMessage("Uploading Please Wait...")
+        progressDialog.show()
+
+        if (imageSelected == 1) {
+            mPresenter.savePicToStorage(applicationContext, filePath, salesId)
+        } else if (imageSelected == 0) {
+            filePath = Uri.parse("android.resource://" + applicationContext.packageName + "/drawable/gallery_ic")
+            mPresenter.savePicToStorage(applicationContext, filePath, salesId)
+        }
     }
 
     override fun imageUploadError(exception: Exception) {
@@ -351,7 +373,7 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
         progressDialog.dismiss()
         Toast.makeText(applicationContext, " Upload Successfully ", Toast.LENGTH_LONG).show()
 
-        val tmpLocation = locationSelectionTxt.text.trim().toString()
+        tmpLocation = locationSelectionTxt.text.trim().toString()
 
         mPresenter.checkLocationTxt(applicationContext, mLatitude, mLongitude, uriString, UserDetail.currentAddress, tmpLocation)
         finish()
