@@ -23,6 +23,9 @@ import com.example.hexa_aaronlee.nearbuy.View.ChatRoomView
 import com.github.chrisbanes.photoview.PhotoView
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.hexa_aaronlee.nearbuy.R.id.scroll
+
+
 
 
 class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
@@ -59,12 +62,12 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
                 .resize(700, 700)
                 .into(chatPic)
 
-        Log.d("Selected Sale : " , UserDetail.saleSelectedId)
+        Log.i("Selected Sale : " , UserDetail.chatListKey)
 
         arrayMsgIDList = ArrayList()
         mProgressDialog = ProgressDialog(this)
 
-        mPresenter.checkHistoryData(UserDetail.user_id, UserDetail.saleSelectedId, UserDetail.chatWithID)
+        mPresenter.checkHistoryData(UserDetail.user_id, UserDetail.chatListKey, UserDetail.chatWithID)
         mPresenter.retrieveMsgData(UserDetail.user_id, selectedUser, arrayMsgIDList, UserDetail.saleSelectedId)
 
         sendButton.setOnClickListener {
@@ -79,6 +82,8 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
 
             mPresenter.saveChatMsg(messageText, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser, UserDetail.saleSelectedId,currentTime,currentDate)
             mPresenter.saveMsgStatus(UserDetail.user_id, UserDetail.saleSelectedId, UserDetail.chatWithID)
+
+            scrollChatView.post({ scrollChatView.fullScroll(View.FOCUS_DOWN) })
         }
 
         backFromChat.setOnClickListener {
@@ -93,7 +98,9 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
             }
         }
 
+
         setting_clip.setOnClickListener {
+            scrollChatView.post({ scrollChatView.fullScroll(View.FOCUS_DOWN) })
             showDialogBox()
         }
     }
@@ -120,7 +127,7 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
 
         mPresenter.createMsgBubble(text, sender, type, applicationContext, UserDetail.user_id, lp2, layout1,msgTime,msgDate, UserDetail.chatWithName, UserDetail.username)
 
-        scrollView?.fullScroll(View.FOCUS_DOWN)
+        scrollChatView.post({ scrollChatView.fullScroll(View.FOCUS_DOWN) })
     }
 
     fun showDialogBox() {

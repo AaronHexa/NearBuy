@@ -7,36 +7,8 @@
     tools:context=".Activity.ShowTotalSalesActivity"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:id="@+id/checkBoxLayout"
-        android:clickable="true"
-        android:focusable="true">
-
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/checkBoxLimitation"
-            android:layout_margin="15dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:id="@+id/distanceLimitTxt"
-            android:text="Limit Finding Sale Distance to 3km"
-            android:layout_margin="15dp"
-            android:layout_gravity="center"
-            android:background="@color/colorKhaki"
-            android:padding="10dp"/>
-
-    </LinearLayout>
-
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/listSalesView"/>
 </LinearLayout>

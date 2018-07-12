@@ -6,4 +6,5 @@ class HistoryData(var history_user : String= ""
                   , var history_image: String = ""
                   , var history_title:String = ""
                   , var msg_status:String = ""
-                  , var msg_statusCount:Int = 0) {}
+                  , var msg_statusCount:Int = 0,
+                  var chatListKey:String = ""){}

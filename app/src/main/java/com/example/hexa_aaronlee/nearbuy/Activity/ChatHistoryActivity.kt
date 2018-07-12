@@ -34,6 +34,7 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
     lateinit var saleData: ArrayList<String>
     lateinit var msg_status: ArrayList<String>
     lateinit var msg_statusCount: ArrayList<Int>
+    lateinit var chatListKeyArray : ArrayList<String>
 
     lateinit var mPresenter: ChatHistoryPresenter
 
@@ -50,6 +51,7 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
         saleData = ArrayList()
         msg_status = ArrayList()
         msg_statusCount = ArrayList()
+        chatListKeyArray = ArrayList()
 
 
         mPresenter.checkChatHistiryData(UserDetail.user_id)
@@ -61,9 +63,10 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
                                         titleData: ArrayList<String>,
                                         saleData: ArrayList<String>,
                                         msg_status: ArrayList<String>,
-                                        msg_statusCount: ArrayList<Int>) {
+                                        msg_statusCount: ArrayList<Int>,
+                                        chatListKeyArray : ArrayList<String>) {
 
-        val customAdapter = CustomListView(applicationContext, nameData, historyData, imageData, titleData, saleData, msg_status, msg_statusCount)
+        val customAdapter = CustomListView(applicationContext, nameData, historyData, imageData, titleData, saleData, msg_status, msg_statusCount,chatListKeyArray)
         listView.layoutManager = LinearLayoutManager(applicationContext)
         listView.adapter = customAdapter
     }
@@ -81,15 +84,16 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
 
         } else {
 
-            this.historyData = ArrayList() //refresh all arrayList ( If not will repeat)
+            this.historyData = ArrayList() //refresh all arrayList ( will not repeat)
             this.imageData = ArrayList()
             this.nameData = ArrayList()
             this.titleData = ArrayList()
             this.saleData = ArrayList()
             this.msg_status = ArrayList()
             this.msg_statusCount = ArrayList()
+            this.chatListKeyArray = ArrayList()
 
-            mPresenter.getChatHistoryDataFromDatabase(historyData, imageData, nameData, titleData, UserDetail.user_id, saleData, msg_status, msg_statusCount)
+            mPresenter.getChatHistoryDataFromDatabase(historyData, imageData, nameData, titleData, UserDetail.user_id, saleData, msg_status, msg_statusCount,chatListKeyArray)
         }
     }
 
@@ -101,7 +105,8 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
                          private val titleData: ArrayList<String>,
                          private val saleData: ArrayList<String>,
                          private val msg_status: ArrayList<String>,
-                         private val msg_statusCount: ArrayList<Int>) : RecyclerView.Adapter<CustomListView.CustomViewHolder>(){
+                         private val msg_statusCount: ArrayList<Int>,
+                         private val chatListKeyArray : ArrayList<String>) : RecyclerView.Adapter<CustomListView.CustomViewHolder>(){
 
         private var mContext: Context = context
 
@@ -135,7 +140,7 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
                 holder.notifyStatusCount!!.text = msg_statusCount[position].toString()
             }
 
-            holder.onClickMethod(position, nameSource, IdSource, imageData, saleData,mContext)
+            holder.onClickMethod(position, nameSource, IdSource, imageData, saleData,mContext,chatListKeyArray)
 
         }
 
@@ -166,7 +171,8 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
                               IdSource: ArrayList<String>,
                               imageData: ArrayList<String>,
                               saleData: ArrayList<String>,
-                              mContext : Context) {
+                              mContext : Context,
+                              chatListKeyArray: ArrayList<String>) {
 
                 itemView.setOnClickListener {
                     Toast.makeText(itemView.context, "Position : $position", Toast.LENGTH_SHORT).show()
@@ -175,10 +181,11 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
                     UserDetail.chatWithName = nameSource[pos]
                     UserDetail.chatWithImageUri = imageData[pos]
                     UserDetail.saleSelectedId = saleData[pos]
+                    UserDetail.chatListKey = chatListKeyArray[pos]
 
                     Log.i("Get Data Chart Users : ", "${UserDetail.chatWithID}....${UserDetail.chatWithName}")
 
-                    getHistoryData(UserDetail.user_id, UserDetail.saleSelectedId)
+                    getHistoryData(UserDetail.user_id, UserDetail.chatListKey)
 
                     val intent = Intent(itemView.context, ChatRoomActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -188,8 +195,8 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
 
             }
 
-            fun getHistoryData(user_id: String,sale_id : String){
-                databaseRef = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(user_id).child(sale_id)
+            fun getHistoryData(user_id: String,chatListKey : String){
+                databaseRef = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(user_id).child(chatListKey)
 
                 databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onCancelled(p0: DatabaseError) {
@@ -204,19 +211,19 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
                         history_userName = data.history_userName
                         history_image = data.history_image
                         history_title = data.history_title
-                        saveMsgStatus(user_id,sale_id)
+                        saveMsgStatus(user_id,chatListKey)
 
                     }
 
                 })
             }
 
-            fun saveMsgStatus(user_id: String,sale_id : String){
+            fun saveMsgStatus(user_id: String,chatListKey : String){
                 databaseRef = FirebaseDatabase.getInstance().reference.child("TotalHistory")
 
                 val data = HistoryData(historyUser, saleId, history_userName, history_image, history_title, "Old", 0)
 
-                databaseRef.child(user_id).child(sale_id).setValue(data)
+                databaseRef.child(user_id).child(chatListKey).setValue(data)
 
             }
 

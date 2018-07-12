@@ -5,6 +5,7 @@ import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
+import android.util.Log
 import android.view.Gravity
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -33,12 +34,12 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
     var historyChatUserName: String = ""
     var historyChatImage: String = ""
 
-    override fun checkHistoryData(user_id: String, sale_id: String,chatWithUser:String) {
-        databaseRef = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(user_id).child(sale_id)
+    override fun checkHistoryData(user_id: String, chatListKey: String,chatWithUser:String) {
+        databaseRef = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(user_id).child(chatListKey)
 
         databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
-
+                Log.i("Error : ", p0.message)
             }
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -48,14 +49,14 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
                 history_userName = data.history_userName
                 history_image = data.history_image
                 history_title = data.history_title
-                getChatUserStatusCount(chatWithUser,sale_id)
+                getChatUserStatusCount(chatWithUser,chatListKey)
 
             }
 
         })
     }
-    fun getChatUserStatusCount(chatUserId : String ,sale_id: String){
-        databaseRef = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(chatUserId).child(sale_id)
+    fun getChatUserStatusCount(chatUserId : String ,chatListKey: String){
+        databaseRef = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(chatUserId).child(chatListKey)
 
         databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {

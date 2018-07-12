@@ -19,7 +19,7 @@
         android:hint="Write a message..."
         android:inputType=""
         android:maxHeight="80dp"
-        android:maxLines="100"
+        android:maxLines="3"
         android:textColor="#000000"
         android:textColorHint="#000000"
         app:layout_constraintBottom_toBottomOf="parent"

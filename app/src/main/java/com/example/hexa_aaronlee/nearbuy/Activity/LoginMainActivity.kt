@@ -3,9 +3,14 @@ package com.example.hexa_aaronlee.nearbuy.Activity
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.util.Log
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 
 import android.widget.Toast
@@ -34,9 +39,9 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
     private lateinit var mAuth: FirebaseAuth
 
     lateinit var mFirebaseDatabase: FirebaseDatabase
-    lateinit var mDatafaceReference: DatabaseReference
     lateinit var firebaseAuth: FirebaseAuth
 
+    val REQUEST_LOCATION_CODE = 99
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +55,11 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
 
         //getting firebase auth object
         firebaseAuth = FirebaseAuth.getInstance()
+
+        //AskPermission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkLocationPermission()
+        }
 
 
         //if the objects getcurrentuser method is not null
@@ -89,7 +99,6 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
 
     override fun loginToNext() {
         loginProcess()
-        Toast.makeText(applicationContext, "Login Successfully", Toast.LENGTH_SHORT).show()
     }
 
     override fun regiterDirected() {
@@ -97,7 +106,9 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
     }
 
     override fun loginFaild() {
-        Toast.makeText(applicationContext, "Login Fail", Toast.LENGTH_SHORT).show()
+        Toast.makeText(applicationContext, "Please Fill In Email & Password", Toast.LENGTH_SHORT).show()
+        emailLoginAlert.visibility = View.VISIBLE
+        passwordLoginAlert.visibility = View.VISIBLE
     }
 
     override fun loginGoogle() {
@@ -205,22 +216,39 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
 
         //logging in the user
         firebaseAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, OnCompleteListener<AuthResult> { task ->
+                .addOnCompleteListener(this, { task ->
                     progressDialog.dismiss()
                     //if the task is successfull
                     if (task.isSuccessful) {
+
+                        Toast.makeText(applicationContext, "Login Successfully", Toast.LENGTH_SHORT).show()
 
                         val intent = Intent(applicationContext, MainPageActivity::class.java)
                         finish()
                         startActivity(intent)
 
-
-                        fun onCancelled(databaseError: DatabaseError) {
-                            println("The read failed: " + databaseError.code)
-                        }
                     }
                     progressDialog.dismiss()
-                })
+                }).addOnFailureListener {
+                    Toast.makeText(applicationContext, "Login Failed: Invalid Email or Password", Toast.LENGTH_SHORT).show()
+                    Log.e("The read error : ", it.toString())
+                    progressDialog.dismiss()
+                }
+    }
+
+    fun checkLocationPermission(): Boolean {
+        return if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_CODE);
+
+            } else {
+                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_CODE);
+            }
+            false
+
+        } else
+            true
     }
 }
 

@@ -29,28 +29,6 @@ class ShowTotalSalesActivity : AppCompatActivity(), ShowTotalSalesView.View {
         mPresenter = ShowTotalSalesPresenter(this)
 
         mPresenter.getAllUserID(lstUserId)
-
-
-        checkBoxLayout.setOnClickListener {
-            if (!checkBoxLimitation.isChecked)
-            {
-                lstSaleData = ArrayList()
-                checkBoxLimitation.isChecked = true
-                for (i in lstUserId.indices){
-                    mPresenter.getSaleDataWithLimitDistance(lstSaleData, UserDetail.mLatitude, UserDetail.mLongitude,lstUserId[i])
-                }
-
-            }
-            else if (checkBoxLimitation.isChecked)
-            {
-                lstSaleData = ArrayList()
-                checkBoxLimitation.isChecked = false
-                for (i in lstUserId.indices){
-                    mPresenter.getSaleData(lstSaleData,lstUserId[i])
-                }
-            }
-
-        }
     }
 
     override fun setLoopCheckSale(lstUserId: ArrayList<String>) {

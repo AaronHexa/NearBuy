@@ -15,8 +15,18 @@ class ChatHistoryPresenter(internal var view: ChatHistoryView.View) : ChatHistor
     lateinit var newSaleData: ArrayList<String>
     lateinit var newMsgStatus: ArrayList<String>
     lateinit var newMsgStatusCount: ArrayList<Int>
+    lateinit var newChatListKeyArray : ArrayList<String>
 
-    override fun getChatHistoryDataFromDatabase(historyData: ArrayList<String>, imageData: ArrayList<String>, nameData: ArrayList<String>, titleData: ArrayList<String>, user_id: String, saleData: ArrayList<String>, msg_status: ArrayList<String>, msg_statusCount: ArrayList<Int>) {
+    override fun getChatHistoryDataFromDatabase(historyData: ArrayList<String>,
+                                                imageData: ArrayList<String>,
+                                                nameData: ArrayList<String>,
+                                                titleData: ArrayList<String>,
+                                                user_id: String,
+                                                saleData: ArrayList<String>,
+                                                msg_status: ArrayList<String>,
+                                                msg_statusCount: ArrayList<Int>,
+                                                chatListKeyArray : ArrayList<String>) {
+
         var tmpNum = 0
         var tmpString = ""
 
@@ -27,6 +37,7 @@ class ChatHistoryPresenter(internal var view: ChatHistoryView.View) : ChatHistor
         newSaleData = ArrayList()
         newMsgStatus = ArrayList()
         newMsgStatusCount = ArrayList()
+        newChatListKeyArray = ArrayList()
 
         databaseR = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(user_id)
 
@@ -43,14 +54,15 @@ class ChatHistoryPresenter(internal var view: ChatHistoryView.View) : ChatHistor
                     newSaleData.add(data.sale_id)
                     newMsgStatus.add(data.msg_status)
                     newMsgStatusCount.add(data.msg_statusCount)
+                    newChatListKeyArray.add(data.chatListKey)
 
-                    Log.i("HistoryUser :", " ${data.msg_statusCount}")
+                    Log.i("HistoryUser :", " ${data.sale_id}")
 
                     tmpNum += 1
                     tmpString = tmpNum.toString()
 
                     if (tmpString == dataSnapshot.childrenCount.toString()) {
-                        checkMsgStatus(historyData, imageData, nameData, titleData, saleData, msg_status, msg_statusCount)
+                        checkMsgStatus(historyData, imageData, nameData, titleData, saleData, msg_status, msg_statusCount,chatListKeyArray)
 
                     }
                 }
@@ -63,7 +75,7 @@ class ChatHistoryPresenter(internal var view: ChatHistoryView.View) : ChatHistor
         })
     }
 
-    fun checkMsgStatus(historyData: ArrayList<String>, imageData: ArrayList<String>, nameData: ArrayList<String>, titleData: ArrayList<String>, saleData: ArrayList<String>, msg_status: ArrayList<String>, msg_statusCount: ArrayList<Int>) {
+    fun checkMsgStatus(historyData: ArrayList<String>, imageData: ArrayList<String>, nameData: ArrayList<String>, titleData: ArrayList<String>, saleData: ArrayList<String>, msg_status: ArrayList<String>, msg_statusCount: ArrayList<Int>,chatListKeyArray : ArrayList<String>) {
         val newMsg = ArrayList<Int>()
         val oldMsg = ArrayList<Int>()
 
@@ -87,6 +99,7 @@ class ChatHistoryPresenter(internal var view: ChatHistoryView.View) : ChatHistor
                             saleData.add(newSaleData[newMsg[x]])
                             msg_status.add(newMsgStatus[newMsg[x]])
                             msg_statusCount.add(newMsgStatusCount[newMsg[x]])
+                            chatListKeyArray.add(newChatListKeyArray[newMsg[x]])
                         }
 
                         for (y in oldMsg.indices) {
@@ -97,11 +110,12 @@ class ChatHistoryPresenter(internal var view: ChatHistoryView.View) : ChatHistor
                             saleData.add(newSaleData[oldMsg[y]])
                             msg_status.add(newMsgStatus[oldMsg[y]])
                             msg_statusCount.add(newMsgStatusCount[oldMsg[y]])
+                            chatListKeyArray.add(newChatListKeyArray[oldMsg[y]])
 
                         }
 
                     } else if (count == 1) {
-                        view.setRecyclerViewAdapter(historyData, imageData, nameData, titleData, saleData, msg_status, msg_statusCount)
+                        view.setRecyclerViewAdapter(historyData, imageData, nameData, titleData, saleData, msg_status, msg_statusCount,chatListKeyArray)
                     }
                 }
 

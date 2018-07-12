@@ -5,6 +5,7 @@ import android.location.Location
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import com.example.hexa_aaronlee.nearbuy.Presenter.ViewSaleDetailPresenter
@@ -36,6 +37,13 @@ class ViewSaleDetailsActivity : AppCompatActivity(), ViewSaleDetailView.View {
 
 
         floatingActionButton.setOnClickListener {
+            floatingActionButton.isClickable = false
+
+            Handler().postDelayed({
+                //doSomethingHere()
+                floatingActionButton.isClickable = true
+            }, 5000)
+
             Log.i("Sale id : ", UserDetail.saleSelectedId)
             if (checkDealer == UserDetail.user_id) {
                 Toast.makeText(application, "You are the dealer !!!", Toast.LENGTH_SHORT).show()
@@ -78,19 +86,22 @@ class ViewSaleDetailsActivity : AppCompatActivity(), ViewSaleDetailView.View {
         mPresenter.checkHistorySaleData(UserDetail.saleSelectedId, UserDetail.user_id)
     }
 
-    override fun saveHistoryData(checkedResult: Boolean) {
+    override fun saveHistoryData(checkedResult: Boolean,chatListKey:String) {
         if (checkedResult) {
 
             mPresenter.saveUserToHistoryChat(UserDetail.imageUrl, UserDetail.user_id, checkDealer, UserDetail.username, tmpSaleTitle, UserDetail.saleSelectedId, tmpSaleUser, UserDetail.chatWithImageUri)
 
-            //finish()
-            startActivity(Intent(applicationContext, ChatRoomActivity::class.java))
-
         } else if (!checkedResult) {
 
             //finish()
+            UserDetail.chatListKey = chatListKey
             startActivity(Intent(applicationContext, ChatRoomActivity::class.java))
         }
+    }
+
+    override fun SuccessfulSaveData(chatListKey: String) {
+        UserDetail.chatListKey = chatListKey
+        startActivity(Intent(applicationContext, ChatRoomActivity::class.java))
     }
 
     override fun onBackPressed() {

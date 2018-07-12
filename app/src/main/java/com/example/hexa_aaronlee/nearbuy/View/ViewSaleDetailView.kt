@@ -17,7 +17,9 @@ interface ViewSaleDetailView {
                        name: String,
                        chatUserId: String)
 
-        fun saveHistoryData(checkedResult: Boolean)
+        fun saveHistoryData(checkedResult: Boolean,chatListKey:String)
+
+        fun SuccessfulSaveData(chatListKey: String)
     }
 
     interface Presenter {

@@ -16,6 +16,7 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_register_main.*
 import android.graphics.drawable.GradientDrawable
 import android.util.Log
+import android.view.View
 import android.widget.TextView
 import com.example.hexa_aaronlee.nearbuy.R
 
@@ -38,6 +39,7 @@ class RegisterMainActivity : AppCompatActivity(), RegisterView.View {
 
     private val PICK_IMAGE_REQUEST = 1234
     var imageEdited: Int = 0
+    var selectedGender = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,6 +64,8 @@ class RegisterMainActivity : AppCompatActivity(), RegisterView.View {
         }
 
         maleGenderRegister.setOnClickListener {
+            selectedGender = 1
+
             val imgIcon = findViewById<TextView>(R.id.maleGenderRegister)
             val backgroundGradient = imgIcon.background as GradientDrawable
             backgroundGradient.setColor(resources.getColor(R.color.colorLightBlue))
@@ -73,6 +77,8 @@ class RegisterMainActivity : AppCompatActivity(), RegisterView.View {
         }
 
         femaleGenderRegister.setOnClickListener {
+            selectedGender = 1
+
             val imgIcon = findViewById<TextView>(R.id.femaleGenderRegister)
             val backgroundGradient = imgIcon.background as GradientDrawable
             backgroundGradient.setColor(resources.getColor(R.color.colorLightBlue))
@@ -101,12 +107,31 @@ fun registerProcess() {
 
     //checking if email and passwords are empty
     if (TextUtils.isEmpty(email)) {
-        Toast.makeText(this, "Please enter email", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "Please enter Email", Toast.LENGTH_SHORT).show()
+        emailRegisterAlert.visibility = View.VISIBLE
         return
     }
 
-    if (TextUtils.isEmpty(password)) {
-        Toast.makeText(this, "Please enter password", Toast.LENGTH_LONG).show()
+    if (TextUtils.isEmpty(password)|| password.length < 6) {
+        Toast.makeText(this, "Please enter Password", Toast.LENGTH_SHORT).show()
+        passwordRegisterAlert.visibility = View.VISIBLE
+        return
+    }
+
+    if (TextUtils.isEmpty(name)) {
+        Toast.makeText(this, "Please enter Name", Toast.LENGTH_SHORT).show()
+        nameRegisterAlert.visibility = View.VISIBLE
+        return
+    }
+
+    if (selectedGender == 0){
+        Toast.makeText(this, "Please select Gender", Toast.LENGTH_SHORT).show()
+        genderRegisterAlert.visibility = View.VISIBLE
+    }
+
+    if (TextUtils.isEmpty(numPhone)|| numPhone.length != 10) {
+        Toast.makeText(this, "Please enter Phone Number", Toast.LENGTH_SHORT).show()
+        phoneRegisterAlert.visibility = View.VISIBLE
         return
     }
 
@@ -133,11 +158,13 @@ fun registerProcess() {
                     //save Profile Pic to Storage
                     mPresenter.saveProfilePicToStorage(tmpID, filePath)
 
-                } else {
-                    //display some message here
-                    Toast.makeText(this, "Registration Error", Toast.LENGTH_LONG).show()
                 }
                 progressDialog.dismiss()
+            }.addOnFailureListener {
+                progressDialog.dismiss()
+                Toast.makeText(this, "Registration Error", Toast.LENGTH_LONG).show()
+
+                Log.e("Registration Error : ", it.toString())
             }
 }
 

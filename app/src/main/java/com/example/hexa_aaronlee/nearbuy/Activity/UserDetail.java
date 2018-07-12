@@ -22,4 +22,5 @@ public class UserDetail {
     static Double mLatitude = 0.0;
     static Double mLongitude = 0.0;
     static String currentAddress = "";
+    static String chatListKey = "";
 }
