@@ -1,5 +1,7 @@
 package com.example.hexa_aaronlee.nearbuy.View
 
+import android.content.Context
+
 interface ViewSaleDetailView {
 
     interface View {
@@ -20,6 +22,8 @@ interface ViewSaleDetailView {
         fun saveHistoryData(checkedResult: Boolean,chatListKey:String)
 
         fun SuccessfulSaveData(chatListKey: String)
+
+        fun SuccessfulDeleteSoldDeal()
     }
 
     interface Presenter {
@@ -38,6 +42,8 @@ interface ViewSaleDetailView {
 
         fun checkHistorySaleData(saleSelectedId: String,
                                  user_id: String)
+
+        fun DeleteSaleDetail(user_id: String,saleSelectedId: String)
 
     }
 }

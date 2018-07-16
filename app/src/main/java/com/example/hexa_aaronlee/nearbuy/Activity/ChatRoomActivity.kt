@@ -81,7 +81,7 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
             Log.i("Time : ", currentTime)
 
             mPresenter.saveChatMsg(messageText, UserDetail.user_id, arrayMsgIDList, newMessagePage, selectedUser, UserDetail.saleSelectedId,currentTime,currentDate)
-            mPresenter.saveMsgStatus(UserDetail.user_id, UserDetail.saleSelectedId, UserDetail.chatWithID)
+            mPresenter.saveMsgStatus(UserDetail.user_id, UserDetail.chatListKey, UserDetail.chatWithID)
 
             scrollChatView.post({ scrollChatView.fullScroll(View.FOCUS_DOWN) })
         }
@@ -100,7 +100,7 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
 
 
         setting_clip.setOnClickListener {
-            scrollChatView.post({ scrollChatView.fullScroll(View.FOCUS_DOWN) })
+            scrollChatView.fullScroll(View.FOCUS_DOWN)
             showDialogBox()
         }
     }
@@ -127,7 +127,7 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
 
         mPresenter.createMsgBubble(text, sender, type, applicationContext, UserDetail.user_id, lp2, layout1,msgTime,msgDate, UserDetail.chatWithName, UserDetail.username)
 
-        scrollChatView.post({ scrollChatView.fullScroll(View.FOCUS_DOWN) })
+        scrollChatView.fullScroll(View.FOCUS_DOWN)
     }
 
     fun showDialogBox() {

@@ -18,7 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="180dp"
             android:src="@color/colorPrimary"
-            android:id="@+id/salesPic"/>
+            android:id="@+id/salesPic"
+            android:layout_margin="8dp"/>
 
         <TextView
             android:layout_width="match_parent"

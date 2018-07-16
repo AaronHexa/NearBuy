@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.text.Editable
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -83,6 +84,8 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
         val inflater: LayoutInflater = layoutInflater
         view = inflater.inflate(R.layout.editing_dialog, null)
 
+        var checkSelecteGender = 0
+
         view.nameEdit.setText(UserDetail.username)
         view.phoneNumEdit.setText(UserDetail.dialog_phoneNum)
 
@@ -105,6 +108,8 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
 
         view.maleGenderEdit.setOnClickListener {
 
+            checkSelecteGender = 1
+
             val imgIcon = view.findViewById<TextView>(R.id.maleGenderEdit)
             val backgroundGradient = imgIcon.background as GradientDrawable
             backgroundGradient.setColor(resources.getColor(R.color.colorLightBlue))
@@ -116,6 +121,7 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
         }
 
         view.femaleGenderEdit.setOnClickListener {
+            checkSelecteGender = 1
 
             val imgIcon = view.findViewById<TextView>(R.id.femaleGenderEdit)
             val backgroundGradient = imgIcon.background as GradientDrawable
@@ -127,15 +133,20 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
             genderEdition = "Female"
         }
 
-
         builder.setView(view)
         builder.setTitle("Edit Profile")
         builder.setNegativeButton("Cancel") { dialog, _ -> dialog?.dismiss() }
 
         builder.setPositiveButton("Edit") { dialog, _ ->
-            dialog?.dismiss()
 
-            mPresenter.saveProfilePic(filePath, UserDetail.user_id, UserDetail.imageUrl, selectedImage)
+            if(view.nameEdit == null || view.phoneNumEdit == null || checkSelecteGender == 0)
+            {
+                Toast.makeText(this,"Editing Failed",Toast.LENGTH_SHORT).show()
+
+            }else{
+                dialog?.dismiss()
+                mPresenter.saveProfilePic(filePath, UserDetail.user_id, UserDetail.imageUrl, selectedImage)
+            }
         }
 
         val dialog: AlertDialog = builder.create()

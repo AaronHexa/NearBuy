@@ -166,7 +166,8 @@
                 android:layout_marginTop="38dp"
                 android:layout_marginBottom="20dp"
                 android:text="My Deal"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:background="@color/colorKhaki"/>
 
         </LinearLayout>
     </ScrollView>

@@ -18,7 +18,7 @@ import com.example.hexa_aaronlee.nearbuy.R
 import com.squareup.picasso.Picasso
 
 
-class RecyclerViewAdapter(private val mContext: Context, private val mData: List<DealsDetailData>, private val userLatitude: Double, private val userLongitude:Double) : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
+class RecyclerViewAdapter(private val mContext: Context, private val mData: List<DealsDetailData>, private val userLatitude: Double, private val userLongitude:Double, private val fromMySale:Int) : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
@@ -49,6 +49,7 @@ class RecyclerViewAdapter(private val mContext: Context, private val mData: List
 
             val intent = Intent(mContext, ViewSaleDetailsActivity::class.java)
 
+            intent.putExtra("mySale",fromMySale)
             intent.putExtra("saleID",mData[position].sales_id)
             intent.putExtra("offerID",mData[position].offer_id)
 

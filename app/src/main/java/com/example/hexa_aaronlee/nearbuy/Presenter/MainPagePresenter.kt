@@ -19,6 +19,9 @@ import java.io.IOException
 public class MainPagePresenter(internal var view : MainPageView.View) : MainPageView.Presenter {
 
     lateinit var databaseR : DatabaseReference
+    val newArrayMarker = ArrayList<Marker>()
+    val newSaleArray = ArrayList<String>()
+    val newOfferIdArray = ArrayList<String>()
 
     override fun moveCamera(latLng: LatLng, title: String,mMap: GoogleMap) {
 
@@ -74,7 +77,7 @@ public class MainPagePresenter(internal var view : MainPageView.View) : MainPage
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                println("The read failed: " + databaseError.code)
+                Log.e("The read failed: " , databaseError.message)
             }
         })
     }
@@ -87,7 +90,6 @@ public class MainPagePresenter(internal var view : MainPageView.View) : MainPage
             override fun onChildAdded(dataSnapshot: DataSnapshot, p1: String?) {
                 val data: UserData = dataSnapshot.getValue(UserData::class.java)!!
                 userIdArray.add(data.user_id)
-                Log.i("Count : ",userIdArray.count().toString())
                 goGetDistanceData(userIdArray,(userIdArray.count()-1),arrayMarker,saleArray,offerIdArray,mMap,mLongitude,mLatitude)
             }
 
@@ -104,18 +106,16 @@ public class MainPagePresenter(internal var view : MainPageView.View) : MainPage
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                println("The read failed: " + databaseError.code)
+                Log.e("The read failed: " , databaseError.message)
             }
         })
     }
 
     fun goGetDistanceData(userIdArray: ArrayList<String>,countNum : Int,arrayMarker: ArrayList<Marker>, saleArray: ArrayList<String>, offerIdArray: ArrayList<String>,mMap: GoogleMap,mLongitude : Double, mLatitude :Double) {
-        databaseR = FirebaseDatabase.getInstance().reference.child("SaleDetail").child(userIdArray[countNum])
 
         val result = FloatArray(10)
-        val newArrayMarker = ArrayList<Marker>()
-        val newSaleArray = ArrayList<String>()
-        val newOfferIdArray = ArrayList<String>()
+
+        databaseR = FirebaseDatabase.getInstance().reference.child("SaleDetail").child(userIdArray[countNum])
 
         databaseR.addChildEventListener(object : ChildEventListener {
             override fun onCancelled(p0: DatabaseError) {
@@ -222,7 +222,6 @@ public class MainPagePresenter(internal var view : MainPageView.View) : MainPage
                 val data: UserData = dataSnapshot.getValue(UserData::class.java)!!
                 if (tmpCount !=totalCount){
                     lstUserId.add(data.user_id)
-                    Log.i("user id :", data.user_id)
                     tmpCount++
                 }
                 else if (tmpCount == totalCount){
@@ -243,7 +242,7 @@ public class MainPagePresenter(internal var view : MainPageView.View) : MainPage
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                println("The read failed: " + databaseError.code)
+                Log.e("The read failed: " , databaseError.message)
             }
         })
     }
@@ -276,7 +275,7 @@ public class MainPagePresenter(internal var view : MainPageView.View) : MainPage
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                println("The read failed: " + databaseError.code)
+                Log.e("The read failed: ", databaseError.message)
             }
         })
     }
@@ -315,7 +314,7 @@ public class MainPagePresenter(internal var view : MainPageView.View) : MainPage
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                println("The read failed: " + databaseError.code)
+                Log.e("The read failed: " , databaseError.message)
             }
         })
     }

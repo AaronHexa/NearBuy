@@ -55,7 +55,7 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
         else
         {
             val myrv = findViewById<RecyclerView>(R.id.listMySale)
-            val myAdapter = RecyclerViewAdapter(this, lstDetail,UserDetail.mLatitude,UserDetail.mLongitude)
+            val myAdapter = RecyclerViewAdapter(this, lstDetail,UserDetail.mLatitude,UserDetail.mLongitude,1)
             myrv.layoutManager = GridLayoutManager(this, 2)
             myrv.adapter = myAdapter
         }

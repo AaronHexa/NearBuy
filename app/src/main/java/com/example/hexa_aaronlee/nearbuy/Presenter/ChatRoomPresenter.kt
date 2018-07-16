@@ -39,7 +39,7 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
 
         databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
-                Log.i("Error : ", p0.message)
+                Log.e("Error : ", p0.message)
             }
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -75,14 +75,15 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
         })
     }
 
-    override fun saveMsgStatus(user_id: String, sale_id: String,chatWithUser:String) {
+    override fun saveMsgStatus(user_id: String, chatListKey: String,chatWithUser:String) {
         databaseRef = FirebaseDatabase.getInstance().reference.child("TotalHistory")
+        databaseRef2 = FirebaseDatabase.getInstance().reference.child("TotalHistory")
 
         msg_statusCount += 1
-        val data = HistoryData(historyUser, saleId, history_userName, history_image, history_title, "Old", 0)
-        val data2 = HistoryData(historyChatUser, saleId, historyChatUserName, historyChatImage, history_title, "New", msg_statusCount)
-        databaseRef.child(user_id).child(sale_id).setValue(data)
-        databaseRef.child(chatWithUser).child(sale_id).setValue(data2)
+        val data = HistoryData(historyUser, saleId, history_userName, history_image, history_title, "Old", 0,chatListKey)
+        val data2 = HistoryData(historyChatUser, saleId, historyChatUserName, historyChatImage, history_title, "New", msg_statusCount,chatListKey)
+        databaseRef.child(user_id).child(chatListKey).setValue(data)
+        databaseRef2.child(chatWithUser).child(chatListKey).setValue(data2)
 
     }
 

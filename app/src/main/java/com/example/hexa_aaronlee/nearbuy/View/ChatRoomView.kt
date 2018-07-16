@@ -73,7 +73,7 @@ public interface ChatRoomView {
                              chatWithUser:String)
 
         fun saveMsgStatus(user_id: String,
-                          sale_id: String,
+                          chatListKey: String,
                           chatWithUser:String)
     }
 }

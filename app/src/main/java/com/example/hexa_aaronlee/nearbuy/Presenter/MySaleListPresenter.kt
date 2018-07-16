@@ -2,6 +2,7 @@ package com.example.hexa_aaronlee.nearbuy.Presenter
 
 import android.util.Log
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
+import com.example.hexa_aaronlee.nearbuy.DatabaseData.HistoryData
 import com.example.hexa_aaronlee.nearbuy.View.MySaleListView
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
@@ -10,6 +11,9 @@ import com.google.firebase.storage.StorageReference
 class MySaleListPresenter(internal var view: MySaleListView.View) : MySaleListView.Presenter {
 
     lateinit var mDataRef: DatabaseReference
+    lateinit var mDataRef2: DatabaseReference
+    lateinit var mDataRef3: DatabaseReference
+    lateinit var mDataRef4: DatabaseReference
     lateinit var mStorageRef: StorageReference
 
     override fun checkSaleData(user_id: String, lstDetail: ArrayList<DealsDetailData>) {
@@ -36,6 +40,10 @@ class MySaleListPresenter(internal var view: MySaleListView.View) : MySaleListVi
     }
 
     fun getDataSale(user_id: String, lstDetail: ArrayList<DealsDetailData>) {
+
+        var newListDetail : ArrayList<DealsDetailData>
+        newListDetail = ArrayList()
+
         mDataRef = FirebaseDatabase.getInstance().reference.child("SaleDetail").child(user_id)
 
         mDataRef.addChildEventListener(object : ChildEventListener {
@@ -44,9 +52,10 @@ class MySaleListPresenter(internal var view: MySaleListView.View) : MySaleListVi
                 val data: DealsDetailData = dataSnapshot.getValue(DealsDetailData::class.java)!!
 
                 if (data.offer_id == user_id) {
-                    lstDetail.add(DealsDetailData(data.itemTitle, data.itemPrice, data.itemDescription, data.itemLocation, data.mLatitude, data.mLongitude, data.offerBy, data.sales_id, data.sales_image1, data.offer_id))
-                    view.updateList(lstDetail)
-                    view.setDeleteBtn(lstDetail)
+
+                    newListDetail.add(DealsDetailData(data.itemTitle, data.itemPrice, data.itemDescription, data.itemLocation, data.mLatitude, data.mLongitude, data.offerBy, data.sales_id, data.sales_image1, data.offer_id))
+                    view.updateList(newListDetail)
+                    view.setDeleteBtn(newListDetail)
                 }
             }
 
@@ -55,7 +64,14 @@ class MySaleListPresenter(internal var view: MySaleListView.View) : MySaleListVi
             }
 
             override fun onChildRemoved(dataSnapshot: DataSnapshot) {
+                val data: DealsDetailData = dataSnapshot.getValue(DealsDetailData::class.java)!!
 
+                if (data.offer_id == user_id) {
+
+                    newListDetail.add(DealsDetailData(data.itemTitle, data.itemPrice, data.itemDescription, data.itemLocation, data.mLatitude, data.mLongitude, data.offerBy, data.sales_id, data.sales_image1, data.offer_id))
+                    view.updateList(newListDetail)
+                    view.setDeleteBtn(newListDetail)
+                }
             }
 
             override fun onChildMoved(dataSnapshot: DataSnapshot, p1: String?) {
@@ -83,5 +99,4 @@ class MySaleListPresenter(internal var view: MySaleListView.View) : MySaleListVi
 
         view.FinishDeletion()
     }
-
 }

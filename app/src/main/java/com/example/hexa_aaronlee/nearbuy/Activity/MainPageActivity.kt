@@ -267,7 +267,7 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
 
     override fun updateList(lstSaleData: ArrayList<DealsDetailData>) {
         val myrv:RecyclerView = findViewById(R.id.mainRecyclerView)
-        val myAdapter = RecyclerViewAdapter(this, lstSaleData,UserDetail.mLatitude,UserDetail.mLongitude)
+        val myAdapter = RecyclerViewAdapter(this, lstSaleData,UserDetail.mLatitude,UserDetail.mLongitude,0)
         myrv.layoutManager = GridLayoutManager(this, 2)
         myrv.adapter = myAdapter
     }
@@ -281,26 +281,20 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
         UserDetail.username = name
         UserDetail.imageUrl = profilePic
 
-        setNavHeaderText(name)
+        setNavHeaderText(name,profilePic)
 
-        setUIUpdate()
     }
 
-    fun setNavHeaderText(name : String){
+    fun setNavHeaderText(name : String,profilePic: String){
         val navigationView = findViewById<NavigationView>(R.id.nav_Menu)
         val headerView = navigationView.getHeaderView(0)
-        headerView.navName.text = "Welcome "+ name
-    }
-
-    fun setUIUpdate() {
-        nameTxt.text = personName
-        emailTxt.text = personEmail
+        headerView.navName.text = name
 
         Picasso.get()
-                .load(Uri.parse(UserDetail.imageUrl))
+                .load(Uri.parse(profilePic))
                 .resize(700, 700)
                 .centerCrop()
-                .into(userImage)
+                .into(headerView.nav_userImage)
     }
 
     override fun onBackPressed() {
@@ -460,41 +454,15 @@ class MainPageActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClien
     override fun onInfoWindowClick(p0: Marker?) {
         for (i in arrayMarker.indices) {
             if (p0 == arrayMarker[i]) {
-                Log.i("Location : ", saleArray[i])
 
                 val intent = Intent(applicationContext, ViewSaleDetailsActivity::class.java)
 
+                intent.putExtra("mySale",0)
                 intent.putExtra("saleID",saleArray[i])
                 intent.putExtra("offerID",offerIdArray[i])
 
                 startActivity(intent)
             }
         }
-    }
-
-    fun RefreshPage(){
-        mainActivityScrollView.post({
-            mainActivityScrollView.fullScroll(View.FOCUS_UP)
-        })
-
-        mPresenter = MainPagePresenter(this)
-
-        gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkLocationPermission()
-        }
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        val mapFragment = supportFragmentManager
-                .findFragmentById(R.id.map2) as SupportMapFragment
-        mapFragment.getMapAsync(this)
-
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
-
-        setSaleArrayList()
     }
 }

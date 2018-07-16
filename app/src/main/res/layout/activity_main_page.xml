@@ -26,52 +26,27 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/userImage"
+                <ImageView
                     android:layout_width="80dp"
                     android:layout_height="80dp"
-                    android:layout_gravity="center"
-                    android:layout_margin="12dp"
-                    android:src="@drawable/ic_launcher_background" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:src="@drawable/location_ic"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="8dp"/>
 
                     <TextView
-                        android:id="@+id/nameTxt"
+                        android:id="@+id/currentLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="20dp"
-                        android:text="TextView"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="50dp"
+                        android:text="My Current Location"
                         android:textColor="@color/colorPrimary"
                         android:textSize="20sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"/>
 
-                    <TextView
-                        android:id="@+id/emailTxt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:text="TextView" />
-
-                </LinearLayout>
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/currentLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="10dp"
-                android:text="My Current Location"
-                android:textColor="@color/colorPrimary"
-                android:textSize="20sp"
-                android:textStyle="bold" />
 
             <LinearLayout
                 android:id="@+id/mapLayout"
@@ -95,7 +70,7 @@
 
                     <ImageView
                         android:id="@+id/transparent_image"
-                        android:layout_width="match_parent"
+                        android:layout_width="330dp"
                         android:layout_height="match_parent"
                         android:src="@color/transparent" />
 
@@ -121,15 +96,31 @@
                 android:focusable="false"
                 android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="10dp"
-                    android:text="Sale List"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center"
+                    android:paddingTop="5dp">
+
+                    <ImageView
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:src="@drawable/sale"
+                        android:layout_marginEnd="30dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="10dp"
+                        android:text="Sale List"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -168,7 +159,8 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="600dp"
-                    android:paddingBottom="10dp">
+                    android:paddingBottom="10dp"
+                    android:layout_marginBottom="10dp">
 
                     <ImageView
                         android:id="@+id/transparent_image2"
