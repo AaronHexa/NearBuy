@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.ActionBar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -34,7 +35,7 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
     lateinit var saleData: ArrayList<String>
     lateinit var msg_status: ArrayList<String>
     lateinit var msg_statusCount: ArrayList<Int>
-    lateinit var chatListKeyArray : ArrayList<String>
+    lateinit var chatListKeyArray: ArrayList<String>
 
     lateinit var mPresenter: ChatHistoryPresenter
 
@@ -53,8 +54,15 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
         msg_statusCount = ArrayList()
         chatListKeyArray = ArrayList()
 
+        val actionBar = this.supportActionBar!!
+
+        actionBar.title = "Chat List"
+        actionBar.setDisplayHomeAsUpEnabled(true)
+
 
         mPresenter.checkChatHistiryData(UserDetail.user_id)
+
+        Log.i("Test Run : ", "run")
     }
 
     override fun setRecyclerViewAdapter(historyData: ArrayList<String>,
@@ -64,9 +72,9 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
                                         saleData: ArrayList<String>,
                                         msg_status: ArrayList<String>,
                                         msg_statusCount: ArrayList<Int>,
-                                        chatListKeyArray : ArrayList<String>) {
+                                        chatListKeyArray: ArrayList<String>) {
 
-        val customAdapter = CustomListView(applicationContext, nameData, historyData, imageData, titleData, saleData, msg_status, msg_statusCount,chatListKeyArray)
+        val customAdapter = CustomListView(applicationContext, nameData, historyData, imageData, titleData, saleData, msg_status, msg_statusCount, chatListKeyArray)
         listView.layoutManager = LinearLayoutManager(applicationContext)
         listView.adapter = customAdapter
     }
@@ -84,6 +92,8 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
 
         } else {
 
+            mPresenter.getChatHistoryDataFromDatabase(historyData, imageData, nameData, titleData, UserDetail.user_id, saleData, msg_status, msg_statusCount, chatListKeyArray)
+
             this.historyData = ArrayList() //refresh all arrayList ( will not repeat)
             this.imageData = ArrayList()
             this.nameData = ArrayList()
@@ -92,26 +102,24 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
             this.msg_status = ArrayList()
             this.msg_statusCount = ArrayList()
             this.chatListKeyArray = ArrayList()
-
-            mPresenter.getChatHistoryDataFromDatabase(historyData, imageData, nameData, titleData, UserDetail.user_id, saleData, msg_status, msg_statusCount,chatListKeyArray)
         }
     }
 
 
-    class CustomListView(private val context: Context,
-                         private val nameSource: ArrayList<String>,
-                         private val IdSource: ArrayList<String>,
-                         private val imageData: ArrayList<String>,
-                         private val titleData: ArrayList<String>,
-                         private val saleData: ArrayList<String>,
-                         private val msg_status: ArrayList<String>,
-                         private val msg_statusCount: ArrayList<Int>,
-                         private val chatListKeyArray : ArrayList<String>) : RecyclerView.Adapter<CustomListView.CustomViewHolder>(){
+    inner class CustomListView(private val context: Context,
+                               private val nameSource: ArrayList<String>,
+                               private val IdSource: ArrayList<String>,
+                               private val imageData: ArrayList<String>,
+                               private val titleData: ArrayList<String>,
+                               private val saleData: ArrayList<String>,
+                               private val msg_status: ArrayList<String>,
+                               private val msg_statusCount: ArrayList<Int>,
+                               private val chatListKeyArray: ArrayList<String>) : RecyclerView.Adapter<CustomListView.CustomViewHolder>() {
 
         private var mContext: Context = context
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-            
+
             val itemView = LayoutInflater.from(parent.context).inflate(list_view_design, parent, false)
             return CustomViewHolder(itemView)
         }
@@ -134,24 +142,24 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
 
             holder.listTitle?.text = titleData[position]
 
-            if (msg_status[position] == "New"){
+            if (msg_status[position] == "New") {
                 holder.notifyStatusCount!!.visibility = TextView.VISIBLE
 
                 holder.notifyStatusCount!!.text = msg_statusCount[position].toString()
             }
 
-            holder.onClickMethod(position, nameSource, IdSource, imageData, saleData,mContext,chatListKeyArray)
+            holder.onClickMethod(position, nameSource, IdSource, imageData, saleData, mContext, chatListKeyArray)
 
         }
 
 
-        class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        inner class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
             var listTxt: TextView? = null
             var listImage: ImageView? = null
             var listTitle: TextView? = null
-            var notifyStatusCount : TextView? = null
-            lateinit var databaseRef : DatabaseReference
+            var notifyStatusCount: TextView? = null
+            lateinit var databaseRef: DatabaseReference
             var historyUser = ""
             var saleId = ""
             var history_userName = ""
@@ -171,7 +179,7 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
                               IdSource: ArrayList<String>,
                               imageData: ArrayList<String>,
                               saleData: ArrayList<String>,
-                              mContext : Context,
+                              mContext: Context,
                               chatListKeyArray: ArrayList<String>) {
 
                 itemView.setOnClickListener {
@@ -183,7 +191,6 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
                     UserDetail.saleSelectedId = saleData[pos]
                     UserDetail.chatListKey = chatListKeyArray[pos]
 
-                    Log.i("Get Data Chart Users : ", "${UserDetail.chatWithID}....${UserDetail.chatWithName}")
 
                     getHistoryData(UserDetail.user_id, UserDetail.chatListKey)
 
@@ -195,7 +202,7 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
 
             }
 
-            fun getHistoryData(user_id: String,chatListKey : String){
+            fun getHistoryData(user_id: String, chatListKey: String) {
                 databaseRef = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(user_id).child(chatListKey)
 
                 databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -211,26 +218,34 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
                         history_userName = data.history_userName
                         history_image = data.history_image
                         history_title = data.history_title
-                        saveMsgStatus(user_id,chatListKey)
+
+
+                        saveMsgStatus(user_id, chatListKey)
 
                     }
 
                 })
             }
 
-            fun saveMsgStatus(user_id: String,chatListKey : String){
-                databaseRef = FirebaseDatabase.getInstance().reference.child("TotalHistory")
+            fun saveMsgStatus(user_id: String, chatListKey: String) {
+                val databaseRef2 = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(user_id).child(chatListKey)
 
-                val data = HistoryData(historyUser, saleId, history_userName, history_image, history_title, "Old", 0)
 
-                databaseRef.child(user_id).child(chatListKey).setValue(data)
+                val data = HistoryData(historyUser, saleId, history_userName, history_image, history_title, "Old", 0, chatListKey)
+
+                databaseRef2.setValue(data)
 
             }
 
         }
 
+    }
 
 
+    override fun onSupportNavigateUp(): Boolean {
+
+        onBackPressed()
+        return true
     }
 
     override fun onBackPressed() {

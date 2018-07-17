@@ -44,6 +44,11 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
 
         mPresenter = ProfileInfoPresenter(this)
 
+        val actionBar = this.supportActionBar!!
+
+        actionBar.title = "Profile Info"
+        actionBar.setDisplayHomeAsUpEnabled(true)
+
         mPresenter.getProfileData(UserDetail.user_id)
 
         editProfile.setOnClickListener {
@@ -192,6 +197,12 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
             }
             super.onActivityResult(requestCode, resultCode, data)
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+
+        onBackPressed()
+        return true
     }
 
     override fun onBackPressed() {

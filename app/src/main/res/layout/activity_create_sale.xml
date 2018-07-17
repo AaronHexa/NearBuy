@@ -140,16 +140,17 @@
                     android:textColorHint="@color/colorPrimaryLight"
                     android:backgroundTint="@color/colorPrimaryLight"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="*This field is require to fill in."
-                    android:textColor="@color/colorLightRed"
-                    android:visibility="invisible"
-                    android:layout_marginStart="2dp"
-                    android:id="@+id/priceAlert"/>
-
             </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="*This field is require to fill in."
+                android:textColor="@color/colorLightRed"
+                android:visibility="invisible"
+                android:layout_marginStart="2dp"
+                android:id="@+id/priceAlert"
+                android:layout_gravity="center"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

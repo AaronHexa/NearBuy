@@ -21,7 +21,7 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_margin="12dp"
-                android:src = "@drawable/document_ic"/>
+                android:src = "@drawable/ic_insert_drive_file_black_24dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -44,7 +44,7 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_margin="12dp"
-                android:src = "@drawable/gallery_ic"/>
+                android:src = "@drawable/ic_insert_photo_black_24dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -67,7 +67,7 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_margin="12dp"
-                android:src = "@drawable/location_ic"/>
+                android:src = "@drawable/ic_location_on_black_24dp"/>
 
             <TextView
                 android:layout_width="wrap_content"

@@ -35,6 +35,11 @@ class ViewSaleDetailsActivity : AppCompatActivity(), ViewSaleDetailView.View {
 
         mPresenter = ViewSaleDetailPresenter(this)
 
+        val actionBar = this.supportActionBar!!
+
+        actionBar.setDisplayHomeAsUpEnabled(true)
+        actionBar.title = "Sale Detail"
+
         val bundle = intent.extras
         UserDetail.saleSelectedId = bundle.getString("saleID")
         UserDetail.saleSelectedUserId = bundle.getString("offerID")
@@ -138,6 +143,12 @@ class ViewSaleDetailsActivity : AppCompatActivity(), ViewSaleDetailView.View {
 
         val dialog: AlertDialog = builder.create()
         dialog.show()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+
+        onBackPressed()
+        return true
     }
 
     override fun onBackPressed() {

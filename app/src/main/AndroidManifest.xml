@@ -23,7 +23,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".Activity.LoginMainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,13 +31,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activity.RegisterMainActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".Activity.MainPageActivity" />
+            />
+        <activity android:name=".Activity.MainPageActivity"
+            />
         <activity android:name=".Activity.ChatRoomActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".Activity.ChatHistoryActivity" />
         <activity android:name=".Activity.ProfileInfoActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -55,12 +56,12 @@
             android:label="@string/title_activity_maps"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".Activity.CreateSaleActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            />
         <activity android:name=".Activity.ShowTotalSalesActivity" />
         <activity android:name=".Activity.ViewSaleDetailsActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            />
         <activity android:name=".Activity.MySaleList"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            ></activity>
     </application>
 
 </manifest>

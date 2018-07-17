@@ -2,9 +2,9 @@ package com.example.hexa_aaronlee.nearbuy.Presenter
 
 import android.content.Context
 import android.content.DialogInterface
-import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.Gravity
 import android.widget.ImageView
@@ -248,32 +248,32 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
 
             if (sender == user_id) {
                 lpChatBox.gravity = Gravity.END
-                lpChatBox.topMargin = 13
+                lpChatBox.topMargin = 5
                 lp2.gravity = Gravity.CENTER or Gravity.START
-                layoutChatBox.setBackgroundResource(R.drawable.bubble_txt)
-                chatText.setTextColor(Color.parseColor("#696969"))
+                layoutChatBox.setBackgroundResource(R.drawable.chatbox)
+                chatText.setTextColor(ContextCompat.getColor(context, R.color.colorBlack))
 
                 lpTC.gravity = Gravity.BOTTOM or Gravity.END
-                timeChat.setTextColor(Color.parseColor("#000000"))
+                timeChat.setTextColor(ContextCompat.getColor(context, R.color.colorBlue))
                 timeChat.text = msgTime
 
                 lpSN.gravity = Gravity.TOP or Gravity.START
-                senderName.setTextColor(Color.parseColor("#ffb732"))
+                senderName.setTextColor(ContextCompat.getColor(context, R.color.colorBlue))
                 senderName.text = username
 
             } else {
                 lpChatBox.gravity = Gravity.START
                 lpChatBox.topMargin = 18
                 lp2.gravity = Gravity.CENTER or Gravity.START
-                layoutChatBox.setBackgroundResource(R.drawable.speech_bubble)
-                chatText.setTextColor(Color.parseColor("#D3D3D3"))
+                layoutChatBox.setBackgroundResource(R.drawable.chatbox)
+                chatText.setTextColor(ContextCompat.getColor(context, R.color.colorBlack))
 
                 lpTC.gravity = Gravity.BOTTOM or Gravity.END
-                timeChat.setTextColor(Color.parseColor("#000000"))
+                timeChat.setTextColor(ContextCompat.getColor(context, R.color.coloOrange))
                 timeChat.text = msgTime
 
                 lpSN.gravity = Gravity.TOP or Gravity.START
-                senderName.setTextColor(Color.parseColor("#ffb732"))
+                senderName.setTextColor(ContextCompat.getColor(context, R.color.coloOrange))
 
                 senderName.text = chatWithUsername
             }
@@ -298,28 +298,28 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
             if (sender == user_id) {
                 lpChatBox.gravity = Gravity.END
                 lpChatBox.topMargin = 10
-                layoutChatBox.setBackgroundResource(R.drawable.bubble_txt)
+                layoutChatBox.setBackgroundResource(R.drawable.chatbox)
 
                 lpTC.gravity = Gravity.BOTTOM or Gravity.END
-                timeChat.setTextColor(Color.parseColor("#000000"))
+                timeChat.setTextColor(ContextCompat.getColor(context, R.color.colorBlue))
                 timeChat.text = msgTime
 
                 lpSN.gravity = Gravity.TOP or Gravity.START
-                senderName.setTextColor(Color.parseColor("#ffb732"))
+                senderName.setTextColor(ContextCompat.getColor(context, R.color.colorBlue))
                 senderName.text = username
 
             } else {
                 lpChatBox.gravity = Gravity.START
                 lpChatBox.topMargin = 15
 
-                layoutChatBox.setBackgroundResource(R.drawable.speech_bubble)
+                layoutChatBox.setBackgroundResource(R.drawable.chatbox)
 
                 lpTC.gravity = Gravity.BOTTOM or Gravity.END
-                timeChat.setTextColor(Color.parseColor("#000000"))
+                timeChat.setTextColor(ContextCompat.getColor(context, R.color.coloOrange))
                 timeChat.text = msgTime
 
                 lpSN.gravity = Gravity.TOP or Gravity.START
-                senderName.setTextColor(Color.parseColor("#ffb732"))
+                senderName.setTextColor(ContextCompat.getColor(context, R.color.coloOrange))
                 senderName.text = chatWithUsername
             }
 

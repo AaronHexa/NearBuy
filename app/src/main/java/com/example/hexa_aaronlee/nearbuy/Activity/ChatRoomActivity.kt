@@ -127,7 +127,7 @@ class ChatRoomActivity : AppCompatActivity(), ChatRoomView.View {
 
         mPresenter.createMsgBubble(text, sender, type, applicationContext, UserDetail.user_id, lp2, layout1,msgTime,msgDate, UserDetail.chatWithName, UserDetail.username)
 
-        scrollChatView.fullScroll(View.FOCUS_DOWN)
+        scrollChatView.post({ scrollChatView.fullScroll(View.FOCUS_DOWN) })
     }
 
     fun showDialogBox() {

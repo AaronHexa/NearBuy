@@ -35,6 +35,11 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
         lstDetail = ArrayList()
         mPresenter = MySaleListPresenter(this)
 
+        val actionBar = this.supportActionBar!!
+
+        actionBar.title = "My Deal List"
+        actionBar.setDisplayHomeAsUpEnabled(true)
+
         mPresenter.checkSaleData(UserDetail.user_id, lstDetail)
 
         floatingCreateBtn.setOnClickListener {
@@ -95,6 +100,12 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
 
     override fun FinishDeletion() {
         Toast.makeText(this, "Delete Success", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+
+        onBackPressed()
+        return true
     }
 
     override fun onBackPressed() {

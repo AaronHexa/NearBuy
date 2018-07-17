@@ -22,7 +22,8 @@ public interface CreateSaleView {
         fun imageUploadSuccess(uriString: String)
         fun imageUploadFailed()
         fun imageUploadError(exception: Exception)
-        fun UpdateAlertUI()
+        fun UpdateTitleAlertUI(emptyTxt: Boolean)
+        fun UpdatePriceAlertUI(emptyTxt: Boolean)
         fun AllowSaveData()
     }
 
@@ -33,6 +34,12 @@ public interface CreateSaleView {
                        title: String,
                        mMap: GoogleMap,
                        context: Context)
+
+        fun moveCameraAfterSelection (latLng: LatLng,
+                                      title: String,
+                                      mMap: GoogleMap,
+                                      context: Context,
+                                      placeName: String)
 
         fun geoLocate(textSearch: String,
                       context: Context)

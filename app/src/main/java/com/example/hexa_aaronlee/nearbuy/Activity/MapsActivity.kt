@@ -131,6 +131,24 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback, GoogleApiClient.Con
         mAutocompleteAdapter = PlaceAutocompleteAdapter(this, mGoogleApiClient, LAT_LNG_BOUNDS, null)
         searchTxt.setAdapter(mAutocompleteAdapter)
 
+        searchTxt.setOnItemClickListener { parent, view, position, id ->
+            HidSoftKeyboard()
+            val item = mAutocompleteAdapter.getItem(position)!!
+            val placeId = item.placeId
+
+            val placeResult = Places.GeoDataApi.getPlaceById(mGoogleApiClient,placeId)
+            placeResult.setResultCallback({
+                if (!it.status.isSuccess) {
+                    Log.i("TAG", "onResult: Place query did not complete successfully: " + it.status.toString())
+                    it.release()
+                }
+                val place = it.get(0)
+
+                Log.i("Latitude : ", place.latLng.toString())
+                moveCamera(place.latLng,place.address.toString())
+            })
+        }
+
         mMap.uiSettings.isMyLocationButtonEnabled = false
 
         HidSoftKeyboard()

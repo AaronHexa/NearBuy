@@ -18,20 +18,13 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.IOException
 
-public class CreateSalePresenter(internal var view : CreateSaleView.View) : CreateSaleView.Presenter
-{
+public class CreateSalePresenter(internal var view: CreateSaleView.View) : CreateSaleView.Presenter {
+    override fun moveCameraAfterSelection(latLng: LatLng, title: String, mMap: GoogleMap, context: Context, placeName:String) {
 
-    lateinit var  mStorage : StorageReference
-    lateinit var databaseR : DatabaseReference
-
-    override fun moveCamera(latitude : Double, longitude: Double, title: String,mMap : GoogleMap,context: Context) {
-
-        val latLng = LatLng(latitude, longitude)
-
-        val options : MarkerOptions = MarkerOptions()
+        val options: MarkerOptions = MarkerOptions()
                 .position(latLng)
                 .title(title)
-         val currentMarker = mMap.addMarker(options)
+        val currentMarker = mMap.addMarker(options)
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
         val cameraPosition = CameraPosition.Builder()
@@ -43,46 +36,83 @@ public class CreateSalePresenter(internal var view : CreateSaleView.View) : Crea
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
 
         val geocoder = Geocoder(context)
-        var list : List<Address> = ArrayList()
+        var list: List<Address> = ArrayList()
 
         try {
-            list = geocoder.getFromLocation(latitude,longitude,1)
-        }catch (e : IOException)
-        {
-            Log.e("MapsActivity","geolocate : IOException" + e.message)
+            list = geocoder.getFromLocationName(placeName, 1)
+        } catch (e: IOException) {
+            Log.e("MapsActivity", "geolocate : IOException" + e.message)
         }
 
-        if(list.isNotEmpty())
-        {
+        if (list.isNotEmpty()) {
             val address: Address = list[0]
 
 
-            view.setMarker(currentMarker,address.getAddressLine(0).toString())
+            view.setMarker(currentMarker, address.getAddressLine(0).toString())
 
-            Log.i("MapsActivity","geolocate : Found a location : " + address.toString())
+            Log.i("MapsActivity", "geolocate : Found a location : " + address.toString())
+
+        }
+    }
+
+    lateinit var mStorage: StorageReference
+    lateinit var databaseR: DatabaseReference
+
+    override fun moveCamera(latitude: Double, longitude: Double, title: String, mMap: GoogleMap, context: Context) {
+
+        val latLng = LatLng(latitude, longitude)
+
+        val options: MarkerOptions = MarkerOptions()
+                .position(latLng)
+                .title(title)
+        val currentMarker = mMap.addMarker(options)
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+        val cameraPosition = CameraPosition.Builder()
+                .target(latLng)
+                .zoom(16f)                   // Sets the zoom
+                .bearing(90f)                // Sets the orientation of the camera to east
+                .tilt(30f)                   // Sets the tilt of the camera to 30 degrees
+                .build()
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+
+        val geocoder = Geocoder(context)
+        var list: List<Address> = ArrayList()
+
+        try {
+            list = geocoder.getFromLocation(latitude, longitude, 1)
+        } catch (e: IOException) {
+            Log.e("MapsActivity", "geolocate : IOException" + e.message)
+        }
+
+        if (list.isNotEmpty()) {
+            val address: Address = list[0]
+
+
+            view.setMarker(currentMarker, address.getAddressLine(0).toString())
+
+            Log.i("MapsActivity", "geolocate : Found a location : " + address.toString())
 
         }
     }
 
     override fun geoLocate(textSearch: String, context: Context) {
         val geocoder = Geocoder(context)
-        var list : List<Address> = ArrayList()
+        var list: List<Address> = ArrayList()
 
         try {
-            list = geocoder.getFromLocationName(textSearch,1)
-        }catch (e : IOException)
-        {
-            Log.e("MapsActivity","geolocate : IOException" + e.message)
+            list = geocoder.getFromLocationName(textSearch, 1)
+        } catch (e: IOException) {
+            Log.e("MapsActivity", "geolocate : IOException" + e.message)
         }
 
-        if(list.isNotEmpty())
-        {
+        if (list.isNotEmpty()) {
             val address: Address = list[0]
 
 
-            view.getLatLngSetCamera(address.latitude,address.longitude,address.getAddressLine(0).toString())
+            view.getLatLngSetCamera(address.latitude, address.longitude, address.getAddressLine(0).toString())
 
-            Log.e("MapsActivity","geolocate : Found a location : " + address.toString())
+            Log.e("MapsActivity", "geolocate : Found a location : " + address.toString())
 
         }
     }
@@ -91,38 +121,33 @@ public class CreateSalePresenter(internal var view : CreateSaleView.View) : Crea
 
         databaseR = FirebaseDatabase.getInstance().reference.child("SaleDetail")
 
-        val data = DealsDetailData(tmpTitle, tmpPrice, tmpDescription, tmpLocation,mLatitude ,mLongitude, username,salesId,imageData1,user_id)
+        val data = DealsDetailData(tmpTitle, tmpPrice, tmpDescription, tmpLocation, mLatitude, mLongitude, username, salesId, imageData1, user_id)
 
         databaseR.child(user_id).child(salesId).setValue(data)
     }
 
-    override fun checkLocationTxt(context: Context , mLatitude: Double, mLongitude: Double,imageData1 : String,locationTxt : String,tmpLocation :String) {
+    override fun checkLocationTxt(context: Context, mLatitude: Double, mLongitude: Double, imageData1: String, locationTxt: String, tmpLocation: String) {
         val geocoder2 = Geocoder(context)
-        var list2 : List<Address> = ArrayList()
+        var list2: List<Address> = ArrayList()
 
         try {
-            list2 = geocoder2.getFromLocation(mLatitude,mLongitude,1)
-        }catch (e : IOException)
-        {
-            Log.e("MapsActivity","geolocate : IOException" + e.message)
+            list2 = geocoder2.getFromLocation(mLatitude, mLongitude, 1)
+        } catch (e: IOException) {
+            Log.e("MapsActivity", "geolocate : IOException" + e.message)
         }
 
-        if(list2.isNotEmpty())
-        {
+        if (list2.isNotEmpty()) {
             val address2: Address = list2[0]
 
             var setLocation = ""
 
-            if(tmpLocation != null)
-            {
+            if (tmpLocation != null) {
                 setLocation = address2.getAddressLine(0).toString()
-            }
-            else if (tmpLocation == null)
-            {
+            } else if (tmpLocation == null) {
                 setLocation = locationTxt
             }
 
-            view.setLocation(setLocation,imageData1)
+            view.setLocation(setLocation, imageData1)
         }
     }
 
@@ -131,7 +156,7 @@ public class CreateSalePresenter(internal var view : CreateSaleView.View) : Crea
         mStorage = FirebaseStorage.getInstance().reference.child("SalesImage").child(salesId).child("image0")
 
         mStorage.putFile(filePath)
-                .addOnSuccessListener {  }
+                .addOnSuccessListener { }
                 .addOnFailureListener({ exception ->
                     //if the upload is not successfull
 
@@ -154,21 +179,41 @@ public class CreateSalePresenter(internal var view : CreateSaleView.View) : Crea
 
                         view.imageUploadSuccess(downloadUri.toString())
 
-                    } else {
-                        // Handle failures
-                        view.imageUploadFailed()
 
+                    } else {
+                    // Handle failures
+                    view.imageUploadFailed()
                     }
                 })
 
     }
 
     override fun checkFillUpText(tmpTitle: String, tmpPrice: String) {
-        if (tmpTitle.isNullOrEmpty()
-                || tmpPrice.isNullOrEmpty()){
-            view.UpdateAlertUI()
-        }else{
+
+        if (tmpTitle.isNotEmpty() && tmpPrice.isNotEmpty()) {
+
             view.AllowSaveData()
+        }
+
+
+        if (tmpTitle.isNullOrEmpty()) {
+
+            view.UpdateTitleAlertUI(true)
+
+        }else if (tmpTitle != null) {
+
+            view.UpdateTitleAlertUI(false)
+
+        }
+
+        if (tmpPrice.isNullOrEmpty()) {
+
+            view.UpdatePriceAlertUI(true)
+
+        }else if (tmpPrice != null) {
+
+            view.UpdatePriceAlertUI(false)
+
         }
     }
 

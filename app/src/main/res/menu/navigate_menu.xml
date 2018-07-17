@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/historyChat_Nav"
-        android:icon="@drawable/ic_history_black_24dp"
-        android:title="Chat History"/>
+        android:icon="@drawable/ic_message_black_24dp"
+        android:title="Chat List"/>
 
     <item android:id="@+id/createSale_Nav"
         android:icon="@drawable/ic_create_black_24dp"
@@ -12,7 +12,7 @@
 
     <item android:id="@+id/showAllSale_Nav"
         android:icon="@drawable/ic_shopping_cart_black_24dp"
-        android:title="All Sales"/>
+        android:title="Landing Sales"/>
 
     <item android:id="@+id/profile_Nav"
         android:icon="@drawable/ic_people_black_24dp"

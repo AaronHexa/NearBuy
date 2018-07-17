@@ -1,5 +1,6 @@
 package com.example.hexa_aaronlee.nearbuy.Activity
 
+import android.app.ActionBar
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
@@ -12,19 +13,25 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
 import android.widget.Toast
+import android.widget.Toolbar
 import com.example.hexa_aaronlee.nearbuy.Adapter.PlaceAutocompleteAdapter
 import com.example.hexa_aaronlee.nearbuy.Presenter.CreateSalePresenter
 import com.example.hexa_aaronlee.nearbuy.R
 import com.example.hexa_aaronlee.nearbuy.View.CreateSaleView
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.common.api.PendingResult
+import com.google.android.gms.common.api.ResultCallback
 import com.google.android.gms.location.LocationListener
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.places.PlaceBuffer
 import com.google.android.gms.location.places.Places
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -92,6 +99,26 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
 
         mAutocompleteAdapter = PlaceAutocompleteAdapter(this, mGoogleApiClient, LAT_LNG_BOUNDS, null)
         locationSelectionTxt.setAdapter(mAutocompleteAdapter)
+
+        //...........Add item Onclick for map search..............
+
+        locationSelectionTxt.setOnItemClickListener { parent, view, position, id ->
+            HidSoftKeyboard()
+            val item = mAutocompleteAdapter.getItem(position)!!
+            val placeId = item.placeId
+
+            val placeResult = Places.GeoDataApi.getPlaceById(mGoogleApiClient,placeId)
+            placeResult.setResultCallback({
+                if (!it.status.isSuccess) {
+                    Log.i("TAG", "onResult: Place query did not complete successfully: " + it.status.toString())
+                    it.release()
+                }
+                val place = it.get(0)
+
+                Log.i("Latitude : ", place.latLng.toString())
+                mPresenter.moveCameraAfterSelection(place.latLng,place.address.toString(),mMap,this,place.name.toString())
+            })
+        }
 
         HidSoftKeyboard()
     }
@@ -201,7 +228,9 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
     }
 
 
+
     //...............................Information Parts..............................................
+
 
 
     val PICK_IMAGE_REQUEST = 1
@@ -226,6 +255,11 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
 
         mPresenter = CreateSalePresenter(this)
         progressDialog = ProgressDialog(this)
+
+        val actionBar = this.supportActionBar!!
+
+        actionBar.title = "Deal Creation"
+        actionBar.setDisplayHomeAsUpEnabled(true)
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -271,6 +305,9 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
         createBtn.setOnClickListener {
             //displaying a progress dialog
 
+            tmpTitle = String()
+            tmpPrice = String()
+
             tmpTitle = titleTxt.text.trim().toString()
             tmpDescription = editTxtDescription.text.trim().toString()
             tmpPrice = priceTxt.text.trim().toString()
@@ -285,6 +322,9 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
         createSaleLayout.setOnClickListener {
             hideKeyboard()
         }
+
+
+        
 
     }
 
@@ -333,9 +373,23 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
         mPresenter.saveSaleData(tmpTitle, newDecPrice, tmpDescription, tmpLocation, mLatitude.toString(), mLongitude.toString(), UserDetail.username, salesId, imageData1, UserDetail.user_id)
     }
 
-    override fun UpdateAlertUI() {
-        titleAlert.visibility = View.VISIBLE
-        priceAlert.visibility = View.VISIBLE
+    override fun UpdateTitleAlertUI(emptyTxt : Boolean) {
+        if (emptyTxt){
+            titleAlert.visibility = View.VISIBLE
+        }else if (!emptyTxt){
+            titleAlert.visibility = View.INVISIBLE
+        }
+
+    }
+
+    override fun UpdatePriceAlertUI(emptyTxt : Boolean) {
+
+        if (emptyTxt){
+            priceAlert.visibility = View.VISIBLE
+        }else if (!emptyTxt){
+            priceAlert.visibility = View.INVISIBLE
+        }
+
     }
 
     override fun AllowSaveData() {
@@ -386,6 +440,12 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+
+        onBackPressed()
+        return true
     }
 
     override fun onBackPressed() {

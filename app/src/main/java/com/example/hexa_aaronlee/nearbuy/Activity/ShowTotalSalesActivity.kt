@@ -28,6 +28,11 @@ class ShowTotalSalesActivity : AppCompatActivity(), ShowTotalSalesView.View {
 
         mPresenter = ShowTotalSalesPresenter(this)
 
+        val actionBar = this.supportActionBar!!
+
+        actionBar.title = "All Landing Sale"
+        actionBar.setDisplayHomeAsUpEnabled(true)
+
         mPresenter.getAllUserID(lstUserId)
     }
 
@@ -42,6 +47,12 @@ class ShowTotalSalesActivity : AppCompatActivity(), ShowTotalSalesView.View {
         val myAdapter = RecyclerViewAdapter(this, lstSaleData,UserDetail.mLatitude,UserDetail.mLongitude,0)
         myrv.layoutManager = GridLayoutManager(this, 2)
         myrv.adapter = myAdapter
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+
+        onBackPressed()
+        return true
     }
 
     override fun onBackPressed() {

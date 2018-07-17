@@ -47,6 +47,10 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_main)
 
+        val actionBar = this.supportActionBar!!
+
+        actionBar.title = "Login"
+
         mAuth = FirebaseAuth.getInstance()
 
         presenter = LoginPresenter(this)
@@ -135,8 +139,7 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
         }
     }
 
-    fun hideKeyboard()
-    {
+    fun hideKeyboard() {
         val view = this.currentFocus
         if (view != null) {
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -152,7 +155,7 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
         progressDialog.setMessage("Logging Please Wait...")
         progressDialog.show()
 
-        Log.d("firebaseAuthWithGoogle:",(acct.id!!))
+        Log.d("firebaseAuthWithGoogle:", (acct.id!!))
         System.out.println("firebaseAuthWithGoogle:" + acct.id!!)
 
         val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
@@ -188,15 +191,15 @@ class LoginMainActivity : AppCompatActivity(), LoginView.View {
             personName = acct.displayName.toString()
             personEmail = acct.email.toString()
             personPhoto = acct.photoUrl.toString()
-            Log.d("Data :","$personName...$user_id...$personEmail...$personPhoto")
-            updateNextPage(personEmail, password, user_id, personName, personPhoto,gender,phoneNum)
+            Log.d("Data :", "$personName...$user_id...$personEmail...$personPhoto")
+            updateNextPage(personEmail, password, user_id, personName, personPhoto, gender, phoneNum)
         }
 
     }
 
-    fun updateNextPage(email: String, password: String, user_id: String, name: String, profilePhoto: String,gender : String, phoneNum: String) {
+    fun updateNextPage(email: String, password: String, user_id: String, name: String, profilePhoto: String, gender: String, phoneNum: String) {
 
-        presenter?.saveDataProcess(email, password, user_id, name, profilePhoto,gender,phoneNum)
+        presenter?.saveDataProcess(email, password, user_id, name, profilePhoto, gender, phoneNum)
 
         val intent = Intent(applicationContext, MainPageActivity::class.java)
         startActivity(intent)
