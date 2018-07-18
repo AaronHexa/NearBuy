@@ -11,9 +11,6 @@ import com.google.firebase.storage.StorageReference
 class MySaleListPresenter(internal var view: MySaleListView.View) : MySaleListView.Presenter {
 
     lateinit var mDataRef: DatabaseReference
-    lateinit var mDataRef2: DatabaseReference
-    lateinit var mDataRef3: DatabaseReference
-    lateinit var mDataRef4: DatabaseReference
     lateinit var mStorageRef: StorageReference
 
     override fun checkSaleData(user_id: String, lstDetail: ArrayList<DealsDetailData>) {

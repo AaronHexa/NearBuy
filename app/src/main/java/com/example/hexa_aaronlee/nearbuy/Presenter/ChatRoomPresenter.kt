@@ -76,18 +76,22 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
     }
 
     override fun saveMsgStatus(user_id: String, chatListKey: String,chatWithUser:String) {
+
         databaseRef = FirebaseDatabase.getInstance().reference.child("TotalHistory")
         databaseRef2 = FirebaseDatabase.getInstance().reference.child("TotalHistory")
 
         msg_statusCount += 1
+
         val data = HistoryData(historyUser, saleId, history_userName, history_image, history_title, "Old", 0,chatListKey)
         val data2 = HistoryData(historyChatUser, saleId, historyChatUserName, historyChatImage, history_title, "New", msg_statusCount,chatListKey)
+
         databaseRef.child(user_id).child(chatListKey).setValue(data)
         databaseRef2.child(chatWithUser).child(chatListKey).setValue(data2)
 
     }
 
     override fun saveChatMsg(messageText: String, user_id: String, arrayMsgIDList: ArrayList<String>, newMessagePage: Int, selectedUser: String, sale_id: String,currentTime:String, currentDate: String) {
+
         databaseRef = FirebaseDatabase.getInstance().reference.child("History")
         databaseRef2 = FirebaseDatabase.getInstance().reference.child("History")
 
@@ -349,6 +353,7 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
     }
 
     override fun retrieveMsgData(user_id: String, selectedUser: String, arrayMsgIDList: ArrayList<String>, sale_id: String) {
+
         databaseRef = FirebaseDatabase.getInstance().reference.child("History").child(user_id).child(selectedUser).child(sale_id)
 
 

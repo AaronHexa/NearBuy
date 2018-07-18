@@ -28,14 +28,7 @@ import kotlin.collections.ArrayList
 
 class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
 
-    lateinit var historyData: ArrayList<String>
-    lateinit var nameData: ArrayList<String>
-    lateinit var imageData: ArrayList<String>
-    lateinit var titleData: ArrayList<String>
-    lateinit var saleData: ArrayList<String>
-    lateinit var msg_status: ArrayList<String>
-    lateinit var msg_statusCount: ArrayList<Int>
-    lateinit var chatListKeyArray: ArrayList<String>
+    lateinit var dataList: ArrayList<HistoryData>
 
     lateinit var mPresenter: ChatHistoryPresenter
 
@@ -45,14 +38,7 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
 
         mPresenter = ChatHistoryPresenter(this)
 
-        historyData = ArrayList()
-        imageData = ArrayList()
-        nameData = ArrayList()
-        titleData = ArrayList()
-        saleData = ArrayList()
-        msg_status = ArrayList()
-        msg_statusCount = ArrayList()
-        chatListKeyArray = ArrayList()
+        dataList = ArrayList()
 
         val actionBar = this.supportActionBar!!
 
@@ -65,16 +51,9 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
         Log.i("Test Run : ", "run")
     }
 
-    override fun setRecyclerViewAdapter(historyData: ArrayList<String>,
-                                        imageData: ArrayList<String>,
-                                        nameData: ArrayList<String>,
-                                        titleData: ArrayList<String>,
-                                        saleData: ArrayList<String>,
-                                        msg_status: ArrayList<String>,
-                                        msg_statusCount: ArrayList<Int>,
-                                        chatListKeyArray: ArrayList<String>) {
+    override fun setRecyclerViewAdapter(dataList: ArrayList<HistoryData>) {
 
-        val customAdapter = CustomListView(applicationContext, nameData, historyData, imageData, titleData, saleData, msg_status, msg_statusCount, chatListKeyArray)
+        val customAdapter = CustomListView(applicationContext, dataList)
         listView.layoutManager = LinearLayoutManager(applicationContext)
         listView.adapter = customAdapter
     }
@@ -92,29 +71,15 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
 
         } else {
 
-            mPresenter.getChatHistoryDataFromDatabase(historyData, imageData, nameData, titleData, UserDetail.user_id, saleData, msg_status, msg_statusCount, chatListKeyArray)
+            mPresenter.getChatHistoryDataFromDatabase(dataList, UserDetail.user_id)
 
-            this.historyData = ArrayList() //refresh all arrayList ( will not repeat)
-            this.imageData = ArrayList()
-            this.nameData = ArrayList()
-            this.titleData = ArrayList()
-            this.saleData = ArrayList()
-            this.msg_status = ArrayList()
-            this.msg_statusCount = ArrayList()
-            this.chatListKeyArray = ArrayList()
+            this.dataList = ArrayList() //refresh all arrayList ( will not repeat)
         }
     }
 
 
     inner class CustomListView(private val context: Context,
-                               private val nameSource: ArrayList<String>,
-                               private val IdSource: ArrayList<String>,
-                               private val imageData: ArrayList<String>,
-                               private val titleData: ArrayList<String>,
-                               private val saleData: ArrayList<String>,
-                               private val msg_status: ArrayList<String>,
-                               private val msg_statusCount: ArrayList<Int>,
-                               private val chatListKeyArray: ArrayList<String>) : RecyclerView.Adapter<CustomListView.CustomViewHolder>() {
+                               private val dataList: ArrayList<HistoryData>) : RecyclerView.Adapter<CustomListView.CustomViewHolder>() {
 
         private var mContext: Context = context
 
@@ -125,14 +90,14 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
         }
 
         override fun getItemCount(): Int {
-            return nameSource.size
+            return dataList.size
         }
 
         override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
 
-            holder.listTxt?.text = nameSource[position]
+            holder.listTxt?.text = dataList[position].history_userName
 
-            val tmpUri = Uri.parse(imageData[position])
+            val tmpUri = Uri.parse(dataList[position].history_image)
 
             Picasso.get()
                     .load(tmpUri)
@@ -140,15 +105,15 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
                     .resize(700, 700)
                     .into(holder.listImage)
 
-            holder.listTitle?.text = titleData[position]
+            holder.listTitle?.text = dataList[position].history_title
 
-            if (msg_status[position] == "New") {
+            if (dataList[position].msg_status == "New") {
                 holder.notifyStatusCount!!.visibility = TextView.VISIBLE
 
-                holder.notifyStatusCount!!.text = msg_statusCount[position].toString()
+                holder.notifyStatusCount!!.text = dataList[position].msg_statusCount.toString()
             }
 
-            holder.onClickMethod(position, nameSource, IdSource, imageData, saleData, mContext, chatListKeyArray)
+            holder.onClickMethod(position, dataList, mContext)
 
         }
 
@@ -175,21 +140,19 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
 
             }
 
-            fun onClickMethod(pos: Int, nameSource: ArrayList<String>,
-                              IdSource: ArrayList<String>,
-                              imageData: ArrayList<String>,
-                              saleData: ArrayList<String>,
-                              mContext: Context,
-                              chatListKeyArray: ArrayList<String>) {
+            fun onClickMethod(pos: Int,
+                              dataList: ArrayList<HistoryData>,
+                              mContext: Context) {
 
                 itemView.setOnClickListener {
                     Toast.makeText(itemView.context, "Position : $position", Toast.LENGTH_SHORT).show()
 
-                    UserDetail.chatWithID = IdSource[pos]
-                    UserDetail.chatWithName = nameSource[pos]
-                    UserDetail.chatWithImageUri = imageData[pos]
-                    UserDetail.saleSelectedId = saleData[pos]
-                    UserDetail.chatListKey = chatListKeyArray[pos]
+                    UserDetail.chatWithID = dataList[pos].history_user
+
+                    UserDetail.chatWithName = dataList[pos].history_userName
+                    UserDetail.chatWithImageUri = dataList[pos].history_image
+                    UserDetail.saleSelectedId = dataList[pos].sale_id
+                    UserDetail.chatListKey = dataList[pos].chatListKey
 
 
                     getHistoryData(UserDetail.user_id, UserDetail.chatListKey)

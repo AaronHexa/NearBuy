@@ -32,16 +32,18 @@ import com.google.firebase.database.*
 class LoginMainActivity : AppCompatActivity(), LoginView.View {
 
     var presenter: LoginPresenter? = null
+    val RC_SIGN_IN: Int = 1
+    val REQUEST_LOCATION_CODE = 99
 
     lateinit var mGoogleSignInClient: GoogleSignInClient
     lateinit var gso: GoogleSignInOptions
-    val RC_SIGN_IN: Int = 1
+
     private lateinit var mAuth: FirebaseAuth
 
     lateinit var mFirebaseDatabase: FirebaseDatabase
     lateinit var firebaseAuth: FirebaseAuth
 
-    val REQUEST_LOCATION_CODE = 99
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
