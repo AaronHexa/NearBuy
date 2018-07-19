@@ -128,22 +128,18 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
 
             holder.titleDeletion.text = mData[position].itemTitle
 
-            holder.checkBox.isChecked = mCheckedIds.get(position)
-
             holder.checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
-                checkCheckBox(position, !mCheckedIds.get(position), holder.checkBox)
+                checkCheckBox(position, isChecked)
             }
 
         }
 
-        fun checkCheckBox(pos: Int, value: Boolean, checkBox: CheckBox) {
+        fun checkCheckBox(pos: Int, value: Boolean) {
 
             if (value) {
-                checkBox.isChecked = true
                 mCheckedIds.put(pos, true)
                 mDeletionPos.add(pos)
             } else {
-                checkBox.isChecked = false
                 mCheckedIds.delete(pos)
                 mDeletionPos.remove(pos)
             }
