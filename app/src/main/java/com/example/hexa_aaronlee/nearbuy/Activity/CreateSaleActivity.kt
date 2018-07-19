@@ -220,7 +220,14 @@ class CreateSaleActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiCli
         this.currentMarker = currentMarker
         UserDetail.currentAddress = address
 
+        Log.i("MapsActivity ",UserDetail.currentAddress)
+
         HidSoftKeyboard()
+    }
+
+    override fun SetLatLng(latitude: Double, longitude: Double) {
+        mLatitude = latitude
+        mLongitude = longitude
     }
 
     fun HidSoftKeyboard() {

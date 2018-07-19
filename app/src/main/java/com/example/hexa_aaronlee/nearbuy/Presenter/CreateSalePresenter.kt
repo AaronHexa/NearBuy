@@ -49,6 +49,7 @@ public class CreateSalePresenter(internal var view: CreateSaleView.View) : Creat
 
 
             view.setMarker(currentMarker, address.getAddressLine(0).toString())
+            view.SetLatLng(address.latitude,address.longitude)
 
             Log.i("MapsActivity", "geolocate : Found a location : " + address.toString())
 
@@ -131,7 +132,7 @@ public class CreateSalePresenter(internal var view: CreateSaleView.View) : Creat
         var list2: List<Address> = ArrayList()
 
         try {
-            list2 = geocoder2.getFromLocation(mLatitude, mLongitude, 1)
+            list2 = geocoder2.getFromLocationName(tmpLocation, 1)
         } catch (e: IOException) {
             Log.e("MapsActivity", "geolocate : IOException" + e.message)
         }

@@ -25,6 +25,7 @@ public interface CreateSaleView {
         fun UpdateTitleAlertUI(emptyTxt: Boolean)
         fun UpdatePriceAlertUI(emptyTxt: Boolean)
         fun AllowSaveData()
+        fun SetLatLng(latitude: Double,longitude: Double)
     }
 
     interface Presenter {

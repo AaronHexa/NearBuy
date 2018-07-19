@@ -130,7 +130,7 @@ class MySaleList : AppCompatActivity(), MySaleListView.View {
 
             holder.checkBox.isChecked = mCheckedIds.get(position)
 
-            holder.checkList.setOnClickListener {
+            holder.checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
                 checkCheckBox(position, !mCheckedIds.get(position), holder.checkBox)
             }
 
