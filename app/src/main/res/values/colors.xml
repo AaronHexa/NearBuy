@@ -11,7 +11,7 @@
     <color name="colorYellowLight">#f3f8c8</color>
     <color name="colorLightGrey">#D3D3D3</color>
     <color name="colorLightBlue">#87CEEB</color>
-    <color name="colorPrimaryLight">#5ba1e5</color>
+    <color name="colorLightBlueUI">#5ba1e5</color>
     <color name="colorDarkBlue">#2c387e</color>
     <color name="coloOrange">#ffb732</color>
     <color name="coloLightOrange">#ffc55a</color>
@@ -20,4 +20,6 @@
     <color name="colorGrey">#595959</color>
     <color name="colorBlue">#5a5aff</color>
     <color name="colorLightRed">#ff3232</color>
+    <color name="colorPrimaryLight">#7986CB</color>
+
 </resources>

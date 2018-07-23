@@ -19,7 +19,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryLight"
+                android:background="@color/colorLightBlueUI"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -136,27 +136,20 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="10dp"
-                android:gravity="center">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="12dp"
-                    android:paddingStart="50dp"
+                    android:paddingStart="20dp"
                     android:paddingEnd="50dp"
                     android:textStyle="bold"
                     android:textColor="@color/colorBlack"
                     android:textSize="22sp"
-                    android:background="@drawable/round_btn_selection"
+                    android:background="@drawable/editbox_underline"
                     android:id="@+id/profileGender"
                     android:enabled="true" />
 
-            </LinearLayout>
 
             <Button
                 android:id="@+id/linkToMySale"

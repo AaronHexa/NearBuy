@@ -78,7 +78,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorYellowLight"
+                android:background="@color/colorPrimaryLight"
                 android:focusable="false"
                 android:orientation="vertical">
 
@@ -97,7 +97,7 @@
                         android:layout_marginTop="15dp"
                         android:layout_marginBottom="15dp"
                         android:text="Sale List"
-                        android:textColor="@color/colorPrimary"
+                        android:textColor="@color/coloLightOrange"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
@@ -117,7 +117,7 @@
                         android:layout_gravity="center"
                         android:layout_margin="5dp"
                         android:text="Limited to Near By(3Km)"
-                        android:textColor="@color/colorPrimary"
+                        android:textColor="@color/colorLightBlueUI"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 

@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:background="@color/colorPrimaryLight">
+                android:background="@color/colorLightBlueUI">
 
                 <TextView
                     android:id="@+id/setSaleTxt"
@@ -63,7 +63,7 @@
                     android:text="Title Sale : "
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/colorPrimaryLight"/>
+                    android:textColor="@color/colorLightBlueUI"/>
 
                 <EditText
                     android:id="@+id/titleTxt"
@@ -73,8 +73,8 @@
                     android:inputType="textPersonName"
                     android:textSize="18sp"
                     android:textColor="@color/colorLightBlue"
-                    android:textColorHint="@color/colorPrimaryLight"
-                    android:backgroundTint="@color/colorPrimaryLight"/>
+                    android:textColorHint="@color/colorLightBlueUI"
+                    android:backgroundTint="@color/colorLightBlueUI"/>
 
 
             </LinearLayout>
@@ -96,7 +96,7 @@
                 android:text="Description : "
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@color/colorPrimaryLight"
+                android:textColor="@color/colorLightBlueUI"
                 />
 
             <EditText
@@ -110,8 +110,8 @@
                 android:inputType="textMultiLine"
                 android:maxLines="12"
                 android:textColor="@color/colorLightBlue"
-                android:textColorHint="@color/colorPrimaryLight"
-                android:backgroundTint="@color/colorPrimaryLight"/>
+                android:textColorHint="@color/colorLightBlueUI"
+                android:backgroundTint="@color/colorLightBlueUI"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -128,7 +128,7 @@
                     android:text="Price : RM "
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/colorPrimaryLight"/>
+                    android:textColor="@color/colorLightBlueUI"/>
 
 
                 <EditText
@@ -137,8 +137,8 @@
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal"
                     android:textColor="@color/colorLightBlue"
-                    android:textColorHint="@color/colorPrimaryLight"
-                    android:backgroundTint="@color/colorPrimaryLight"/>
+                    android:textColorHint="@color/colorLightBlueUI"
+                    android:backgroundTint="@color/colorLightBlueUI"/>
 
             </LinearLayout>
 
@@ -172,7 +172,7 @@
                     android:text="Please Select Shop Location "
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/colorPrimaryLight"/>
+                    android:textColor="@color/colorLightBlueUI"/>
 
             </LinearLayout>
 
@@ -188,8 +188,8 @@
                 android:inputType="textMultiLine"
                 android:maxLines="5"
                 android:textColor="@color/colorLightBlue"
-                android:textColorHint="@color/colorPrimaryLight"
-                android:backgroundTint="@color/colorPrimaryLight"/>
+                android:textColorHint="@color/colorLightBlueUI"
+                android:backgroundTint="@color/colorLightBlueUI"/>
 
             <TextView
                 android:layout_width="wrap_content"
