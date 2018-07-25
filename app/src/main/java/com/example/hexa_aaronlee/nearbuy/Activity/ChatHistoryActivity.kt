@@ -71,8 +71,9 @@ class ChatHistoryActivity : AppCompatActivity(), ChatHistoryView.View {
 
         } else {
 
-            mPresenter.getChatHistoryDataFromDatabase(dataList, UserDetail.user_id)
+            //mPresenter.getChatHistoryDataFromDatabase(dataList, UserDetail.user_id)
 
+            mPresenter.getHistory(UserDetail.user_id)
             this.dataList = ArrayList() //refresh all arrayList ( will not repeat)
         }
     }

@@ -38,8 +38,7 @@ class MySaleListPresenter(internal var view: MySaleListView.View) : MySaleListVi
 
     fun getDataSale(user_id: String, lstDetail: ArrayList<DealsDetailData>) {
 
-        var newListDetail : ArrayList<DealsDetailData>
-        newListDetail = ArrayList()
+        var newListDetail : ArrayList<DealsDetailData> = ArrayList()
 
         mDataRef = FirebaseDatabase.getInstance().reference.child("SaleDetail").child(user_id)
 

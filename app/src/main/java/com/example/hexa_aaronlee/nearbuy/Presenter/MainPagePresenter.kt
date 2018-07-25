@@ -6,6 +6,9 @@ import android.location.Location
 import android.util.Log
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.DealsDetailData
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.UserData
+import com.example.hexa_aaronlee.nearbuy.Model.ChatHistoryModel
+import com.example.hexa_aaronlee.nearbuy.Model.MainPageModel
+import com.example.hexa_aaronlee.nearbuy.Model.User
 import com.example.hexa_aaronlee.nearbuy.View.MainPageView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -14,6 +17,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.*
+import io.reactivex.FlowableSubscriber
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import org.reactivestreams.Subscription
 import java.io.IOException
 
 public class MainPagePresenter(internal var view : MainPageView.View) : MainPageView.Presenter {
@@ -22,6 +29,7 @@ public class MainPagePresenter(internal var view : MainPageView.View) : MainPage
     val newArrayMarker = ArrayList<Marker>()
     val newSaleArray = ArrayList<String>()
     val newOfferIdArray = ArrayList<String>()
+    val mModel = MainPageModel()
 
     override fun moveCamera(latLng: LatLng, title: String,mMap: GoogleMap) {
 
@@ -66,20 +74,29 @@ public class MainPagePresenter(internal var view : MainPageView.View) : MainPage
     }
 
     override fun getUserDataFromDatabase(user_id: String) {
-        databaseR = FirebaseDatabase.getInstance().reference.child("User").child(user_id)
 
+        mModel.getUserDataFlowable(user_id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : FlowableSubscriber<ArrayList<UserData>> {
+                    override fun onComplete() {
+                        Log.i("Get History", "Done")
+                    }
 
-        databaseR.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val data = dataSnapshot.getValue(UserData::class.java)!!
+                    override fun onSubscribe(s: Subscription) {
+                        //Need to request subscriber (because flowableSubscriber extend subcriber)
+                        s.request(Long.MAX_VALUE)
+                    }
 
-                view.setUserDataToView(data.email,data.name,data.profilePhoto)
-            }
+                    override fun onNext(dataList: ArrayList<UserData>) {
+                        view.setUserDataToView(dataList[0].email,dataList[0].name,dataList[0].profilePhoto)
+                    }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.e("The read failed: " , databaseError.message)
-            }
-        })
+                    override fun onError(t: Throwable?) {
+                        Log.e("Get History", t!!.message.toString())
+                    }
+
+                })
     }
 
     override fun getAreaSaleDetail(arrayMarker: ArrayList<Marker>, saleArray: ArrayList<String>, userIdArray: ArrayList<String>, offerIdArray: ArrayList<String>,mMap: GoogleMap,mLongitude : Double, mLatitude :Double) {

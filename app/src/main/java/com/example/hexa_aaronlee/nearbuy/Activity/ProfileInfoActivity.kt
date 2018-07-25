@@ -67,10 +67,6 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
         profilePhoneNum.text = Editable.Factory.getInstance().newEditable(userPhoneNum)
         profileGender.text = userGender
 
-        val imgIcon = findViewById<TextView>(R.id.profileGender)
-        val backgroundGradient = imgIcon.background as GradientDrawable
-        backgroundGradient.setColor(resources.getColor(R.color.colorLightBlue))
-
         UserDetail.imageUrl = profileImageUrl
         UserDetail.dialog_phoneNum = userPhoneNum
 

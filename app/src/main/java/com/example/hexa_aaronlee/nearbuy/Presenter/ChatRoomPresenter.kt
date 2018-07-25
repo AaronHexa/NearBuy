@@ -12,11 +12,16 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.HistoryData
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.MessageData
+import com.example.hexa_aaronlee.nearbuy.Model.ChatRoomModel
 import com.example.hexa_aaronlee.nearbuy.R
 import com.example.hexa_aaronlee.nearbuy.View.ChatRoomView
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
+import io.reactivex.FlowableSubscriber
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import org.reactivestreams.Subscription
 
 
 public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomView.Presenter {
@@ -33,46 +38,69 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
     var historyChatUser: String = ""
     var historyChatUserName: String = ""
     var historyChatImage: String = ""
+    var mModel = ChatRoomModel()
 
     override fun checkHistoryData(user_id: String, chatListKey: String,chatWithUser:String) {
-        databaseRef = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(user_id).child(chatListKey)
+        mModel.checkHistoryFlowable(user_id,chatListKey)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : FlowableSubscriber<ArrayList<HistoryData>> {
+                    override fun onComplete() {
+                        Log.i("Get History", "Done")
+                    }
 
-        databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
-                Log.e("Error : ", p0.message)
-            }
+                    override fun onSubscribe(s: Subscription) {
+                        //Need to request subscriber (because flowableSubscriber extend subcriber)
+                        s.request(Long.MAX_VALUE)
+                    }
 
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val data = dataSnapshot.getValue(HistoryData::class.java)!!
-                historyUser = data.history_user
-                saleId = data.sale_id
-                history_userName = data.history_userName
-                history_image = data.history_image
-                history_title = data.history_title
-                getChatUserStatusCount(chatWithUser,chatListKey)
+                    override fun onNext(dataList: ArrayList<HistoryData>) {
 
-            }
+                        historyUser = dataList[0].history_user
+                        saleId = dataList[0].sale_id
+                        history_userName = dataList[0].history_userName
+                        history_image = dataList[0].history_image
+                        history_title = dataList[0].history_title
 
-        })
+                        getChatUserStatusCount(chatWithUser,chatListKey)
+                    }
+
+                    override fun onError(t: Throwable?) {
+                        Log.e("Get History", t!!.message.toString())
+                    }
+
+                })
     }
+
     fun getChatUserStatusCount(chatUserId : String ,chatListKey: String){
-        databaseRef = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(chatUserId).child(chatListKey)
 
-        databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
+        mModel.getUserStatusCountFlowable(chatUserId,chatListKey)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : FlowableSubscriber<ArrayList<HistoryData>> {
+                    override fun onComplete() {
+                        Log.i("Get", "User Status Count Done")
+                    }
 
-            }
+                    override fun onSubscribe(s: Subscription) {
+                        //Need to request subscriber (because flowableSubscriber extend subcriber)
+                        s.request(Long.MAX_VALUE)
+                    }
 
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val data = dataSnapshot.getValue(HistoryData::class.java)!!
+                    override fun onNext(dataList: ArrayList<HistoryData>) {
 
-                historyChatUser = data.history_user
-                historyChatUserName = data.history_userName
-                historyChatImage = data.history_image
-                msg_statusCount = data.msg_statusCount
-            }
+                        historyChatUser = dataList[0].history_user
+                        historyChatUserName = dataList[0].history_userName
+                        historyChatImage = dataList[0].history_image
+                        msg_statusCount = dataList[0].msg_statusCount
+                        history_title =dataList[0].history_title
+                    }
 
-        })
+                    override fun onError(t: Throwable?) {
+                        Log.e("Got Error", t!!.message.toString())
+                    }
+
+                })
     }
 
     override fun saveMsgStatus(user_id: String, chatListKey: String,chatWithUser:String) {

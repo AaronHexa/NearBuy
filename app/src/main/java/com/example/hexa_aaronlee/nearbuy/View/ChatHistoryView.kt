@@ -11,9 +11,9 @@ interface ChatHistoryView {
     }
 
     interface Presenter {
-        fun getChatHistoryDataFromDatabase(dataList: ArrayList<HistoryData>,
-                                           user_id: String)
 
         fun checkChatHistiryData(user_id: String)
+
+        fun getHistory(user_id: String)
     }
 }

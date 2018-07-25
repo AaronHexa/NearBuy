@@ -2,77 +2,76 @@ package com.example.hexa_aaronlee.nearbuy.Presenter
 
 import android.util.Log
 import com.example.hexa_aaronlee.nearbuy.DatabaseData.HistoryData
+import com.example.hexa_aaronlee.nearbuy.Model.ChatHistoryModel
 import com.example.hexa_aaronlee.nearbuy.View.ChatHistoryView
 import com.google.firebase.database.*
+import io.reactivex.FlowableSubscriber
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import org.reactivestreams.Subscription
 
 class ChatHistoryPresenter(internal var view: ChatHistoryView.View) : ChatHistoryView.Presenter {
 
     lateinit var databaseR: DatabaseReference
     lateinit var newDataList: ArrayList<HistoryData>
 
-    override fun getChatHistoryDataFromDatabase(dataList: ArrayList<HistoryData>, user_id: String) {
+    val mModel = ChatHistoryModel()
 
-        var tmpNum = 0
-        var tmpString = ""
+    override fun getHistory(user_id: String) {
 
-        newDataList = ArrayList()
-
-        databaseR = FirebaseDatabase.getInstance().reference.child("TotalHistory").child(user_id)
-
-
-        databaseR.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (postSnapshot in dataSnapshot.children) {
-                    val data = postSnapshot.getValue(HistoryData::class.java)!!
-
-                    newDataList.add(HistoryData(data.history_user, data.sale_id, data.history_userName, data.history_image, data.history_title, data.msg_status, data.msg_statusCount, data.chatListKey))
-
-                    Log.i("HistoryUser :", " ${data.sale_id}")
-
-                    tmpNum += 1
-                    tmpString = tmpNum.toString()
-
-                    if (tmpString == dataSnapshot.childrenCount.toString()) {
-                        checkMsgStatus(dataList)
-
+        mModel.getTotalHistoryFlowable(user_id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : FlowableSubscriber<ArrayList<HistoryData>> {
+                    override fun onComplete() {
+                        Log.i("Get History", "Done")
                     }
-                }
-            }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                println("The read failed: " + databaseError.code)
+                    override fun onSubscribe(s: Subscription) {
+                        //Need to request subscriber (because flowableSubscriber extend subcriber)
+                        s.request(Long.MAX_VALUE)
+                    }
 
-            }
-        })
+                    override fun onNext(dataList: ArrayList<HistoryData>) {
+                        checkMsgsStatus(dataList)
+                        Log.i("data is",dataList.toString())
+                    }
+
+                    override fun onError(t: Throwable?) {
+                        Log.e("Get History", t!!.message.toString())
+                    }
+
+                })
     }
 
-    fun checkMsgStatus(dataList: ArrayList<HistoryData>) {
+    fun checkMsgsStatus(dataList: ArrayList<HistoryData>) {
+        newDataList = ArrayList()
         val newMsg = ArrayList<Int>()
         val oldMsg = ArrayList<Int>()
 
-        for (i in 0 until (newDataList.count() + 1)) {
-            if (i != newDataList.count()) {
-                if (newDataList[i].msg_status == "New") {
+        for (i in 0 until (dataList.count() + 1)) {
+            if (i != dataList.count()) {
+                if (dataList[i].msg_status == "New") {
                     newMsg.add(i)
                     Log.i("new i : ", i.toString())
-                } else if (newDataList[i].msg_status == "Old") {
+                } else if (dataList[i].msg_status == "Old") {
                     oldMsg.add(i)
                     Log.i("old i : ", i.toString())
                 }
-            } else if (i == newDataList.count()) {
+            } else if (i == dataList.count()) {
                 for (count in 0 until 2) {
                     if (count != 1) {
                         for (x in newMsg.indices) {
-                            dataList.add(newDataList[newMsg[x]])
+                            newDataList.add(dataList[newMsg[x]])
                         }
 
                         for (y in oldMsg.indices) {
-                            dataList.add(newDataList[oldMsg[y]])
+                            newDataList.add(dataList[oldMsg[y]])
 
                         }
 
                     } else if (count == 1) {
-                        view.setRecyclerViewAdapter(dataList)
+                        view.setRecyclerViewAdapter(newDataList)
                     }
                 }
 
