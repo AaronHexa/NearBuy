@@ -58,7 +58,7 @@
                 android:inputType="textEmailAddress"
                 android:backgroundTint="@color/colorLightBlue"
                 android:textColorHint="@color/colorLightBlue"
-                android:textColor="@color/colorLightBlue"/>
+                android:textColor="@color/colorBlack"/>
 
             <TextView
                 android:id="@+id/emailRegisterAlert"
@@ -89,7 +89,7 @@
                 android:inputType="textPassword"
                 android:backgroundTint="@color/colorLightBlue"
                 android:textColorHint="@color/colorLightBlue"
-                android:textColor="@color/colorLightBlue"/>
+                android:textColor="@color/colorBlack"/>
 
             <TextView
                 android:id="@+id/passwordRegisterAlert"
@@ -120,7 +120,7 @@
                 android:inputType="textPersonName"
                 android:backgroundTint="@color/colorLightBlue"
                 android:textColorHint="@color/colorLightBlue"
-                android:textColor="@color/colorLightBlue"/>
+                android:textColor="@color/colorBlack"/>
 
             <TextView
                 android:id="@+id/nameRegisterAlert"
@@ -205,7 +205,7 @@
                 android:inputType="phone"
                 android:backgroundTint="@color/colorLightBlue"
                 android:textColorHint="@color/colorLightBlue"
-                android:textColor="@color/colorLightBlue"/>
+                android:textColor="@color/colorBlack"/>
 
             <TextView
                 android:id="@+id/phoneRegisterAlert"
