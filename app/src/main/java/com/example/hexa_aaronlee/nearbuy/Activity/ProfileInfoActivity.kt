@@ -135,7 +135,6 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
         }
 
         builder.setView(view)
-        builder.setTitle("Edit Profile")
         builder.setNegativeButton("Cancel") { dialog, _ -> dialog?.dismiss() }
 
         builder.setPositiveButton("Edit") { dialog, _ ->
