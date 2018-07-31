@@ -15,6 +15,7 @@ import android.support.v7.widget.CardView
 import com.example.hexa_aaronlee.nearbuy.Activity.UserDetail
 import com.example.hexa_aaronlee.nearbuy.Activity.ViewSaleDetailsActivity
 import com.example.hexa_aaronlee.nearbuy.R
+import com.google.android.gms.flags.impl.DataUtils
 import com.squareup.picasso.Picasso
 
 
@@ -38,7 +39,17 @@ class RecyclerViewAdapter(private val mContext: Context, private val mData: List
 
         holder.title.text = mData[position].itemTitle
         holder.price.text = "MYR " + mData[position].itemPrice
-        holder.offerBy.text = mData[position].offerBy
+
+        var offerBy = mData[position].offerBy
+
+        if(offerBy.length > 15){
+            offerBy = offerBy.substring(0,(offerBy.indexOf(" ")))
+        }else
+        {
+            offerBy = offerBy
+        }
+
+        holder.offerBy.text = offerBy
 
         val result: FloatArray = FloatArray(10)
 

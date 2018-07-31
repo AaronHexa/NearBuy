@@ -19,6 +19,7 @@ import android.util.Log
 import android.view.View
 import android.widget.TextView
 import com.example.hexa_aaronlee.nearbuy.R
+import java.util.regex.Pattern
 
 
 class RegisterMainActivity : AppCompatActivity(), RegisterView.View {
@@ -112,6 +113,8 @@ class RegisterMainActivity : AppCompatActivity(), RegisterView.View {
         name = nameRegister.text.toString().trim()
         numPhone = phoneRegister.text.toString().trim()
 
+        val regex = Pattern.compile("[$&+,:;=\\\\?@#|/'<>.^*()%!_-]")
+
         //checking if email and passwords are empty
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(this, "Please enter Email", Toast.LENGTH_SHORT).show()
@@ -129,6 +132,10 @@ class RegisterMainActivity : AppCompatActivity(), RegisterView.View {
             Toast.makeText(this, "Please enter Name", Toast.LENGTH_SHORT).show()
             nameRegisterAlert.visibility = View.VISIBLE
             return
+        }else if(regex.matcher(name).find()){
+            Toast.makeText(this, "No Special Character", Toast.LENGTH_SHORT).show()
+            nameRegisterAlert.text = "No Special Character"
+            nameRegisterAlert.visibility = View.VISIBLE
         }
 
         if (selectedGender == 0) {

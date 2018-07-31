@@ -34,10 +34,11 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="30dp"
+                android:backgroundTint="@color/colorLightBlue"
                 android:ems="10"
                 android:hint="Email"
                 android:inputType="textEmailAddress"
-                android:backgroundTint="@color/colorLightBlue"/>
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/emailLoginAlert"
@@ -56,10 +57,11 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
+                android:backgroundTint="@color/colorLightBlue"
                 android:ems="10"
                 android:hint="Password"
                 android:inputType="textPassword"
-                android:backgroundTint="@color/colorLightBlue"/>
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/passwordLoginAlert"

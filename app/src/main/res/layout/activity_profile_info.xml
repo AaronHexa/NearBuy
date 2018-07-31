@@ -67,11 +67,6 @@
 
 
                 </LinearLayout>
-                <ImageView
-                    android:id="@+id/imageView3"
-                    android:layout_width="match_parent"
-                    android:layout_height="49dp"
-                    app:srcCompat="@drawable/line" />
             </LinearLayout>
 
 
@@ -93,11 +88,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/editbox_underline"
                 android:layout_marginStart="20dp"
+                android:background="@drawable/editbox_underline"
                 android:focusable="false"
                 android:inputType="textEmailAddress"
-                android:textSize="22sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -117,11 +112,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/editbox_underline"
                 android:layout_marginStart="20dp"
+                android:background="@drawable/editbox_underline"
                 android:focusable="false"
                 android:inputType="phone"
-                android:textSize="22sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -137,18 +132,18 @@
                 android:textStyle="bold" />
 
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="50dp"
-                    android:textStyle="bold"
-                    android:textColor="@color/colorBlack"
-                    android:textSize="22sp"
-                    android:background="@drawable/editbox_underline"
-                    android:id="@+id/profileGender"
-                    android:enabled="true" />
+            <TextView
+                android:id="@+id/profileGender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/editbox_underline"
+                android:enabled="true"
+                android:padding="12dp"
+                android:paddingEnd="50dp"
+                android:paddingStart="20dp"
+                android:textColor="@color/colorBlack"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
 
             <Button
@@ -156,11 +151,11 @@
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="38dp"
                 android:layout_marginBottom="20dp"
+                android:layout_marginTop="38dp"
+                android:background="@color/colorKhaki"
                 android:text="My Deal"
-                android:textSize="18sp"
-                android:background="@color/colorKhaki"/>
+                android:textSize="14sp" />
 
         </LinearLayout>
     </ScrollView>

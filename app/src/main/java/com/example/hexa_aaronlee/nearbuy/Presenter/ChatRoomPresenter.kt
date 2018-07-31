@@ -267,14 +267,14 @@ public class ChatRoomPresenter(internal var view: ChatRoomView.View) : ChatRoomV
         val lpTC = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT)
 
         val senderName = TextView(context) //gravity top or start/end
-        senderName.textSize = 12f
+        senderName.textSize = 10f
         senderName.typeface = Typeface.DEFAULT_BOLD
         val lpSN = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT)
 
         if (type == "Text") {
             val chatText = TextView(context)
             chatText.text = text
-            chatText.textSize = 20f
+            chatText.textSize = 14f
             chatText.typeface = Typeface.DEFAULT_BOLD
             chatText.maxLines = 100
 

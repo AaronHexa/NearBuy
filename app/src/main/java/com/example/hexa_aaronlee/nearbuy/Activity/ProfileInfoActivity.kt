@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.editing_dialog.view.*
 import com.example.hexa_aaronlee.nearbuy.Presenter.ProfileInfoPresenter
 import com.example.hexa_aaronlee.nearbuy.R
 import com.example.hexa_aaronlee.nearbuy.View.ProfileInfoView
+import java.util.regex.Pattern
 
 
 class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
@@ -87,8 +88,11 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
 
         var checkSelecteGender = 0
 
+        val regex = Pattern.compile("[$&+,:;=\\\\?@#|/'<>.^*()%!_-]")
+
         view.nameEdit.setText(UserDetail.username)
         view.phoneNumEdit.setText(UserDetail.dialog_phoneNum)
+
 
         Picasso.get()
                 .load(profileUri)
@@ -141,7 +145,11 @@ class ProfileInfoActivity : AppCompatActivity(), ProfileInfoView.View {
 
             if(view.nameEdit == null || view.phoneNumEdit == null || checkSelecteGender == 0)
             {
-                Toast.makeText(this,"Editing Failed",Toast.LENGTH_SHORT).show()
+                if(regex.matcher(view.nameEdit.text).find()){
+                    Toast.makeText(this, "No Special Character", Toast.LENGTH_SHORT).show()
+                }else{
+                    Toast.makeText(this,"Editing Failed",Toast.LENGTH_SHORT).show()
+                }
 
             }else{
                 dialog?.dismiss()

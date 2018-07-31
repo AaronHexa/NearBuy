@@ -41,12 +41,11 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Email"
-                android:textColor="@color/colorLightBlue"
-                android:textSize="18sp"
                 android:layout_marginStart="40dp"
                 android:layout_marginTop="10dp"
-                />
+                android:text="Email"
+                android:textColor="@color/colorLightBlue"
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/emailRegister"
@@ -54,11 +53,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="50dp"
                 android:layout_marginTop="8dp"
+                android:backgroundTint="@color/colorLightBlue"
                 android:hint="Email (e.g.@hotmail.com,etc)"
                 android:inputType="textEmailAddress"
-                android:backgroundTint="@color/colorLightBlue"
+                android:textColor="@color/colorBlack"
                 android:textColorHint="@color/colorLightBlue"
-                android:textColor="@color/colorBlack"/>
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/emailRegisterAlert"
@@ -74,22 +74,22 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
                 android:text="Password"
                 android:textColor="@color/colorLightBlue"
-                android:textSize="18sp"
-                android:layout_marginStart="40dp"
-                />
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/passwordRegister"
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="50dp"
+                android:backgroundTint="@color/colorLightBlue"
                 android:hint="Password (6 character Above)"
                 android:inputType="textPassword"
-                android:backgroundTint="@color/colorLightBlue"
+                android:textColor="@color/colorBlack"
                 android:textColorHint="@color/colorLightBlue"
-                android:textColor="@color/colorBlack"/>
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/passwordRegisterAlert"
@@ -116,11 +116,12 @@
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="50dp"
+                android:backgroundTint="@color/colorLightBlue"
                 android:hint="Name"
                 android:inputType="textPersonName"
-                android:backgroundTint="@color/colorLightBlue"
+                android:textColor="@color/colorBlack"
                 android:textColorHint="@color/colorLightBlue"
-                android:textColor="@color/colorBlack"/>
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/nameRegisterAlert"
@@ -136,12 +137,11 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="40dp"
                 android:text="Gender"
                 android:textColor="@color/colorLightBlue"
-                android:textSize="18sp"
-                android:layout_marginStart="40dp"
-                android:layout_marginBottom="8dp"
-                />
+                android:textSize="16sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -190,22 +190,22 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
                 android:text="Phone Number"
                 android:textColor="@color/colorLightBlue"
-                android:textSize="18sp"
-                android:layout_marginStart="40dp"
-                />
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/phoneRegister"
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="50dp"
+                android:backgroundTint="@color/colorLightBlue"
                 android:hint="Phone (e.g. 0125745843)"
                 android:inputType="phone"
-                android:backgroundTint="@color/colorLightBlue"
+                android:textColor="@color/colorBlack"
                 android:textColorHint="@color/colorLightBlue"
-                android:textColor="@color/colorBlack"/>
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/phoneRegisterAlert"
